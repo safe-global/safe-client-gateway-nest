@@ -1,10 +1,10 @@
-import { Schema, SchemaObject } from 'ajv';
+import { SchemaObject } from 'ajv';
 
 export function buildPageSchema(
   keyRef: string,
   itemSchema: SchemaObject,
-): Schema {
-  return <SchemaObject>{
+): SchemaObject {
+  return {
     $id: keyRef,
     type: 'object',
     properties: {

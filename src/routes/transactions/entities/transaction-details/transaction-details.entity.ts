@@ -20,17 +20,17 @@ import { TransactionStatus } from '@/routes/transactions/entities/transaction-st
 )
 export class TransactionDetails {
   @ApiProperty()
-  safeAddress: string;
+  safeAddress!: string;
   @ApiProperty()
-  txId: string;
+  txId!: string;
   @ApiPropertyOptional({ type: Number, nullable: true })
-  executedAt: number | null;
+  executedAt!: number | null;
   @ApiProperty()
-  txStatus: TransactionStatus;
+  txStatus!: TransactionStatus;
   @ApiProperty()
-  txInfo: TransactionInfo;
+  txInfo!: TransactionInfo;
   @ApiPropertyOptional({ type: TransactionData, nullable: true })
-  txData: TransactionData | null;
+  txData!: TransactionData | null;
   @ApiPropertyOptional({
     oneOf: [
       { $ref: getSchemaPath(MultisigExecutionDetails) },
@@ -38,12 +38,12 @@ export class TransactionDetails {
     ],
     nullable: true,
   })
-  detailedExecutionInfo:
+  detailedExecutionInfo!:
     | MultisigExecutionDetails
     | ModuleExecutionDetails
     | null;
   @ApiPropertyOptional({ type: String, nullable: true })
-  txHash: string | null;
+  txHash!: string | null;
   @ApiPropertyOptional({ type: SafeAppInfo, nullable: true })
-  safeAppInfo: SafeAppInfo | null;
+  safeAppInfo!: SafeAppInfo | null;
 }

@@ -25,7 +25,7 @@ import { TransactionPreviewMapper } from '@/routes/transactions/mappers/transact
 import { TransactionsHistoryMapper } from '@/routes/transactions/mappers/transactions-history.mapper';
 import { TransferDetailsMapper } from '@/routes/transactions/mappers/transfers/transfer-details.mapper';
 import { TransferInfoMapper } from '@/routes/transactions/mappers/transfers/transfer-info.mapper';
-import { IncomingTransferMapper } from '@/routes/transactions/mappers/transfers/transfer.mapper';
+import { TransferMapper } from '@/routes/transactions/mappers/transfers/transfer.mapper';
 import { TransactionsController } from '@/routes/transactions/transactions.controller';
 import { TransactionsService } from '@/routes/transactions/transactions.service';
 
@@ -38,7 +38,7 @@ import { TransactionsService } from '@/routes/transactions/transactions.service'
     DataDecodedParamHelper,
     Erc20TransferMapper,
     Erc721TransferMapper,
-    IncomingTransferMapper,
+    TransferMapper,
     ModuleTransactionDetailsMapper,
     ModuleTransactionMapper,
     ModuleTransactionStatusMapper,

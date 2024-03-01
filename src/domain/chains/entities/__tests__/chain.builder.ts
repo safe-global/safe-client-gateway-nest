@@ -10,7 +10,7 @@ import { themeBuilder } from '@/domain/chains/entities/__tests__/theme.builder';
 import { Chain } from '@/domain/chains/entities/chain.entity';
 
 export function chainBuilder(): IBuilder<Chain> {
-  return Builder.new<Chain>()
+  return new Builder<Chain>()
     .with('chainId', faker.string.numeric())
     .with('chainName', faker.company.name())
     .with('description', faker.word.words())

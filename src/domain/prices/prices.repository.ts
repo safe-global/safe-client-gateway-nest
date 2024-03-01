@@ -3,11 +3,14 @@ import { IPricesApi } from '../interfaces/prices-api.interface';
 import { IPricesRepository } from './prices.repository.interface';
 import { AssetPriceValidator } from './asset-price.validator';
 import { FiatCodesValidator } from './fiat-codes.validator';
+import { AssetPrice } from '@/domain/prices/entities/asset-price.entity';
+import { LoggingService, ILoggingService } from '@/logging/logging.interface';
 
 @Injectable()
 export class PricesRepository implements IPricesRepository {
   constructor(
     @Inject(IPricesApi) private readonly coingeckoApi: IPricesApi,
+    @Inject(LoggingService) private readonly loggingService: ILoggingService,
     private readonly assetPriceValidator: AssetPriceValidator,
     private readonly fiatCodesValidator: FiatCodesValidator,
   ) {}
@@ -15,7 +18,7 @@ export class PricesRepository implements IPricesRepository {
   async getNativeCoinPrice(args: {
     nativeCoinId: string;
     fiatCode: string;
-  }): Promise<number> {
+  }): Promise<number | null> {
     const lowerCaseFiatCode = args.fiatCode.toLowerCase();
     const result = await this.coingeckoApi.getNativeCoinPrice({
       nativeCoinId: args.nativeCoinId,
@@ -25,24 +28,36 @@ export class PricesRepository implements IPricesRepository {
     return assetPrice?.[args.nativeCoinId]?.[lowerCaseFiatCode];
   }
 
-  async getTokenPrice(args: {
+  async getTokenPrices(args: {
     chainName: string;
-    tokenAddress: string;
+    tokenAddresses: string[];
     fiatCode: string;
-  }): Promise<number> {
+  }): Promise<AssetPrice[]> {
     const lowerCaseFiatCode = args.fiatCode.toLowerCase();
-    const lowerCaseTokenAddress = args.tokenAddress.toLowerCase();
-    const result = await this.coingeckoApi.getTokenPrice({
+    const lowerCaseTokenAddresses = args.tokenAddresses.map((address) =>
+      address.toLowerCase(),
+    );
+    return this.coingeckoApi.getTokenPrices({
       chainName: args.chainName,
-      tokenAddress: lowerCaseTokenAddress,
+      tokenAddresses: lowerCaseTokenAddresses,
       fiatCode: lowerCaseFiatCode,
     });
-    const assetPrice = this.assetPriceValidator.validate(result);
-    return assetPrice?.[lowerCaseTokenAddress]?.[lowerCaseFiatCode];
   }
 
   async getFiatCodes(): Promise<string[]> {
     const result = await this.coingeckoApi.getFiatCodes();
-    return this.fiatCodesValidator.validate(result);
+
+    const fiatCodes = this.fiatCodesValidator
+      .validate(result)
+      .map((item) => item.toUpperCase())
+      .sort();
+
+    if (!fiatCodes.includes('USD')) {
+      this.loggingService.error(
+        'USD fiat code is not supported by the Prices Provider API',
+      );
+    }
+
+    return fiatCodes;
   }
 }

@@ -12,20 +12,20 @@ export class RegisterDeviceDto {
   @ApiPropertyOptional({ type: String, nullable: true })
   uuid?: string;
   @ApiProperty()
-  cloudMessagingToken: string;
+  cloudMessagingToken!: string;
   @ApiProperty()
-  buildNumber: string;
+  buildNumber!: string;
   @ApiProperty()
-  bundle: string;
+  bundle!: string;
   @ApiProperty()
-  deviceType: DeviceType;
+  deviceType!: DeviceType;
   @ApiProperty()
-  version: string;
+  version!: string;
   @ApiPropertyOptional({ type: String, nullable: true })
   timestamp?: string;
   @ApiProperty({
     type: 'array',
     items: { $ref: getSchemaPath(SafeRegistration) },
   })
-  safeRegistrations: SafeRegistration[];
+  safeRegistrations!: SafeRegistration[];
 }

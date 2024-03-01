@@ -32,6 +32,7 @@ export class ModuleTransactionMapper {
         'CONTRACT',
       ]),
     );
+
     return new Transaction(
       `${MODULE_TRANSACTION_PREFIX}${TRANSACTION_ID_SEPARATOR}${transaction.safe}${TRANSACTION_ID_SEPARATOR}${transaction.moduleTransactionId}`,
       transaction.executionDate.getTime(),

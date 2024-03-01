@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class MasterCopy {
   @ApiProperty()
-  address: string;
+  address!: string;
   @ApiProperty()
-  version: string;
+  version!: string;
 }

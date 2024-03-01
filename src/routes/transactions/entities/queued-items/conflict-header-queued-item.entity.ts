@@ -1,12 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { QueuedItem } from '@/routes/transactions/entities/queued-item.entity';
+import {
+  QueuedItem,
+  QueuedItemType,
+} from '@/routes/transactions/entities/queued-item.entity';
 
 export class ConflictHeaderQueuedItem extends QueuedItem {
   @ApiProperty()
   nonce: number;
 
   constructor(nonce: number) {
-    super('CONFLICT_HEADER');
+    super(QueuedItemType.ConflictHeader);
     this.nonce = nonce;
   }
 }

@@ -1,7 +1,4 @@
-export type NetworkError =
-  | NetworkResponseError
-  | NetworkRequestError
-  | NetworkOtherError;
+export type NetworkError = NetworkResponseError | NetworkRequestError;
 
 /**
  * Represent a network error where a response was received.
@@ -11,7 +8,8 @@ export type NetworkError =
  */
 export class NetworkResponseError extends Error {
   constructor(
-    readonly status,
+    readonly url: URL,
+    readonly response: Response,
     readonly data?: any,
   ) {
     super();
@@ -23,17 +21,10 @@ export class NetworkResponseError extends Error {
  * was never received.
  */
 export class NetworkRequestError extends Error {
-  constructor(readonly request: any) {
+  constructor(
+    readonly url: URL | null,
+    readonly data?: any,
+  ) {
     super();
-  }
-}
-
-/**
- * Represents a network error on the client level i.e.: an error occurred
- * while setting up the network request
- */
-export class NetworkOtherError extends Error {
-  constructor(readonly message: string) {
-    super(message);
   }
 }

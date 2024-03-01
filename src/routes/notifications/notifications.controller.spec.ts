@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { range } from 'lodash';
 import * as request from 'supertest';
 import { TestAppProvider } from '@/__tests__/test-app.provider';
 import { TestCacheModule } from '@/datasources/cache/__tests__/test.cache.module';
@@ -9,32 +8,37 @@ import { NetworkResponseError } from '@/datasources/network/entities/network.err
 import { TestNetworkModule } from '@/datasources/network/__tests__/test.network.module';
 import { chainBuilder } from '@/domain/chains/entities/__tests__/chain.builder';
 import { TestLoggingModule } from '@/logging/__tests__/test.logging.module';
-import { ConfigurationModule } from '@/config/configuration.module';
 import configuration from '@/config/entities/__tests__/configuration';
 import { IConfigurationService } from '@/config/configuration.service.interface';
-import { AppModule, configurationModule } from '@/app.module';
+import { AppModule } from '@/app.module';
 import { CacheModule } from '@/datasources/cache/cache.module';
 import { RequestScopedLoggingModule } from '@/logging/logging.module';
 import { NetworkModule } from '@/datasources/network/network.module';
-import { NetworkService } from '@/datasources/network/network.service.interface';
+import {
+  INetworkService,
+  NetworkService,
+} from '@/datasources/network/network.service.interface';
 import { registerDeviceDtoBuilder } from '@/routes/notifications/entities/__tests__/register-device.dto.builder';
 import { safeRegistrationBuilder } from '@/routes/notifications/entities/__tests__/safe-registration.builder';
+import { AccountDataSourceModule } from '@/datasources/account/account.datasource.module';
+import { TestAccountDataSourceModule } from '@/datasources/account/__tests__/test.account.datasource.module';
+import { RegisterDeviceDto } from '@/routes/notifications/entities/register-device.dto.entity';
 
 describe('Notifications Controller (Unit)', () => {
   let app: INestApplication;
-  let safeConfigUrl;
-  let networkService;
+  let safeConfigUrl: string;
+  let networkService: jest.MockedObjectDeep<INetworkService>;
 
   beforeEach(async () => {
     jest.clearAllMocks();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule.register(configuration)],
     })
+      .overrideModule(AccountDataSourceModule)
+      .useModule(TestAccountDataSourceModule)
       .overrideModule(CacheModule)
       .useModule(TestCacheModule)
-      .overrideModule(configurationModule)
-      .useModule(ConfigurationModule.register(configuration))
       .overrideModule(RequestScopedLoggingModule)
       .useModule(TestLoggingModule)
       .overrideModule(NetworkModule)
@@ -49,19 +53,19 @@ describe('Notifications Controller (Unit)', () => {
     await app.init();
   });
 
-  const buildInputDto = () =>
+  const buildInputDto = (): RegisterDeviceDto =>
     registerDeviceDtoBuilder()
       .with(
         'safeRegistrations',
-        range(4)
-          .map((i) => chainBuilder().with('chainId', i.toString()).build())
-          .map((chain) =>
-            safeRegistrationBuilder().with('chainId', chain.chainId).build(),
-          ),
+        Array.from({ length: 4 }).map((_, i) => {
+          return safeRegistrationBuilder()
+            .with('chainId', i.toString())
+            .build();
+        }),
       )
       .build();
 
-  const rejectForUrl = (url) =>
+  const rejectForUrl = (url: string): Promise<never> =>
     Promise.reject(`No matching rule for url: ${url}`);
 
   describe('POST /register/notifications', () => {
@@ -69,12 +73,12 @@ describe('Notifications Controller (Unit)', () => {
       const registerDeviceDto = buildInputDto();
       networkService.get.mockImplementation((url) =>
         url.includes(`${safeConfigUrl}/api/v1/chains/`)
-          ? Promise.resolve({ data: chainBuilder().build() })
+          ? Promise.resolve({ data: chainBuilder().build(), status: 200 })
           : rejectForUrl(url),
       );
       networkService.post.mockImplementation((url) =>
         url.includes('/api/v1/notifications/devices/')
-          ? Promise.resolve()
+          ? Promise.resolve({ data: {}, status: 200 })
           : rejectForUrl(url),
       );
 
@@ -89,21 +93,24 @@ describe('Notifications Controller (Unit)', () => {
       const registerDeviceDto = buildInputDto();
       networkService.get.mockImplementation((url) => {
         return url.includes(`${safeConfigUrl}/api/v1/chains/`)
-          ? Promise.resolve({ data: chainBuilder().build() })
+          ? Promise.resolve({ data: chainBuilder().build(), status: 200 })
           : rejectForUrl(url);
       });
       networkService.post.mockImplementationOnce((url) =>
         url.includes(`/api/v1/notifications/devices`)
           ? Promise.reject(
               new NetworkResponseError(
-                faker.number.int({ min: 400, max: 499 }),
+                new URL(`${safeConfigUrl}/api/v1/notifications/devices`),
+                {
+                  status: faker.number.int({ min: 400, max: 499 }),
+                } as Response,
               ),
             )
           : rejectForUrl(url),
       );
       networkService.post.mockImplementation((url) =>
         url.includes('/api/v1/notifications/devices/')
-          ? Promise.resolve()
+          ? Promise.resolve({ data: {}, status: 200 })
           : rejectForUrl(url),
       );
 
@@ -124,21 +131,24 @@ describe('Notifications Controller (Unit)', () => {
       const registerDeviceDto = buildInputDto();
       networkService.get.mockImplementation((url) =>
         url.includes(`${safeConfigUrl}/api/v1/chains/`)
-          ? Promise.resolve({ data: chainBuilder().build() })
+          ? Promise.resolve({ data: chainBuilder().build(), status: 200 })
           : rejectForUrl(url),
       );
       networkService.post.mockImplementationOnce((url) =>
         url.includes(`/api/v1/notifications/devices`)
           ? Promise.reject(
               new NetworkResponseError(
-                faker.number.int({ min: 500, max: 599 }),
+                new URL(`${safeConfigUrl}/api/v1/notifications/devices`),
+                {
+                  status: faker.number.int({ min: 500, max: 599 }),
+                } as Response,
               ),
             )
           : rejectForUrl(url),
       );
       networkService.post.mockImplementation((url) =>
         url.includes('/api/v1/notifications/devices/')
-          ? Promise.resolve()
+          ? Promise.resolve({ data: {}, status: 200 })
           : rejectForUrl(url),
       );
 
@@ -157,14 +167,17 @@ describe('Notifications Controller (Unit)', () => {
       const registerDeviceDto = buildInputDto();
       networkService.get.mockImplementation((url) => {
         return url.includes(`${safeConfigUrl}/api/v1/chains/`)
-          ? Promise.resolve({ data: chainBuilder().build() })
+          ? Promise.resolve({ data: chainBuilder().build(), status: 200 })
           : rejectForUrl(url);
       });
       networkService.post.mockImplementationOnce((url) =>
         url.includes(`/api/v1/notifications/devices`)
           ? Promise.reject(
               new NetworkResponseError(
-                faker.number.int({ min: 400, max: 499 }),
+                new URL(`${safeConfigUrl}/api/v1/notifications/devices`),
+                {
+                  status: faker.number.int({ min: 400, max: 499 }),
+                } as Response,
               ),
             )
           : rejectForUrl(url),
@@ -173,14 +186,17 @@ describe('Notifications Controller (Unit)', () => {
         url.includes(`/api/v1/notifications/devices`)
           ? Promise.reject(
               new NetworkResponseError(
-                faker.number.int({ min: 500, max: 599 }),
+                new URL(`${safeConfigUrl}/api/v1/notifications/devices`),
+                {
+                  status: faker.number.int({ min: 500, max: 599 }),
+                } as Response,
               ),
             )
           : rejectForUrl(url),
       );
       networkService.post.mockImplementation((url) =>
         url.includes('/api/v1/notifications/devices/')
-          ? Promise.resolve()
+          ? Promise.resolve({ data: {}, status: 200 })
           : rejectForUrl(url),
       );
 
@@ -202,12 +218,12 @@ describe('Notifications Controller (Unit)', () => {
       const registerDeviceDto = buildInputDto();
       networkService.get.mockImplementation((url) =>
         url.includes(`${safeConfigUrl}/api/v1/chains/`)
-          ? Promise.resolve({ data: chainBuilder().build() })
+          ? Promise.resolve({ data: chainBuilder().build(), status: 200 })
           : rejectForUrl(url),
       );
       networkService.post.mockImplementationOnce((url) =>
         url.includes('/api/v1/notifications/devices/')
-          ? Promise.resolve()
+          ? Promise.resolve({ data: {}, status: 200 })
           : rejectForUrl(url),
       );
       networkService.post.mockImplementationOnce((url) =>
@@ -217,7 +233,7 @@ describe('Notifications Controller (Unit)', () => {
       );
       networkService.post.mockImplementation((url) =>
         url.includes('/api/v1/notifications/devices/')
-          ? Promise.resolve()
+          ? Promise.resolve({ data: {}, status: 200 })
           : rejectForUrl(url),
       );
 
@@ -240,19 +256,21 @@ describe('Notifications Controller (Unit)', () => {
       const expectedProviderURL = `${chain.transactionService}/api/v1/notifications/devices/${uuid}`;
       networkService.get.mockImplementation((url) =>
         url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`
-          ? Promise.resolve({ data: chain })
+          ? Promise.resolve({ data: chain, status: 200 })
           : rejectForUrl(url),
       );
       networkService.delete.mockImplementation((url) =>
-        url === expectedProviderURL ? Promise.resolve() : rejectForUrl(url),
+        url === expectedProviderURL
+          ? Promise.resolve({ data: {}, status: 200 })
+          : rejectForUrl(url),
       );
 
       await request(app.getHttpServer())
         .delete(`/v1/chains/${chain.chainId}/notifications/devices/${uuid}`)
         .expect(200)
         .expect({});
-      expect(networkService.delete).toBeCalledTimes(1);
-      expect(networkService.delete).toBeCalledWith(expectedProviderURL);
+      expect(networkService.delete).toHaveBeenCalledTimes(1);
+      expect(networkService.delete).toHaveBeenCalledWith(expectedProviderURL);
     });
 
     it('Failure: Config API fails', async () => {
@@ -267,7 +285,7 @@ describe('Notifications Controller (Unit)', () => {
       await request(app.getHttpServer())
         .delete(`/v1/chains/${chainId}/notifications/devices/${uuid}`)
         .expect(503);
-      expect(networkService.delete).toBeCalledTimes(0);
+      expect(networkService.delete).toHaveBeenCalledTimes(0);
     });
 
     it('Failure: Transaction API fails', async () => {
@@ -275,7 +293,7 @@ describe('Notifications Controller (Unit)', () => {
       const chain = chainBuilder().build();
       networkService.get.mockImplementation((url) =>
         url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`
-          ? Promise.resolve({ data: chain })
+          ? Promise.resolve({ data: chain, status: 200 })
           : rejectForUrl(url),
       );
       networkService.delete.mockImplementation((url) =>
@@ -288,7 +306,7 @@ describe('Notifications Controller (Unit)', () => {
       await request(app.getHttpServer())
         .delete(`/v1/chains/${chain.chainId}/notifications/devices/${uuid}`)
         .expect(503);
-      expect(networkService.delete).toBeCalledTimes(1);
+      expect(networkService.delete).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -300,11 +318,13 @@ describe('Notifications Controller (Unit)', () => {
       const expectedProviderURL = `${chain.transactionService}/api/v1/notifications/devices/${uuid}/safes/${safeAddress}`;
       networkService.get.mockImplementation((url) =>
         url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`
-          ? Promise.resolve({ data: chain })
+          ? Promise.resolve({ data: chain, status: 200 })
           : rejectForUrl(url),
       );
       networkService.delete.mockImplementation((url) =>
-        url === expectedProviderURL ? Promise.resolve() : rejectForUrl(url),
+        url === expectedProviderURL
+          ? Promise.resolve({ data: {}, status: 200 })
+          : rejectForUrl(url),
       );
 
       await request(app.getHttpServer())
@@ -313,8 +333,8 @@ describe('Notifications Controller (Unit)', () => {
         )
         .expect(200)
         .expect({});
-      expect(networkService.delete).toBeCalledTimes(1);
-      expect(networkService.delete).toBeCalledWith(expectedProviderURL);
+      expect(networkService.delete).toHaveBeenCalledTimes(1);
+      expect(networkService.delete).toHaveBeenCalledWith(expectedProviderURL);
     });
 
     it('Failure: Config API fails', async () => {
@@ -332,7 +352,7 @@ describe('Notifications Controller (Unit)', () => {
           `/v1/chains/${chainId}/notifications/devices/${uuid}/safes/${safeAddress}`,
         )
         .expect(503);
-      expect(networkService.delete).toBeCalledTimes(0);
+      expect(networkService.delete).toHaveBeenCalledTimes(0);
     });
 
     it('Failure: Transaction API fails', async () => {
@@ -341,7 +361,7 @@ describe('Notifications Controller (Unit)', () => {
       const chain = chainBuilder().build();
       networkService.get.mockImplementation((url) =>
         url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`
-          ? Promise.resolve({ data: chain })
+          ? Promise.resolve({ data: chain, status: 200 })
           : rejectForUrl(url),
       );
       networkService.delete.mockImplementation((url) =>
@@ -356,7 +376,7 @@ describe('Notifications Controller (Unit)', () => {
           `/v1/chains/${chain.chainId}/notifications/devices/${uuid}/safes/${safeAddress}`,
         )
         .expect(503);
-      expect(networkService.delete).toBeCalledTimes(1);
+      expect(networkService.delete).toHaveBeenCalledTimes(1);
     });
   });
 });

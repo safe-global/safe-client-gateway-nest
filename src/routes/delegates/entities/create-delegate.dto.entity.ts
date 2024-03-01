@@ -4,11 +4,11 @@ export class CreateDelegateDto {
   @ApiPropertyOptional()
   safe?: string;
   @ApiProperty()
-  delegate: string;
+  delegate!: string;
   @ApiProperty()
-  delegator: string;
+  delegator!: string;
   @ApiProperty()
-  signature: string;
+  signature!: string;
   @ApiProperty()
-  label: string;
+  label!: string;
 }

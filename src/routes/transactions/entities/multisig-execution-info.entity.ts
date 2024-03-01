@@ -1,6 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AddressInfo } from '@/routes/common/entities/address-info.entity';
-import { ExecutionInfo } from '@/routes/transactions/entities/execution-info.entity';
+import {
+  ExecutionInfo,
+  ExecutionInfoType,
+} from '@/routes/transactions/entities/execution-info.entity';
 
 export class MultisigExecutionInfo extends ExecutionInfo {
   @ApiProperty()
@@ -18,7 +21,7 @@ export class MultisigExecutionInfo extends ExecutionInfo {
     confirmationsSubmitted: number,
     missingSigners: AddressInfo[] | null,
   ) {
-    super('MULTISIG');
+    super(ExecutionInfoType.Multisig);
     this.nonce = nonce;
     this.confirmationsRequired = confirmationsRequired;
     this.confirmationsSubmitted = confirmationsSubmitted;

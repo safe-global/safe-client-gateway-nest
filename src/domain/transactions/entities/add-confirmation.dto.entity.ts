@@ -1,3 +1,3 @@
 export class AddConfirmationDto {
-  signedSafeTxHash: string;
+  signedSafeTxHash!: string;
 }

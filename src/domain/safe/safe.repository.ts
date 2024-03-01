@@ -19,6 +19,7 @@ import { TransactionTypeValidator } from '@/domain/safe/transaction-type.validat
 import { TransferValidator } from '@/domain/safe/transfer.validator';
 import { AddConfirmationDto } from '@/domain/transactions/entities/add-confirmation.dto.entity';
 import { ProposeTransactionDto } from '@/domain/transactions/entities/propose-transaction.dto.entity';
+import { getAddress } from 'viem';
 
 @Injectable()
 export class SafeRepository implements ISafeRepository {
@@ -45,6 +46,20 @@ export class SafeRepository implements ISafeRepository {
     const transactionService =
       await this.transactionApiManager.getTransactionApi(args.chainId);
     return transactionService.clearSafe(args.address);
+  }
+
+  async isOwner(args: {
+    chainId: string;
+    safeAddress: string;
+    address: string;
+  }): Promise<boolean> {
+    const safe = await this.getSafe({
+      chainId: args.chainId,
+      address: args.safeAddress,
+    });
+    const owner = getAddress(args.address);
+    const owners = safe.owners.map((rawAddress) => getAddress(rawAddress));
+    return owners.includes(owner);
   }
 
   async getCollectibleTransfers(args: {
@@ -265,6 +280,16 @@ export class SafeRepository implements ISafeRepository {
     return this.multisigTransactionValidator.validate(multiSigTransaction);
   }
 
+  async deleteTransaction(args: {
+    chainId: string;
+    safeTxHash: string;
+    signature: string;
+  }): Promise<void> {
+    const transactionService =
+      await this.transactionApiManager.getTransactionApi(args.chainId);
+    return transactionService.deleteTransaction(args);
+  }
+
   async clearMultisigTransactions(args: {
     chainId: string;
     safeAddress: string;
@@ -362,5 +387,42 @@ export class SafeRepository implements ISafeRepository {
       address: args.safeAddress,
       data: args.proposeTransactionDto,
     });
+  }
+
+  async getNonces(args: {
+    chainId: string;
+    safeAddress: string;
+  }): Promise<{ currentNonce: number; recommendedNonce: number }> {
+    const safe = await this.getSafe({
+      chainId: args.chainId,
+      address: args.safeAddress,
+    });
+
+    const lastTransaction = await this.getLastTransactionSortedByNonce({
+      chainId: args.chainId,
+      safeAddress: args.safeAddress,
+    });
+
+    const recommendedNonce = lastTransaction
+      ? Math.max(safe.nonce, lastTransaction.nonce + 1)
+      : safe.nonce;
+
+    return {
+      currentNonce: safe.nonce,
+      recommendedNonce: recommendedNonce,
+    };
+  }
+
+  async getSafesByModule(args: {
+    chainId: string;
+    moduleAddress: string;
+  }): Promise<SafeList> {
+    const transactionService =
+      await this.transactionApiManager.getTransactionApi(args.chainId);
+    const safesByModule = await transactionService.getSafesByModule(
+      args.moduleAddress,
+    );
+
+    return this.safeListValidator.validate(safesByModule);
   }
 }

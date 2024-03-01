@@ -1,7 +1,10 @@
-import { SettingsChange } from '@/routes/transactions/entities/settings-changes/settings-change.entity';
+import {
+  SettingsChange,
+  SettingsChangeType,
+} from '@/routes/transactions/entities/settings-changes/settings-change.entity';
 
 export class DeleteGuard extends SettingsChange {
   constructor() {
-    super('DELETE_GUARD');
+    super(SettingsChangeType.DeleteGuard);
   }
 }

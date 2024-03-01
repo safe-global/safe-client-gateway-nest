@@ -14,7 +14,7 @@ import Ajv from 'ajv';
  *
  * @param ajv - the AJV instance to which the isDate keyword should be registered
  */
-export function addIsDate(ajv: Ajv) {
+export function addIsDate(ajv: Ajv): void {
   ajv.addKeyword({
     keyword: 'isDate',
     compile: (schema) => (data, dataContext) => {

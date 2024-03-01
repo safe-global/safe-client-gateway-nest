@@ -23,7 +23,7 @@ export class MultisigTransactionInfoMapper {
   private readonly TRANSFER_METHOD = 'transfer';
   private readonly TRANSFER_FROM_METHOD = 'transferFrom';
   private readonly SAFE_TRANSFER_FROM_METHOD = 'safeTransferFrom';
-  private readonly isHumanDescriptionEnabled: boolean;
+  private readonly isRichFragmentsEnabled: boolean;
 
   private readonly ERC20_TRANSFER_METHODS = [
     this.TRANSFER_METHOD,
@@ -48,8 +48,8 @@ export class MultisigTransactionInfoMapper {
     private readonly erc721TransferMapper: Erc721TransferMapper,
     private readonly humanDescriptionMapper: HumanDescriptionMapper,
   ) {
-    this.isHumanDescriptionEnabled = this.configurationService.getOrThrow(
-      'features.humanDescription',
+    this.isRichFragmentsEnabled = this.configurationService.getOrThrow(
+      'features.richFragments',
     );
   }
 
@@ -65,16 +65,20 @@ export class MultisigTransactionInfoMapper {
     const dataSize =
       dataByteLength >= 2 ? Math.floor((dataByteLength - 2) / 2) : 0;
 
-    const richDecodedInfo = this.isHumanDescriptionEnabled
-      ? await this.humanDescriptionMapper.mapRichDecodedInfo(
-          transaction,
-          chainId,
-        )
-      : null;
+    const richDecodedInfo =
+      await this.humanDescriptionMapper.mapRichDecodedInfo(
+        transaction,
+        chainId,
+      );
 
-    const humanDescription = this.isHumanDescriptionEnabled
-      ? this.humanDescriptionMapper.mapHumanDescription(richDecodedInfo)
-      : null;
+    const humanDescription =
+      this.humanDescriptionMapper.mapHumanDescription(richDecodedInfo);
+
+    // If the rich fragment feature is disabled, we set it as undefined.
+    // Undefined properties are not rendered on the response
+    const richDecodedInfoApiProperty = this.isRichFragmentsEnabled
+      ? richDecodedInfo
+      : undefined;
 
     if (this.isCustomTransaction(value, dataSize, transaction.operation)) {
       return await this.customTransactionMapper.mapCustomTransaction(
@@ -82,7 +86,7 @@ export class MultisigTransactionInfoMapper {
         dataSize,
         chainId,
         humanDescription,
-        richDecodedInfo,
+        richDecodedInfoApiProperty,
       );
     }
 
@@ -91,7 +95,7 @@ export class MultisigTransactionInfoMapper {
         chainId,
         transaction,
         humanDescription,
-        richDecodedInfo,
+        richDecodedInfoApiProperty,
       );
     }
 
@@ -122,7 +126,7 @@ export class MultisigTransactionInfoMapper {
         new DataDecoded(transaction.dataDecoded.method, dataDecodedParameters),
         settingsInfo,
         humanDescription,
-        richDecodedInfo,
+        richDecodedInfoApiProperty,
       );
     }
 
@@ -138,7 +142,7 @@ export class MultisigTransactionInfoMapper {
             chainId,
             transaction,
             humanDescription,
-            richDecodedInfo,
+            richDecodedInfoApiProperty,
           );
         case TokenType.Erc721:
           return this.erc721TransferMapper.mapErc721Transfer(
@@ -146,7 +150,7 @@ export class MultisigTransactionInfoMapper {
             chainId,
             transaction,
             humanDescription,
-            richDecodedInfo,
+            richDecodedInfoApiProperty,
           );
       }
     }
@@ -156,7 +160,7 @@ export class MultisigTransactionInfoMapper {
       dataSize,
       chainId,
       humanDescription,
-      richDecodedInfo,
+      richDecodedInfoApiProperty,
     );
   }
 

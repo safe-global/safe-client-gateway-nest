@@ -3,5 +3,5 @@ import { AddConfirmationDto as DomainCreateConfirmationDto } from '@/domain/tran
 
 export class AddConfirmationDto implements DomainCreateConfirmationDto {
   @ApiProperty()
-  signedSafeTxHash: string;
+  signedSafeTxHash!: string;
 }

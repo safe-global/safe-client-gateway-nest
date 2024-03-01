@@ -3,7 +3,7 @@ import { IConfigurationService } from '@/config/configuration.service.interface'
 export class FakeConfigurationService implements IConfigurationService {
   private configuration: Record<string, any> = {};
 
-  set(key: string, value: any) {
+  set(key: string, value: any): void {
     this.configuration[key] = value;
   }
 

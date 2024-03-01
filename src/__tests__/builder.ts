@@ -1,21 +1,21 @@
 export interface IBuilder<T> {
-  with<K extends keyof T>(key: K, value: T[K]): IBuilder<T>;
+  with<K extends keyof T>(key: K, value: T[K]): this;
 
   build(): T;
 }
 
 export class Builder<T> implements IBuilder<T> {
-  private constructor(private target: Partial<T>) {}
+  private target: Partial<T> = {};
 
   /**
-   * Returns a new {@link Builder} with the property {@link key} set to {@link value}.
+   * Returns the {@link Builder} with the property {@link key} set to {@link value}.
    *
    * @param key - the name of the property from T to be set
    * @param value - the value of the property from T to be set
    */
-  with<K extends keyof T>(key: K, value: T[K]): IBuilder<T> {
-    const target: Partial<T> = { ...this.target, [key]: value };
-    return new Builder<T>(target);
+  with<K extends keyof T>(key: K, value: T[K]): this {
+    this.target = { ...this.target, [key]: value };
+    return this;
   }
 
   /**
@@ -23,9 +23,5 @@ export class Builder<T> implements IBuilder<T> {
    */
   build(): T {
     return this.target as T;
-  }
-
-  public static new<T>(): IBuilder<T> {
-    return new Builder<T>({});
   }
 }

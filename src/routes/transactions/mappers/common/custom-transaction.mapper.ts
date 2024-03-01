@@ -20,7 +20,7 @@ export class CustomTransactionMapper {
     dataSize: number,
     chainId: string,
     humanDescription: string | null,
-    richDecodedInfo: RichDecodedInfo | null,
+    richDecodedInfo: RichDecodedInfo | null | undefined,
   ): Promise<CustomTransactionInfo> {
     const toAddressInfo = await this.addressInfoHelper.getOrDefault(
       chainId,

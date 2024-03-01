@@ -4,5 +4,5 @@ import { Page } from '@/routes/common/entities/page.entity';
 
 export class CollectiblePage extends Page<Collectible> {
   @ApiProperty({ type: Collectible })
-  results: Collectible[];
+  results!: Collectible[];
 }

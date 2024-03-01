@@ -7,23 +7,41 @@ export default (): ReturnType<typeof configuration> => ({
     version: faker.system.semver(),
     buildNumber: faker.string.numeric(),
   },
+  alerts: {
+    baseUri: faker.internet.url({ appendSlash: false }),
+    signingKey: faker.string.nanoid(32),
+    apiKey: faker.string.hexadecimal({ length: 32 }),
+    account: faker.string.sample(),
+    project: faker.string.sample(),
+  },
   applicationPort: faker.internet.port().toString(),
   auth: {
     token: faker.string.hexadecimal({ length: 32 }),
   },
   db: {
     postgres: {
-      host: faker.internet.ip(),
-      port: faker.internet.port().toString(),
-      database: faker.word.sample(),
-      username: faker.internet.userName(),
-      password: faker.internet.password(),
+      host: process.env.POSTGRES_TEST_HOST || 'localhost',
+      port: process.env.POSTGRES_TEST_PORT || '5433',
+      database: process.env.POSTGRES_TEST_DB || 'test-db',
+      username: process.env.POSTGRES_TEST_USER || 'postgres',
+      password: process.env.POSTGRES_TEST_PASSWORD || 'postgres',
     },
   },
-  exchange: {
-    baseUri: faker.internet.url({ appendSlash: false }),
+  email: {
+    applicationCode: faker.string.alphanumeric(),
+    baseUri: faker.internet.url({ appendSlash: true }),
     apiKey: faker.string.hexadecimal({ length: 32 }),
-    cacheTtlSeconds: faker.number.int(),
+    fromEmail: faker.internet.email(),
+    fromName: faker.person.fullName(),
+    templates: {
+      recoveryTx: faker.string.alphanumeric(),
+      unknownRecoveryTx: faker.string.alphanumeric(),
+      verificationCode: faker.string.alphanumeric(),
+    },
+    verificationCode: {
+      resendLockWindowMs: faker.number.int(),
+      ttlMs: faker.number.int(),
+    },
   },
   expirationTimeInSeconds: {
     default: faker.number.int(),
@@ -33,20 +51,26 @@ export default (): ReturnType<typeof configuration> => ({
       token: faker.number.int(),
     },
   },
+  express: { jsonLimit: '1mb' },
   features: {
-    pricesProviderChainIds: ['10'],
-    humanDescription: true,
-    messagesCache: true,
+    richFragments: true,
+    email: true,
   },
   httpClient: { requestTimeout: faker.number.int() },
   log: {
     level: 'debug',
     silent: process.env.LOG_SILENT?.toLowerCase() === 'true',
   },
+  mappings: {
+    history: {
+      maxNestedTransfers: faker.number.int({ min: 1, max: 5 }),
+    },
+  },
   prices: {
     baseUri: faker.internet.url({ appendSlash: false }),
     apiKey: faker.string.hexadecimal({ length: 32 }),
     pricesTtlSeconds: faker.number.int(),
+    notFoundPriceTtlSeconds: faker.number.int(),
     chains: {
       1: {
         nativeCoin: faker.string.sample(),
@@ -104,11 +128,19 @@ export default (): ReturnType<typeof configuration> => ({
         nativeCoin: faker.string.sample(),
         chainName: faker.string.sample(),
       },
+      84531: {
+        nativeCoin: faker.string.sample(),
+        chainName: faker.string.sample(),
+      },
+      84532: {
+        nativeCoin: faker.string.sample(),
+        chainName: faker.string.sample(),
+      },
     },
   },
   redis: {
-    host: faker.internet.domainName(),
-    port: faker.internet.port().toString(),
+    host: process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || '6379',
   },
   relay: { limit: faker.number.int({ min: 1 }) },
   safeConfig: {
@@ -116,5 +148,8 @@ export default (): ReturnType<typeof configuration> => ({
   },
   safeTransaction: {
     useVpcUrl: false,
+  },
+  safeWebApp: {
+    baseUri: faker.internet.url({ appendSlash: false }),
   },
 });

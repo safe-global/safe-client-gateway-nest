@@ -44,17 +44,17 @@ export class SafeAppsService {
   ): SafeAppAccessControl {
     switch (domainSafeApp.accessControl.type) {
       case SafeAppAccessControlPolicies.NoRestrictions:
-        return <SafeAppAccessControl>{
+        return {
           type: SafeAppAccessControlPolicies.NoRestrictions,
           value: domainSafeApp.accessControl.value,
         };
       case SafeAppAccessControlPolicies.DomainAllowlist:
-        return <SafeAppAccessControl>{
+        return {
           type: SafeAppAccessControlPolicies.DomainAllowlist,
           value: domainSafeApp.accessControl.value,
         };
       default:
-        return <SafeAppAccessControl>{
+        return {
           type: SafeAppAccessControlPolicies.Unknown,
           value: domainSafeApp.accessControl.value,
         };

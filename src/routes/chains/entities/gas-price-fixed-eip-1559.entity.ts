@@ -3,9 +3,9 @@ import { GasPriceFixedEIP1559 as DomainGasPriceFixedEIP1559 } from '@/domain/cha
 
 export class GasPriceFixedEIP1559 implements DomainGasPriceFixedEIP1559 {
   @ApiProperty()
-  type: 'fixed1559';
+  type!: 'fixed1559';
   @ApiProperty()
-  maxFeePerGas: string;
+  maxFeePerGas!: string;
   @ApiProperty()
-  maxPriorityFeePerGas: string;
+  maxPriorityFeePerGas!: string;
 }

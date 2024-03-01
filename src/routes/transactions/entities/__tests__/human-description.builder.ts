@@ -9,7 +9,7 @@ import {
 import { faker } from '@faker-js/faker';
 
 function richTokenValueFragmentBuilder(): IBuilder<RichTokenValueFragment> {
-  return Builder.new<RichTokenValueFragment>()
+  return new Builder<RichTokenValueFragment>()
     .with('type', RichFragmentType.TokenValue)
     .with('value', faker.string.numeric())
     .with('symbol', faker.finance.currencySymbol())
@@ -17,13 +17,13 @@ function richTokenValueFragmentBuilder(): IBuilder<RichTokenValueFragment> {
 }
 
 function richTextFragmentBuilder(): IBuilder<RichTextFragment> {
-  return Builder.new<RichTextFragment>()
+  return new Builder<RichTextFragment>()
     .with('type', RichFragmentType.Text)
     .with('value', faker.word.words());
 }
 
 function richAddressFragmentBuilder(): IBuilder<RichAddressFragment> {
-  return Builder.new<RichAddressFragment>()
+  return new Builder<RichAddressFragment>()
     .with('type', RichFragmentType.Address)
     .with('value', faker.finance.ethereumAddress());
 }

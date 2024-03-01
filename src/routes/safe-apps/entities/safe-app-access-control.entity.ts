@@ -6,7 +6,7 @@ import {
 
 export class SafeAppAccessControl implements DomainSafeAppAccessControl {
   @ApiProperty()
-  type: SafeAppAccessControlPolicies;
+  type!: SafeAppAccessControlPolicies;
   @ApiPropertyOptional({ type: String, isArray: true, nullable: true })
-  value: string[] | null;
+  value!: string[] | null;
 }

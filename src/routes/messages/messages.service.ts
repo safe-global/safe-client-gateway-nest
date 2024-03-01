@@ -76,7 +76,7 @@ export class MessagesService {
       }),
     );
 
-    return <Page<DateLabel | MessageItem>>{
+    return {
       count: page.count,
       next: nextURL?.toString() ?? null,
       previous: previousURL?.toString() ?? null,

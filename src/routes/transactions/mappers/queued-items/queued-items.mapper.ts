@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { flatten, groupBy } from 'lodash';
+import { groupBy } from 'lodash';
 import { MultisigTransaction } from '@/domain/safe/entities/multisig-transaction.entity';
 import { Safe } from '@/domain/safe/entities/safe.entity';
 import { MultisigTransactionMapper } from '@/routes/transactions/mappers/multisig-transactions/multisig-transaction.mapper';
@@ -8,14 +8,14 @@ import { ConflictType } from '@/routes/transactions/entities/conflict-type.entit
 import { QueuedItem } from '@/routes/transactions/entities/queued-item.entity';
 import { ConflictHeaderQueuedItem } from '@/routes/transactions/entities/queued-items/conflict-header-queued-item.entity';
 import {
-  LabelQueuedItem,
   LabelItem,
+  LabelQueuedItem,
 } from '@/routes/transactions/entities/queued-items/label-queued-item.entity';
 import { TransactionQueuedItem } from '@/routes/transactions/entities/queued-items/transaction-queued-item.entity';
 
 class TransactionGroup {
-  nonce: number;
-  transactions: MultisigTransaction[];
+  nonce!: number;
+  transactions!: MultisigTransaction[];
 }
 
 @Injectable()
@@ -28,47 +28,42 @@ export class QueuedItemsMapper {
     chainId: string,
     previousPageLastNonce: number | null,
     nextPageFirstNonce: number | null,
-    timezoneOffset: number,
   ): Promise<QueuedItem[]> {
-    const transactionGroups = this.groupByNonce(
-      this.getTimezoneOffsetTransactions(transactions.results, timezoneOffset),
-    );
+    const transactionGroups = this.groupByNonce(transactions.results);
     let lastProcessedNonce = previousPageLastNonce ?? -1;
 
-    return flatten(
-      await Promise.all(
-        transactionGroups.map(async (transactionGroup) => {
-          const transactionGroupItems: QueuedItem[] = [];
-          const { nonce } = transactionGroup;
-          if (lastProcessedNonce < safe.nonce && nonce === safe.nonce) {
-            transactionGroupItems.push(new LabelQueuedItem(LabelItem.Next));
-          } else if (lastProcessedNonce <= safe.nonce && nonce > safe.nonce) {
-            transactionGroupItems.push(new LabelQueuedItem(LabelItem.Queued));
-          }
-          lastProcessedNonce = nonce;
+    return await Promise.all(
+      transactionGroups.map(async (transactionGroup) => {
+        const transactionGroupItems: QueuedItem[] = [];
+        const { nonce } = transactionGroup;
+        if (lastProcessedNonce < safe.nonce && nonce === safe.nonce) {
+          transactionGroupItems.push(new LabelQueuedItem(LabelItem.Next));
+        } else if (lastProcessedNonce <= safe.nonce && nonce > safe.nonce) {
+          transactionGroupItems.push(new LabelQueuedItem(LabelItem.Queued));
+        }
+        lastProcessedNonce = nonce;
 
-          const isEdgeGroup = nonce === nextPageFirstNonce;
-          const isSingleItemGroup = transactionGroup.transactions.length === 1;
-          const conflictFromPreviousPage = nonce === previousPageLastNonce;
-          const hasConflicts = !isSingleItemGroup || isEdgeGroup;
-          if (hasConflicts && !conflictFromPreviousPage) {
-            transactionGroupItems.push(new ConflictHeaderQueuedItem(nonce));
-          }
+        const isEdgeGroup = nonce === nextPageFirstNonce;
+        const isSingleItemGroup = transactionGroup.transactions.length === 1;
+        const conflictFromPreviousPage = nonce === previousPageLastNonce;
+        const hasConflicts = !isSingleItemGroup || isEdgeGroup;
+        if (hasConflicts && !conflictFromPreviousPage) {
+          transactionGroupItems.push(new ConflictHeaderQueuedItem(nonce));
+        }
 
-          const mappedTransactionItems = await this.getMappedTransactionGroup(
-            chainId,
-            safe,
-            hasConflicts,
-            conflictFromPreviousPage,
-            isEdgeGroup,
-            transactionGroup,
-          );
+        const mappedTransactionItems = await this.getMappedTransactionGroup(
+          chainId,
+          safe,
+          hasConflicts,
+          conflictFromPreviousPage,
+          isEdgeGroup,
+          transactionGroup,
+        );
 
-          transactionGroupItems.push(...mappedTransactionItems);
-          return transactionGroupItems;
-        }),
-      ),
-    );
+        transactionGroupItems.push(...mappedTransactionItems);
+        return transactionGroupItems;
+      }),
+    ).then((items) => items.flat());
   }
 
   private async getMappedTransactionGroup(
@@ -128,34 +123,10 @@ export class QueuedItemsMapper {
     transactions: MultisigTransaction[],
   ): TransactionGroup[] {
     return Object.entries(groupBy(transactions, 'nonce')).map(
-      ([nonce, transactions]) =>
-        <TransactionGroup>{
-          nonce: Number(nonce),
-          transactions: transactions,
-        },
+      ([nonce, transactions]): TransactionGroup => ({
+        nonce: Number(nonce),
+        transactions: transactions,
+      }),
     );
-  }
-
-  /**
-   * Adjusts the timestamps of transactions array by given offset
-   * @param transactions transactions to offset the timestamp of
-   * @param timezoneOffset UTC timezone offset in milliseconds
-   */
-  private getTimezoneOffsetTransactions(
-    transactions: MultisigTransaction[],
-    timezoneOffset: number,
-  ): MultisigTransaction[] {
-    if (timezoneOffset === 0) {
-      return transactions;
-    }
-
-    // We clone so as to not modify the original dates
-    return structuredClone(transactions).map((transaction) => {
-      // No need to set the `executionDate` as it will not exist in the queue
-      transaction.modified?.setUTCMilliseconds(timezoneOffset);
-      transaction.submissionDate.setUTCMilliseconds(timezoneOffset);
-
-      return transaction;
-    });
   }
 }

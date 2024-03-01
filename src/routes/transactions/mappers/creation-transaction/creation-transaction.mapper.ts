@@ -40,6 +40,7 @@ export class CreationTransactionMapper {
       implementation,
       factory,
     );
+
     return new Transaction(
       `${CreationTransactionMapper.TRANSACTION_TYPE}_${safe.address}`,
       transaction.created.getTime(),

@@ -3,7 +3,7 @@ import { Builder, IBuilder } from '@/__tests__/builder';
 import { EthereumTransaction } from '@/domain/safe/entities/ethereum-transaction.entity';
 
 export function ethereumTransactionBuilder(): IBuilder<EthereumTransaction> {
-  return Builder.new<EthereumTransaction>()
+  return new Builder<EthereumTransaction>()
     .with('blockNumber', faker.number.int())
     .with('data', faker.string.hexadecimal())
     .with('executionDate', faker.date.recent())

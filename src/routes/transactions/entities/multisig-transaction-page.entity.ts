@@ -4,5 +4,5 @@ import { MultisigTransaction } from '@/routes/transactions/entities/multisig-tra
 
 export class MultisigTransactionPage extends Page<MultisigTransaction> {
   @ApiProperty({ type: MultisigTransaction })
-  results: MultisigTransaction[];
+  results!: MultisigTransaction[];
 }

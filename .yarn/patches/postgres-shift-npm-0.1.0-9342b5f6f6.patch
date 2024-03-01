@@ -1,0 +1,38 @@
+diff --git a/index.js b/index.js
+index 0115c8519e8c756ee24f50418eb2d85e8fc5c617..cf5cac0df35edf705c51ef7ed0ed489b69c0777e 100644
+--- a/index.js
++++ b/index.js
+@@ -1,9 +1,9 @@
+-import fs from 'fs'
+-import path from 'path'
++const fs = require('fs')
++const path = require('path')
+ 
+ const join = path.join
+ 
+-export default async function({
++module.exports = async function({
+   sql,
+   path = join(process.cwd(), 'migrations'),
+   before = null,
+@@ -48,7 +48,7 @@ export default async function({
+   }) {
+     fs.existsSync(join(path, 'index.sql')) && !fs.existsSync(join(path, 'index.js'))
+       ? await sql.file(join(path, 'index.sql'))
+-      : await import(join(path, 'index.js')).then(x => x.default(sql)) // eslint-disable-line
++      : await require(join(path, 'index.js'))(sql) // eslint-disable-line
+ 
+     await sql`
+       insert into migrations (
+diff --git a/package.json b/package.json
+index fde88a1ecb0f49e7925fdd8743c552c70b30db32..5eee1e0c9728d5c38d517f3592ed5e893d9455cb 100644
+--- a/package.json
++++ b/package.json
+@@ -3,7 +3,6 @@
+   "version": "0.1.0",
+   "description": "A simple forwards only migration solution for [postgres.js](https://github.com/porsager/postgres)",
+   "main": "index.js",
+-  "type": "module",
+   "scripts": {
+     "test": "node tests/index.js"
+   },

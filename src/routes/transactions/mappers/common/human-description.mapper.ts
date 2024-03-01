@@ -24,6 +24,7 @@ import {
   RichTokenValueFragment,
 } from '@/routes/transactions/entities/human-description.entity';
 import { SafeAppInfoMapper } from '@/routes/transactions/mappers/common/safe-app-info.mapper';
+import { asError } from '@/logging/utils';
 
 @Injectable()
 export class HumanDescriptionMapper {
@@ -72,7 +73,7 @@ export class HumanDescriptionMapper {
       return new RichDecodedInfo(richDecodedInfo);
     } catch (error) {
       this.loggingService.debug(
-        `Error trying to decode the input data: ${error.message}`,
+        `Error trying to decode the input data: ${asError(error).message}`,
       );
       return null;
     }
@@ -157,10 +158,11 @@ export class HumanDescriptionMapper {
       : null;
 
     if (safeAppInfo) {
-      fragments.push(<RichTextFragment>{
+      const fragment: RichTextFragment = {
         type: RichFragmentType.Text,
         value: `via ${safeAppInfo.name}`,
-      });
+      };
+      fragments.push(fragment);
     }
 
     return fragments;

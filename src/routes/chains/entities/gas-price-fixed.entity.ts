@@ -3,7 +3,7 @@ import { GasPriceFixed as DomainGasPriceFixed } from '@/domain/chains/entities/g
 
 export class GasPriceFixed implements DomainGasPriceFixed {
   @ApiProperty()
-  type: 'fixed';
+  type!: 'fixed';
   @ApiProperty()
-  weiValue: string;
+  weiValue!: string;
 }

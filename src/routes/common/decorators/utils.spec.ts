@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { getRouteUrl } from '@/routes/common/decorators/utils';
+import { Request } from 'express';
 
 describe('utils tests', () => {
   describe('getRouteUrl tests', () => {
@@ -7,7 +8,7 @@ describe('utils tests', () => {
       get: jest.fn(),
       originalUrl: faker.system.filePath(),
       protocol: faker.internet.protocol(),
-    } as unknown as any;
+    } as jest.MockedObjectDeep<Request>;
 
     const requestMock = jest.mocked(request);
 

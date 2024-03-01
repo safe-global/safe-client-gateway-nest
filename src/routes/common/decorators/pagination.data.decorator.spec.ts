@@ -6,12 +6,12 @@ import { PaginationData } from '@/routes/common/pagination/pagination.data';
 
 describe('PaginationDataDecorator', () => {
   let app: INestApplication;
-  let paginationData;
+  let paginationData: PaginationData;
 
   @Controller()
   class TestController {
     @Get()
-    route(@PaginationDataDecorator() data: PaginationData) {
+    route(@PaginationDataDecorator() data: PaginationData): void {
       paginationData = data;
       return;
     }

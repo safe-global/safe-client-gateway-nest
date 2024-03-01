@@ -1,4 +1,4 @@
-export interface NetworkResponse<T = any> {
+export interface NetworkResponse<T> {
   data: T;
   status: number;
 }

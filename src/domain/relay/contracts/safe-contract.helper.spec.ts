@@ -6,7 +6,7 @@ import { getSafeSingletonDeployment } from '@safe-global/safe-deployments';
 
 describe('Safe Contract Helper Tests', () => {
   let target: SafeContractHelper;
-  let abi;
+  let abi: Array<unknown>;
 
   const supportedSafeVersion = '1.3.0';
 

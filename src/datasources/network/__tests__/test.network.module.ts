@@ -25,7 +25,7 @@ const networkService: INetworkService = {
   providers: [
     {
       provide: NetworkService,
-      useFactory: () => {
+      useFactory: (): any => {
         return jest.mocked(networkService);
       },
     },

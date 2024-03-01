@@ -35,5 +35,5 @@ export interface IDelegateRepository {
     delegate: string;
     safeAddress: string;
     signature: string;
-  }): Promise<void>;
+  }): Promise<unknown>;
 }

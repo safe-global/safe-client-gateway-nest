@@ -40,7 +40,7 @@ export class DelegatesService {
       delegates.previous,
     );
 
-    return <Page<Delegate>>{
+    return {
       count: delegates.count,
       next: nextURL?.toString() ?? null,
       previous: previousURL?.toString() ?? null,

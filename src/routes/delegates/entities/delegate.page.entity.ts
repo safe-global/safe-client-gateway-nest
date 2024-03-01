@@ -4,5 +4,5 @@ import { Delegate } from '@/routes/delegates/entities/delegate.entity';
 
 export class DelegatePage extends Page<Delegate> {
   @ApiProperty({ type: Delegate })
-  results: Delegate[];
+  results!: Delegate[];
 }

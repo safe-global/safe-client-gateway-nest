@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { range } from 'lodash';
 import { FakeCacheService } from '@/datasources/cache/__tests__/fake.cache.service';
 import { CacheDir } from '@/datasources/cache/entities/cache-dir.entity';
 
@@ -23,7 +22,9 @@ describe('FakeCacheService', () => {
     expect(target.keyCount()).toBe(1);
   });
 
-  it('deletes key', async () => {
+  it('deletes key and sets invalidationTimeMs', async () => {
+    jest.useFakeTimers();
+    const now = jest.now();
     const key = faker.string.alphanumeric();
     const field = faker.string.alphanumeric();
     const cacheDir = new CacheDir(key, field);
@@ -33,7 +34,11 @@ describe('FakeCacheService', () => {
     await target.deleteByKey(key);
 
     await expect(target.get(cacheDir)).resolves.toBe(undefined);
-    expect(target.keyCount()).toBe(0);
+    await expect(
+      target.get(new CacheDir(`invalidationTimeMs:${cacheDir.key}`, '')),
+    ).resolves.toBe(now.toString());
+    expect(target.keyCount()).toBe(1);
+    jest.useRealTimers();
   });
 
   it('clears keys', async () => {
@@ -54,14 +59,17 @@ describe('FakeCacheService', () => {
     const prefix = faker.word.sample();
     // insert 5 items matching the pattern
     await Promise.all(
-      range(5).map(() =>
-        target.set(new CacheDir(`${prefix}${faker.string.uuid()}`, ''), ''),
+      faker.helpers.multiple(
+        () =>
+          target.set(new CacheDir(`${prefix}${faker.string.uuid()}`, ''), ''),
+        { count: 5 },
       ),
     );
     // insert 4 items not matching the pattern
     await Promise.all(
-      range(4).map(() =>
-        target.set(new CacheDir(`${faker.string.uuid()}`, ''), ''),
+      faker.helpers.multiple(
+        () => target.set(new CacheDir(`${faker.string.uuid()}`, ''), ''),
+        { count: 4 },
       ),
     );
 
@@ -75,17 +83,20 @@ describe('FakeCacheService', () => {
     const suffix = faker.word.sample();
     // insert 5 items matching the pattern
     await Promise.all(
-      range(5).map(() =>
-        target.set(
-          new CacheDir(`${prefix}_${faker.string.uuid()}_${suffix}`, ''),
-          '',
-        ),
+      faker.helpers.multiple(
+        () =>
+          target.set(
+            new CacheDir(`${prefix}_${faker.string.uuid()}_${suffix}`, ''),
+            '',
+          ),
+        { count: 5 },
       ),
     );
     // insert 4 items not matching the pattern
     await Promise.all(
-      range(4).map(() =>
-        target.set(new CacheDir(`${faker.string.uuid()}`, ''), ''),
+      faker.helpers.multiple(
+        () => target.set(new CacheDir(`${faker.string.uuid()}`, ''), ''),
+        { count: 4 },
       ),
     );
 

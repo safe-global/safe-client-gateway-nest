@@ -11,4 +11,5 @@ export interface Token {
   name: string;
   symbol: string;
   type: TokenType;
+  trusted: boolean;
 }

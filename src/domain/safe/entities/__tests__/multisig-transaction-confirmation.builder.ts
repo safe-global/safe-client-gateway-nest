@@ -3,7 +3,7 @@ import { Builder, IBuilder } from '@/__tests__/builder';
 import { Confirmation } from '@/domain/safe/entities/multisig-transaction.entity';
 
 export function confirmationBuilder(): IBuilder<Confirmation> {
-  return Builder.new<Confirmation>()
+  return new Builder<Confirmation>()
     .with('owner', faker.finance.ethereumAddress())
     .with('signature', faker.string.hexadecimal())
     .with('signatureType', faker.string.sample())

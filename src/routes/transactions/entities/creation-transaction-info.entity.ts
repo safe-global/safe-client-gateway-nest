@@ -1,6 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AddressInfo } from '@/routes/common/entities/address-info.entity';
-import { TransactionInfo } from '@/routes/transactions/entities/transaction-info.entity';
+import {
+  TransactionInfo,
+  TransactionInfoType,
+} from '@/routes/transactions/entities/transaction-info.entity';
 
 export class CreationTransactionInfo extends TransactionInfo {
   @ApiProperty()
@@ -18,7 +21,7 @@ export class CreationTransactionInfo extends TransactionInfo {
     implementation: AddressInfo | null,
     factory: AddressInfo | null,
   ) {
-    super('Creation', null, null);
+    super(TransactionInfoType.Creation, null, null);
     this.creator = creator;
     this.transactionHash = transactionHash;
     this.implementation = implementation;

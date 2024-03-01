@@ -18,7 +18,7 @@ export class NativeCoinTransferMapper {
     chainId: string,
     transaction: MultisigTransaction | ModuleTransaction,
     humanDescription: string | null,
-    richDecodedInfo: RichDecodedInfo | null,
+    richDecodedInfo: RichDecodedInfo | null | undefined,
   ): Promise<TransferTransactionInfo> {
     const recipient = await this.addressInfoHelper.getOrDefault(
       chainId,

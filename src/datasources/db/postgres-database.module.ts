@@ -1,7 +1,8 @@
 import * as postgres from 'postgres';
 import { Module } from '@nestjs/common';
-import { PostgresDatabaseHook } from '@/datasources/db/postgres-database.hook';
+import { PostgresDatabaseShutdownHook } from '@/datasources/db/postgres-database.shutdown.hook';
 import { IConfigurationService } from '@/config/configuration.service.interface';
+import { PostgresDatabaseMigrationHook } from '@/datasources/db/postgres-database.migration.hook';
 
 function dbFactory(configurationService: IConfigurationService): postgres.Sql {
   return postgres({
@@ -20,7 +21,8 @@ function dbFactory(configurationService: IConfigurationService): postgres.Sql {
       useFactory: dbFactory,
       inject: [IConfigurationService],
     },
-    PostgresDatabaseHook,
+    PostgresDatabaseShutdownHook,
+    PostgresDatabaseMigrationHook,
   ],
   exports: ['DB_INSTANCE'],
 })

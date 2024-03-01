@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -34,6 +35,8 @@ import { AddConfirmationDtoValidationPipe } from '@/routes/transactions/pipes/ad
 import { PreviewTransactionDtoValidationPipe } from '@/routes/transactions/pipes/preview-transaction.validation.pipe';
 import { ProposeTransactionDtoValidationPipe } from '@/routes/transactions/pipes/propose-transaction.dto.validation.pipe';
 import { TransactionsService } from '@/routes/transactions/transactions.service';
+import { DeleteTransactionDtoValidationPipe } from '@/routes/transactions/pipes/delete-transaction.validation.pipe';
+import { DeleteTransactionDto } from '@/routes/transactions/entities/delete-transaction.dto.entity';
 
 @ApiTags('transactions')
 @Controller({
@@ -49,7 +52,10 @@ export class TransactionsController {
     @Param('chainId') chainId: string,
     @Param('id') id: string,
   ): Promise<TransactionDetails> {
-    return this.transactionsService.getById({ chainId, txId: id });
+    return this.transactionsService.getById({
+      chainId,
+      txId: id,
+    });
   }
 
   @ApiOkResponse({ type: MultisigTransactionPage })
@@ -85,6 +91,20 @@ export class TransactionsController {
       value,
       nonce,
       executed,
+    });
+  }
+
+  @Delete('chains/:chainId/transactions/:safeTxHash')
+  async deleteTransaction(
+    @Param('chainId') chainId: string,
+    @Param('safeTxHash') safeTxHash: string,
+    @Body(DeleteTransactionDtoValidationPipe)
+    deleteTransactionDto: DeleteTransactionDto,
+  ): Promise<void> {
+    return this.transactionsService.deleteTransaction({
+      chainId,
+      safeTxHash,
+      signature: deleteTransactionDto.signature,
     });
   }
 
@@ -178,15 +198,12 @@ export class TransactionsController {
   @ApiOkResponse({ type: QueuedItemPage })
   @Get('chains/:chainId/safes/:safeAddress/transactions/queued')
   @ApiQuery({ name: 'cursor', required: false, type: String })
-  @ApiQuery({ name: 'timezone_offset', required: false, type: String })
   @ApiQuery({ name: 'trusted', required: false, type: Boolean })
   async getTransactionQueue(
     @Param('chainId') chainId: string,
     @RouteUrlDecorator() routeUrl: URL,
     @Param('safeAddress') safeAddress: string,
     @PaginationDataDecorator() paginationData: PaginationData,
-    @Query('timezone_offset', new DefaultValuePipe(0), ParseIntPipe)
-    timezoneOffset: number,
     @Query('trusted', new DefaultValuePipe(true), ParseBoolPipe)
     trusted: boolean,
   ): Promise<Partial<Page<QueuedItem>>> {
@@ -196,7 +213,6 @@ export class TransactionsController {
       safeAddress,
       paginationData,
       trusted,
-      timezoneOffset,
     });
   }
 
@@ -210,14 +226,17 @@ export class TransactionsController {
     @Param('safeAddress') safeAddress: string,
     @PaginationDataDecorator() paginationData: PaginationData,
     @Query('timezone_offset', new DefaultValuePipe(0), ParseIntPipe)
-    timezoneOffset: number,
+    timezoneOffsetMs: number,
+    @Query('trusted', new DefaultValuePipe(true), ParseBoolPipe)
+    trusted: boolean,
   ): Promise<Partial<TransactionItemPage>> {
     return this.transactionsService.getTransactionHistory({
       chainId,
       routeUrl,
       safeAddress,
       paginationData,
-      timezoneOffset,
+      timezoneOffsetMs,
+      onlyTrusted: trusted,
     });
   }
 

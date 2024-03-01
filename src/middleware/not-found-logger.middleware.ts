@@ -17,7 +17,7 @@ export class NotFoundLoggerMiddleware implements NestMiddleware {
     @Inject(LoggingService) private readonly loggingService: ILoggingService,
   ) {}
 
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: Request, res: Response, next: NextFunction): void {
     const startTimeMs: number = performance.now();
 
     res.on('finish', () => {

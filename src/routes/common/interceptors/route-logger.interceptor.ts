@@ -60,7 +60,7 @@ export class RouteLoggerInterceptor implements NestInterceptor {
    * compute the response time of the route
    * @private
    */
-  private onError(request: any, error: Error, startTimeMs: number) {
+  private onError(request: any, error: Error, startTimeMs: number): void {
     let statusCode;
     if (error instanceof HttpException) {
       statusCode = error.getStatus();
@@ -84,7 +84,7 @@ export class RouteLoggerInterceptor implements NestInterceptor {
     }
   }
 
-  private onComplete(request: any, response: any, startTimeMs: number) {
+  private onComplete(request: any, response: any, startTimeMs: number): void {
     this.loggingService.info(
       formatRouteLogMessage(response.statusCode, request, startTimeMs),
     );

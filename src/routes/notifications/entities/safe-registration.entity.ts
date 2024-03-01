@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class SafeRegistration {
   @ApiProperty()
-  chainId: string;
+  chainId!: string;
   @ApiProperty()
-  safes: string[];
+  safes!: string[];
   @ApiProperty()
-  signatures: string[];
+  signatures!: string[];
 }

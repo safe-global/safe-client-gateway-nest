@@ -3,17 +3,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class Backbone implements DomainBackbone {
   @ApiProperty()
-  api_version: string;
+  api_version!: string;
   @ApiProperty()
-  headers: string[];
+  headers!: string[];
   @ApiProperty()
-  host: string;
+  host!: string;
   @ApiProperty()
-  name: string;
+  name!: string;
   @ApiProperty()
-  secure: boolean;
+  secure!: boolean;
   @ApiProperty()
-  settings: Record<string, string>;
+  settings!: Record<string, string>;
   @ApiProperty()
-  version: string;
+  version!: string;
 }

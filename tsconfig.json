@@ -12,14 +12,13 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
+    "noImplicitAny": true,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "strict": true
   }
 }

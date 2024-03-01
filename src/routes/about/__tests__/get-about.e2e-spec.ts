@@ -4,17 +4,26 @@ import * as request from 'supertest';
 import { AppModule } from '@/app.module';
 import { expect } from '@jest/globals';
 import '@/__tests__/matchers/to-be-string-or-null';
+import { CacheKeyPrefix } from '@/datasources/cache/constants';
 
 describe('Get about e2e test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
+    const cacheKeyPrefix = crypto.randomUUID();
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+      imports: [AppModule.register()],
+    })
+      .overrideProvider(CacheKeyPrefix)
+      .useValue(cacheKeyPrefix)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it('GET /about', async () => {
@@ -30,9 +39,5 @@ describe('Get about e2e test', () => {
           }),
         );
       });
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });

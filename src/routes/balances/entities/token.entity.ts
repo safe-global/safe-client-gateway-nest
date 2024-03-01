@@ -3,15 +3,15 @@ import { TokenType } from '@/routes/balances/entities/token-type.entity';
 
 export class Token {
   @ApiProperty()
-  address: string;
+  address!: string;
   @ApiPropertyOptional({ type: Number, nullable: true })
-  decimals: number | null;
+  decimals!: number | null;
   @ApiProperty()
   logoUri?: string;
   @ApiProperty()
-  name: string;
+  name!: string;
   @ApiProperty()
-  symbol: string;
+  symbol!: string;
   @ApiProperty({ enum: Object.values(TokenType) })
-  type: TokenType;
+  type!: TokenType;
 }

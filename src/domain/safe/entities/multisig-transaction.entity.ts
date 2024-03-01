@@ -14,7 +14,7 @@ export type MultisigTransaction = {
   blockNumber: number | null;
   confirmations: Confirmation[] | null;
   confirmationsRequired: number;
-  data: string | null; // TODO: replace with DataDecoded entity
+  data: string | null;
   dataDecoded: DataDecoded | null;
   ethGasPrice: string | null;
   executionDate: Date | null;

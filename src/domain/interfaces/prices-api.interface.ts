@@ -8,11 +8,11 @@ export interface IPricesApi {
     fiatCode: string;
   }): Promise<AssetPrice>;
 
-  getTokenPrice(args: {
+  getTokenPrices(args: {
     chainName: string;
-    tokenAddress: string;
+    tokenAddresses: string[];
     fiatCode: string;
-  }): Promise<AssetPrice>;
+  }): Promise<AssetPrice[]>;
 
   getFiatCodes(): Promise<string[]>;
 }

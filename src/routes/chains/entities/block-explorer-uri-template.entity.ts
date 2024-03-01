@@ -5,9 +5,9 @@ export class BlockExplorerUriTemplate
   implements DomainBlockExplorerUriTemplate
 {
   @ApiProperty()
-  address: string;
+  address!: string;
   @ApiProperty()
-  api: string;
+  api!: string;
   @ApiProperty()
-  txHash: string;
+  txHash!: string;
 }

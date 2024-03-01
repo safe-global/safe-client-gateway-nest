@@ -5,24 +5,30 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '@/app.module';
 import { redisClientFactory } from '@/__tests__/redis-client.factory';
 import { TestAppProvider } from '@/__tests__/test-app.provider';
+import { CacheKeyPrefix } from '@/datasources/cache/constants';
 
 describe('Get contract e2e test', () => {
   let app: INestApplication;
   let redisClient: RedisClientType;
   const chainId = '5'; // Görli testnet
+  const cacheKeyPrefix = crypto.randomUUID();
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+      imports: [AppModule.register()],
+    })
+      .overrideProvider(CacheKeyPrefix)
+      .useValue(cacheKeyPrefix)
+      .compile();
 
     app = await new TestAppProvider().provide(moduleRef);
     await app.init();
     redisClient = await redisClientFactory();
   });
 
-  beforeEach(async () => {
-    await redisClient.flushAll();
+  afterAll(async () => {
+    await app.close();
+    await redisClient.quit();
   });
 
   it('GET /contracts/<address>', async () => {
@@ -30,8 +36,9 @@ describe('Get contract e2e test', () => {
     const expectedResponse = {
       address: '0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4',
       name: 'CreateCall',
-      displayName: '',
-      logoUri: null,
+      displayName: 'Safe: CreateCall 1.3.0',
+      logoUri:
+        'https://safe-transaction-assets.staging.5afe.dev/contracts/logos/0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4.png',
       contractAbi: {
         abi: [
           {
@@ -115,15 +122,9 @@ describe('Get contract e2e test', () => {
       });
 
     const cacheContent = await redisClient.hGet(
-      `${chainId}_contract_${contractAddress}`,
+      `${cacheKeyPrefix}-${chainId}_contract_${contractAddress}`,
       '',
     );
     expect(cacheContent).toEqual(JSON.stringify(expectedResponse));
-  });
-
-  afterAll(async () => {
-    await app.close();
-    await redisClient.flushAll();
-    await redisClient.quit();
   });
 });

@@ -3,15 +3,12 @@ import { CacheDir } from '@/datasources/cache/entities/cache-dir.entity';
 export class CacheRouter {
   private static readonly ALL_TRANSACTIONS_KEY = 'all_transactions';
   private static readonly BACKBONE_KEY = 'backbone';
-  private static readonly BALANCES_KEY = 'balances';
   private static readonly CHAIN_KEY = 'chain';
   private static readonly CHAINS_KEY = 'chains';
   private static readonly COLLECTIBLES_KEY = 'collectibles';
   private static readonly CONTRACT_KEY = 'contract';
   private static readonly CREATION_TRANSACTION_KEY = 'creation_transaction';
   private static readonly DELEGATES_KEY = 'delegates';
-  private static readonly EXCHANGE_FIAT_CODES_KEY = 'exchange_fiat_codes';
-  private static readonly EXCHANGE_RATES_KEY = 'exchange_rates';
   private static readonly FIAT_CODES_KEY = 'fiat_codes';
   private static readonly INCOMING_TRANSFERS_KEY = 'incoming_transfers';
   private static readonly MASTER_COPIES_KEY = 'master_copies';
@@ -25,16 +22,13 @@ export class CacheRouter {
   private static readonly OWNERS_SAFE_KEY = 'owner_safes';
   private static readonly SAFE_APPS_KEY = 'safe_apps';
   private static readonly SAFE_KEY = 'safe';
-  private static readonly SIMPLE_BALANCES_KEY = 'simple_balances';
+  private static readonly BALANCES_KEY = 'balances';
   private static readonly TOKEN_KEY = 'token';
   private static readonly TOKEN_PRICE_KEY = 'token_price';
   private static readonly TOKENS_KEY = 'tokens';
   private static readonly TRANSFER_KEY = 'transfer';
   private static readonly TRANSFERS_KEY = 'transfers';
 
-  /**
-   * @deprecated to be removed after Coingecko prices retrieval is complete.
-   */
   static getBalancesCacheKey(args: {
     chainId: string;
     safeAddress: string;
@@ -42,10 +36,7 @@ export class CacheRouter {
     return `${args.chainId}_${CacheRouter.BALANCES_KEY}_${args.safeAddress}`;
   }
 
-  /**
-   * @deprecated to be removed after Coingecko prices retrieval is complete.
-   */
-  static getBalanceCacheDir(args: {
+  static getBalancesCacheDir(args: {
     chainId: string;
     safeAddress: string;
     trusted?: boolean;
@@ -57,33 +48,11 @@ export class CacheRouter {
     );
   }
 
-  static getSimpleBalancesCacheKey(args: {
-    chainId: string;
-    safeAddress: string;
-  }): string {
-    return `${args.chainId}_${CacheRouter.SIMPLE_BALANCES_KEY}_${args.safeAddress}`;
-  }
-
-  static getSimpleBalancesCacheDir(args: {
-    chainId: string;
-    safeAddress: string;
-    trusted?: boolean;
-    excludeSpam?: boolean;
-  }): CacheDir {
-    return new CacheDir(
-      CacheRouter.getSimpleBalancesCacheKey(args),
-      `${args.trusted}_${args.excludeSpam}`,
-    );
-  }
-
   static getSafeCacheDir(args: {
     chainId: string;
     safeAddress: string;
   }): CacheDir {
-    return new CacheDir(
-      `${args.chainId}_${CacheRouter.SAFE_KEY}_${args.safeAddress}`,
-      '',
-    );
+    return new CacheDir(CacheRouter.getSafeCacheKey(args), '');
   }
 
   static getSafeCacheKey(args: {
@@ -124,12 +93,15 @@ export class CacheRouter {
     excludeSpam?: boolean;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainId}_${CacheRouter.COLLECTIBLES_KEY}_${args.safeAddress}`,
+      CacheRouter.getCollectiblesKey(args),
       `${args.limit}_${args.offset}_${args.trusted}_${args.excludeSpam}`,
     );
   }
 
-  static getCollectiblesKey(args: { chainId: string; safeAddress: string }) {
+  static getCollectiblesKey(args: {
+    chainId: string;
+    safeAddress: string;
+  }): string {
     return `${args.chainId}_${CacheRouter.COLLECTIBLES_KEY}_${args.safeAddress}`;
   }
 
@@ -167,12 +139,15 @@ export class CacheRouter {
     offset?: number;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainId}_${CacheRouter.TRANSFERS_KEY}_${args.safeAddress}`,
+      CacheRouter.getTransfersCacheKey(args),
       `${args.onlyErc20}_${args.onlyErc721}_${args.limit}_${args.offset}`,
     );
   }
 
-  static getTransfersCacheKey(args: { chainId: string; safeAddress: string }) {
+  static getTransfersCacheKey(args: {
+    chainId: string;
+    safeAddress: string;
+  }): string {
     return `${args.chainId}_${CacheRouter.TRANSFERS_KEY}_${args.safeAddress}`;
   }
 
@@ -195,7 +170,7 @@ export class CacheRouter {
     offset?: number;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainId}_${CacheRouter.MODULE_TRANSACTIONS_KEY}_${args.safeAddress}`,
+      CacheRouter.getModuleTransactionsCacheKey(args),
       `${args.to}_${args.module}_${args.limit}_${args.offset}`,
     );
   }
@@ -219,7 +194,7 @@ export class CacheRouter {
     offset?: number;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainId}_${CacheRouter.INCOMING_TRANSFERS_KEY}_${args.safeAddress}`,
+      CacheRouter.getIncomingTransfersCacheKey(args),
       `${args.executionDateGte}_${args.executionDateLte}_${args.to}_${args.value}_${args.tokenAddress}_${args.limit}_${args.offset}`,
     );
   }
@@ -247,7 +222,7 @@ export class CacheRouter {
     offset?: number;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainId}_${CacheRouter.MULTISIG_TRANSACTIONS_KEY}_${args.safeAddress}`,
+      CacheRouter.getMultisigTransactionsCacheKey(args),
       `${args.ordering}_${args.executed}_${args.trusted}_${args.executionDateGte}_${args.executionDateLte}_${args.to}_${args.value}_${args.nonce}_${args.nonceGte}_${args.limit}_${args.offset}`,
     );
   }
@@ -263,10 +238,7 @@ export class CacheRouter {
     chainId: string;
     safeTransactionHash: string;
   }): CacheDir {
-    return new CacheDir(
-      `${args.chainId}_${CacheRouter.MULTISIG_TRANSACTION_KEY}_${args.safeTransactionHash}`,
-      '',
-    );
+    return new CacheDir(CacheRouter.getMultisigTransactionCacheKey(args), '');
   }
 
   static getMultisigTransactionCacheKey(args: {
@@ -296,7 +268,7 @@ export class CacheRouter {
     offset?: number;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainId}_${CacheRouter.ALL_TRANSACTIONS_KEY}_${args.safeAddress}`,
+      CacheRouter.getAllTransactionsKey(args),
       `${args.ordering}_${args.executed}_${args.queued}_${args.limit}_${args.offset}`,
     );
   }
@@ -425,21 +397,13 @@ export class CacheRouter {
     return `*_${CacheRouter.SAFE_APPS_KEY}`;
   }
 
-  static getExchangeFiatCodesCacheDir(): CacheDir {
-    return new CacheDir(CacheRouter.EXCHANGE_FIAT_CODES_KEY, '');
-  }
-
-  static getExchangeRatesCacheDir(): CacheDir {
-    return new CacheDir(CacheRouter.EXCHANGE_RATES_KEY, '');
-  }
-
   static getNativeCoinPriceCacheDir(args: {
     nativeCoinId: string;
     fiatCode: string;
   }): CacheDir {
     return new CacheDir(
-      `${args.nativeCoinId}_${CacheRouter.NATIVE_COIN_PRICE_KEY}`,
-      args.fiatCode,
+      `${args.nativeCoinId}_${CacheRouter.NATIVE_COIN_PRICE_KEY}_${args.fiatCode}`,
+      '',
     );
   }
 
@@ -449,8 +413,8 @@ export class CacheRouter {
     tokenAddress: string;
   }): CacheDir {
     return new CacheDir(
-      `${args.chainName}_${CacheRouter.TOKEN_PRICE_KEY}`,
-      `${args.tokenAddress}_${args.fiatCode}`,
+      `${args.chainName}_${CacheRouter.TOKEN_PRICE_KEY}_${args.tokenAddress}_${args.fiatCode}`,
+      '',
     );
   }
 

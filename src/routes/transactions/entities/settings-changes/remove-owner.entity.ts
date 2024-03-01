@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { AddressInfo } from '@/routes/common/entities/address-info.entity';
-import { SettingsChange } from '@/routes/transactions/entities/settings-changes/settings-change.entity';
+import {
+  SettingsChange,
+  SettingsChangeType,
+} from '@/routes/transactions/entities/settings-changes/settings-change.entity';
 
 export class RemoveOwner extends SettingsChange {
   @ApiProperty()
@@ -9,7 +12,7 @@ export class RemoveOwner extends SettingsChange {
   threshold: number;
 
   constructor(owner: AddressInfo, threshold: number) {
-    super('REMOVE_OWNER');
+    super(SettingsChangeType.RemoveOwner);
     this.owner = owner;
     this.threshold = threshold;
   }

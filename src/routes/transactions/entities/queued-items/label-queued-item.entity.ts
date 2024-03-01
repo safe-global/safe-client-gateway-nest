@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { QueuedItem } from '@/routes/transactions/entities/queued-item.entity';
+import {
+  QueuedItem,
+  QueuedItemType,
+} from '@/routes/transactions/entities/queued-item.entity';
 
 export enum LabelItem {
   Next = 'Next',
@@ -11,7 +14,7 @@ export class LabelQueuedItem extends QueuedItem {
   label: string;
 
   constructor(label: LabelItem) {
-    super('LABEL');
+    super(QueuedItemType.Label);
     this.label = label;
   }
 }

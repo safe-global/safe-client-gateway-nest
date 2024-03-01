@@ -4,7 +4,7 @@ import { Builder, IBuilder } from '@/__tests__/builder';
 import { ProposeTransactionDto } from '@/routes/transactions/entities/propose-transaction.dto.entity';
 
 export function proposeTransactionDtoBuilder(): IBuilder<ProposeTransactionDto> {
-  return Builder.new<ProposeTransactionDto>()
+  return new Builder<ProposeTransactionDto>()
     .with('to', faker.finance.ethereumAddress())
     .with('value', faker.string.numeric())
     .with('data', faker.string.hexadecimal({ length: 32 }))

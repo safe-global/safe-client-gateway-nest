@@ -37,7 +37,7 @@ export class CollectiblesService {
       collectibles.previous,
     );
 
-    return <Page<Collectible>>{
+    return {
       count: collectibles.count,
       next: nextURL?.toString() ?? null,
       previous: previousURL?.toString() ?? null,

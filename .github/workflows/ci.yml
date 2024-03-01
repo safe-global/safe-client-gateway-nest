@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18.17.x'
+          node-version: '20.11.x'
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn run format-check
@@ -20,9 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18.17.x'
+          node-version: '20.11.x'
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn run lint-check
@@ -33,6 +33,11 @@ jobs:
       fail-fast: false
       matrix:
         task: ['test:cov', 'test:e2e:cov']
+    env:
+      POSTGRES_TEST_DB: test-db
+      POSTGRES_TEST_USER: postgres
+      POSTGRES_TEST_PASSWORD: postgres
+      POSTGRES_TEST_PORT: 5433
     services:
       redis:
         image: redis
@@ -43,18 +48,31 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
+      postgres:
+        image: postgres:14.8
+        env:
+          # Should match the env above. "Variables in the env map cannot be defined in terms of other variables in the map."
+          # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#env
+          POSTGRES_DB: test-db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5433:5432
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18.17.x'
+          node-version: '20.11.x'
           cache: 'yarn'
       - run: yarn install --immutable
       - run: yarn run build
       - run: yarn run ${{matrix.task}}
         env:
-          EXCHANGE_API_BASE_URI: http://api.exchangeratesapi.io/v1
-          EXCHANGE_API_KEY: ${{ secrets.EXCHANGE_API_KEY }}
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           SAFE_CONFIG_BASE_URI: ${{ secrets.SAFE_CONFIG_BASE_URI }}

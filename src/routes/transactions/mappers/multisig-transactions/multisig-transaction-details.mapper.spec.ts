@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { sample } from 'lodash';
 import { multisigTransactionBuilder } from '@/domain/safe/entities/__tests__/multisig-transaction.builder';
 import { safeBuilder } from '@/domain/safe/entities/__tests__/safe.builder';
 import { addressInfoBuilder } from '@/routes/common/__tests__/entities/address-info.builder';
@@ -61,8 +60,7 @@ describe('MultisigTransactionDetails mapper (Unit)', () => {
     const transaction = multisigTransactionBuilder()
       .with('safe', safe.address)
       .build();
-    const txStatus =
-      sample(Object.values(TransactionStatus)) ?? TransactionStatus.Success;
+    const txStatus = faker.helpers.objectValue(TransactionStatus);
     statusMapper.mapTransactionStatus.mockReturnValue(txStatus);
     const txInfo = transferTransactionInfoBuilder().build();
     transactionInfoMapper.mapTransactionInfo.mockResolvedValue(txInfo);
@@ -106,8 +104,7 @@ describe('MultisigTransactionDetails mapper (Unit)', () => {
     const transaction = multisigTransactionBuilder()
       .with('safe', safe.address)
       .build();
-    const txStatus =
-      sample(Object.values(TransactionStatus)) ?? TransactionStatus.Success;
+    const txStatus = faker.helpers.objectValue(TransactionStatus);
     statusMapper.mapTransactionStatus.mockReturnValue(txStatus);
     const txInfo = transferTransactionInfoBuilder().build();
     transactionInfoMapper.mapTransactionInfo.mockResolvedValue(txInfo);

@@ -19,5 +19,5 @@ export class QueuedItemPage extends Page<QueuedItem> {
       { $ref: getSchemaPath(TransactionQueuedItem) },
     ],
   })
-  results: QueuedItem[];
+  results!: QueuedItem[];
 }

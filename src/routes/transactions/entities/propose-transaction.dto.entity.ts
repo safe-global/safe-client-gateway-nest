@@ -4,31 +4,31 @@ import { ProposeTransactionDto as DomainProposeTransactionDto } from '@/domain/t
 
 export class ProposeTransactionDto implements DomainProposeTransactionDto {
   @ApiProperty()
-  to: string;
+  to!: string;
   @ApiProperty()
-  value: string;
+  value!: string;
   @ApiPropertyOptional({ type: String, nullable: true })
-  data: string | null;
+  data!: string | null;
   @ApiProperty()
-  nonce: string;
+  nonce!: string;
   @ApiProperty()
-  operation: Operation;
+  operation!: Operation;
   @ApiProperty()
-  safeTxGas: string;
+  safeTxGas!: string;
   @ApiProperty()
-  baseGas: string;
+  baseGas!: string;
   @ApiProperty()
-  gasPrice: string;
+  gasPrice!: string;
   @ApiProperty()
-  gasToken: string;
+  gasToken!: string;
   @ApiPropertyOptional({ type: String, nullable: true })
-  refundReceiver: string | null;
+  refundReceiver!: string | null;
   @ApiProperty()
-  safeTxHash: string;
+  safeTxHash!: string;
   @ApiProperty()
-  sender: string;
+  sender!: string;
   @ApiPropertyOptional({ type: String, nullable: true })
-  signature: string | null;
+  signature!: string | null;
   @ApiPropertyOptional({ type: String, nullable: true })
-  origin: string | null;
+  origin!: string | null;
 }

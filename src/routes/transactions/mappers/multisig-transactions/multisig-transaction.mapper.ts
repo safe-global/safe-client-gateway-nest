@@ -39,11 +39,10 @@ export class MultisigTransactionMapper {
       chainId,
       transaction,
     );
-    const timestamp = transaction.executionDate ?? transaction.submissionDate;
 
     return new Transaction(
       `${MULTISIG_TRANSACTION_PREFIX}${TRANSACTION_ID_SEPARATOR}${transaction.safe}${TRANSACTION_ID_SEPARATOR}${transaction.safeTxHash}`,
-      timestamp?.getTime() ?? null,
+      (transaction.executionDate ?? transaction.submissionDate).getTime(),
       txStatus,
       txInfo,
       executionInfo,

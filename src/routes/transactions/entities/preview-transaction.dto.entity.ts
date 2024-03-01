@@ -3,11 +3,11 @@ import { Operation } from '@/domain/safe/entities/operation.entity';
 
 export class PreviewTransactionDto {
   @ApiProperty()
-  to: string;
+  to!: string;
   @ApiPropertyOptional({ type: String, nullable: true })
-  data: string | null;
+  data!: string | null;
   @ApiProperty()
-  value: string;
+  value!: string;
   @ApiProperty()
-  operation: Operation;
+  operation!: Operation;
 }

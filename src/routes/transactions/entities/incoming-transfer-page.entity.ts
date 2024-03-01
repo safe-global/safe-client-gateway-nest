@@ -4,5 +4,5 @@ import { IncomingTransfer } from '@/routes/transactions/entities/incoming-transf
 
 export class IncomingTransferPage extends Page<IncomingTransfer> {
   @ApiProperty({ type: IncomingTransfer })
-  results: IncomingTransfer[];
+  results!: IncomingTransfer[];
 }

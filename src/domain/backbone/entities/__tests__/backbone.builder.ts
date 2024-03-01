@@ -4,7 +4,7 @@ import { fakeJson } from '@/__tests__/faker';
 import { Backbone } from '@/domain/backbone/entities/backbone.entity';
 
 export function backboneBuilder(): IBuilder<Backbone> {
-  return Builder.new<Backbone>()
+  return new Builder<Backbone>()
     .with('name', faker.word.sample())
     .with('version', faker.system.semver())
     .with('api_version', faker.system.semver())

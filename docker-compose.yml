@@ -13,9 +13,17 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-safe-client-gateway}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
+
+  db-test:
+    image: postgres:14.8-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_TEST_DB:-test-db}
+      POSTGRES_USER: ${POSTGRES_TEST_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_TEST_PASSWORD:-postgres}
+    ports:
+      - '${POSTGRES_TEST_PORT:-5433}:5432'
 
   web:
     build: .
@@ -23,9 +31,18 @@ services:
     environment:
       REDIS_HOST: redis
       PRICES_PROVIDER_API_KEY: ${PRICES_PROVIDER_API_KEY-example_api_key}
-      EXCHANGE_API_KEY: ${EXCHANGE_API_KEY-example_api_key}
       APPLICATION_PORT: ${APPLICATION_PORT-3000}
       AUTH_TOKEN: ${AUTH_TOKEN-example_auth_token}
+      ALERTS_PROVIDER_SIGNING_KEY: ${ALERTS_PROVIDER_SIGNING_KEY-example_signing_key}
+      ALERTS_PROVIDER_API_KEY: ${ALERTS_PROVIDER_API_KEY-example_api_key}
+      ALERTS_PROVIDER_ACCOUNT: ${ALERTS_PROVIDER_ACCOUNT-example_account}
+      ALERTS_PROVIDER_PROJECT: ${ALERTS_PROVIDER_PROJECT-example_project}
+      EMAIL_API_APPLICATION_CODE: ${EMAIL_API_APPLICATION_CODE-example_application_code}
+      EMAIL_API_FROM_EMAIL: ${EMAIL_API_FROM_EMAIL-changeme@example.com}
+      EMAIL_API_KEY: ${EMAIL_API_KEY-example_api_key}
+      EMAIL_TEMPLATE_UNKNOWN_RECOVERY_TX: ${EMAIL_TEMPLATE_UNKNOWN_RECOVERY_TX-example_template_unknown_recovery_tx}
+      EMAIL_TEMPLATE_RECOVERY_TX: ${EMAIL_TEMPLATE_RECOVERY_TX-example_template_recovery_tx}
+      EMAIL_TEMPLATE_VERIFICATION_CODE: ${EMAIL_TEMPLATE_VERIFICATION_CODE-example_template_verification_code}
     depends_on:
       - redis
       - db

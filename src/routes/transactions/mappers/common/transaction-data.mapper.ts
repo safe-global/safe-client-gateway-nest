@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { isArray, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { ContractsRepository } from '@/domain/contracts/contracts.repository';
 import { IContractsRepository } from '@/domain/contracts/contracts.repository.interface';
 import {
@@ -110,7 +110,8 @@ export class TransactionDataMapper {
     chainId: string,
     dataDecoded: DataDecoded | null,
   ): Promise<Record<string, AddressInfo>> {
-    if (dataDecoded === null || !isArray(dataDecoded.parameters)) return {};
+    if (dataDecoded === null || !Array.isArray(dataDecoded.parameters))
+      return {};
     const { method, parameters } = dataDecoded;
     const promises: Promise<(AddressInfo | null)[] | AddressInfo | null>[] = [];
 
@@ -148,7 +149,7 @@ export class TransactionDataMapper {
     chainId: string,
     valueDecoded: unknown,
   ): Promise<(AddressInfo | null)[]> {
-    if (!isArray(valueDecoded)) return [];
+    if (!Array.isArray(valueDecoded)) return [];
     const promises: Promise<AddressInfo | null>[] = [];
 
     for (const transaction of valueDecoded) {

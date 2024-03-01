@@ -3,7 +3,7 @@ import { SafeAppSocialProfile as DomainSafeAppSocialProfile } from '@/domain/saf
 
 export class SafeAppSocialProfile implements DomainSafeAppSocialProfile {
   @ApiProperty()
-  platform: string;
+  platform!: string;
   @ApiProperty()
-  url: string;
+  url!: string;
 }

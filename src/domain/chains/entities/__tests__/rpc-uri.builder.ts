@@ -4,7 +4,7 @@ import { RpcUri } from '@/domain/chains/entities/rpc-uri.entity';
 import { RpcUriAuthentication } from '@/domain/chains/entities/rpc-uri-authentication.entity';
 
 export function rpcUriBuilder(): IBuilder<RpcUri> {
-  return Builder.new<RpcUri>()
+  return new Builder<RpcUri>()
     .with('authentication', RpcUriAuthentication.NoAuthentication)
     .with('value', faker.internet.url({ appendSlash: false }));
 }

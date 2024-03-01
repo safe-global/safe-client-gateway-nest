@@ -4,7 +4,7 @@ import { Builder, IBuilder } from '@/__tests__/builder';
 import { ModuleTransaction } from '@/domain/safe/entities/module-transaction.entity';
 
 export function moduleTransactionBuilder(): IBuilder<ModuleTransaction> {
-  return Builder.new<ModuleTransaction>()
+  return new Builder<ModuleTransaction>()
     .with('blockNumber', faker.number.int())
     .with('created', faker.date.recent())
     .with('data', faker.string.hexadecimal())

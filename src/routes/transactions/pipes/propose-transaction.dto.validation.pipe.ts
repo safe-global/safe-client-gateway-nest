@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  PipeTransform,
+} from '@nestjs/common';
 import { ValidateFunction } from 'ajv';
 import { ProposeTransactionDto } from '@/routes/transactions/entities/propose-transaction.dto.entity';
 import {
@@ -27,7 +32,9 @@ export class ProposeTransactionDtoValidationPipe
     try {
       return this.genericValidator.validate(this.isValid, data);
     } catch (err) {
-      err.status = HttpStatus.BAD_REQUEST;
+      if (err instanceof HttpException) {
+        throw new HttpException(err.getResponse(), HttpStatus.BAD_REQUEST);
+      }
       throw err;
     }
   }

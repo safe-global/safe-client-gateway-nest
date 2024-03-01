@@ -1,21 +1,24 @@
 #
 # BUILD CONTAINER
 #
-FROM node:18.17 as base
+FROM node:20.11.0 as base
 ENV NODE_ENV production
+ENV YARN_CACHE_FOLDER /root/.yarn
 WORKDIR /app
 COPY --chown=node:node .yarn/releases ./.yarn/releases
-COPY --chown=node:node .yarn/plugins ./.yarn/plugins
+COPY --chown=node:node .yarn/patches ./.yarn/patches
 COPY --chown=node:node package.json yarn.lock .yarnrc.yml tsconfig*.json ./
-RUN --mount=type=cache,target=/root/.yarn YARN_CACHE_FOLDER=/root/.yarn yarn workspaces focus --production
+RUN --mount=type=cache,target=/root/.yarn yarn
 COPY --chown=node:node assets ./assets
 COPY --chown=node:node src ./src
-RUN yarn run build
+RUN --mount=type=cache,target=/root/.yarn yarn run build \
+    && rm -rf ./node_modules \
+    && yarn workspaces focus --production
 
 #
 # PRODUCTION CONTAINER
 #
-FROM node:18.17-alpine as production
+FROM node:20.11.0-alpine as production
 USER node
 
 ARG VERSION

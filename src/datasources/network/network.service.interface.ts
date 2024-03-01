@@ -4,19 +4,16 @@ import { NetworkResponse } from '@/datasources/network/entities/network.response
 export const NetworkService = Symbol('INetworkService');
 
 export interface INetworkService {
-  get<T = any, R = NetworkResponse<T>>(
+  get<T = any>(
     url: string,
     networkRequest?: NetworkRequest,
-  ): Promise<R>;
+  ): Promise<NetworkResponse<T>>;
 
-  post<T = any, R = NetworkResponse<T>>(
+  post<T = any>(
     url: string,
     data: object,
     networkRequest?: NetworkRequest,
-  ): Promise<R>;
+  ): Promise<NetworkResponse<T>>;
 
-  delete<T = any, R = NetworkResponse<T>>(
-    url: string,
-    data?: object,
-  ): Promise<R>;
+  delete<T = any>(url: string, data?: object): Promise<NetworkResponse<T>>;
 }

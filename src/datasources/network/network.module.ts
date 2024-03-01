@@ -1,24 +1,59 @@
 import { Global, Module } from '@nestjs/common';
-import axios, { Axios } from 'axios';
-import * as http from 'http';
-import * as https from 'https';
 import { IConfigurationService } from '@/config/configuration.service.interface';
-import { AxiosNetworkService } from '@/datasources/network/axios.network.service';
+import { FetchNetworkService } from '@/datasources/network/fetch.network.service';
 import { NetworkService } from '@/datasources/network/network.service.interface';
+import { NetworkResponse } from '@/datasources/network/entities/network.response.entity';
+import {
+  NetworkRequestError,
+  NetworkResponseError,
+} from '@/datasources/network/entities/network.error.entity';
+
+export type FetchClient = <T>(
+  url: string,
+  options: RequestInit,
+) => Promise<NetworkResponse<T>>;
 
 /**
- * Use this factory to add any default parameter to the
- * {@link Axios} instance
+ * Use this factory to create a {@link FetchClient} instance
+ * that can be used to make HTTP requests.
  */
-function axiosFactory(configurationService: IConfigurationService): Axios {
+function fetchClientFactory(
+  configurationService: IConfigurationService,
+): FetchClient {
   const requestTimeout = configurationService.getOrThrow<number>(
     'httpClient.requestTimeout',
   );
-  return axios.create({
-    timeout: requestTimeout,
-    httpAgent: new http.Agent({ keepAlive: true }),
-    httpsAgent: new https.Agent({ keepAlive: true }),
-  });
+
+  return async <T>(
+    url: string,
+    options: RequestInit,
+  ): Promise<NetworkResponse<T>> => {
+    let urlObject: URL | null = null;
+    let response: Response | null = null;
+
+    try {
+      urlObject = new URL(url);
+      response = await fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(requestTimeout),
+        keepalive: true,
+      });
+    } catch (error) {
+      throw new NetworkRequestError(urlObject, error);
+    }
+
+    // We validate data so don't need worry about casting `null` response
+    const data = (await response.json().catch(() => null)) as T;
+
+    if (!response.ok) {
+      throw new NetworkResponseError(urlObject, response, data);
+    }
+
+    return {
+      status: response.status,
+      data,
+    };
+  };
 }
 
 /**
@@ -32,11 +67,11 @@ function axiosFactory(configurationService: IConfigurationService): Axios {
 @Module({
   providers: [
     {
-      provide: 'AxiosClient',
-      useFactory: axiosFactory,
+      provide: 'FetchClient',
+      useFactory: fetchClientFactory,
       inject: [IConfigurationService],
     },
-    { provide: NetworkService, useClass: AxiosNetworkService },
+    { provide: NetworkService, useClass: FetchNetworkService },
   ],
   exports: [NetworkService],
 })

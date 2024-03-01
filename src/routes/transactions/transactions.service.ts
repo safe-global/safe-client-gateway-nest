@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { head, last } from 'lodash';
 import { MultisigTransaction as DomainMultisigTransaction } from '@/domain/safe/entities/multisig-transaction.entity';
 import { SafeRepository } from '@/domain/safe/safe.repository';
 import { ISafeRepository } from '@/domain/safe/safe.repository.interface';
@@ -7,10 +6,10 @@ import { AddConfirmationDto } from '@/domain/transactions/entities/add-confirmat
 import { ProposeTransactionDto } from '@/domain/transactions/entities/propose-transaction.dto.entity';
 import { Page } from '@/routes/common/entities/page.entity';
 import {
-  PaginationData,
   buildNextPageURL,
   buildPreviousPageURL,
   cursorUrlFromLimitAndOffset,
+  PaginationData,
 } from '@/routes/common/pagination/pagination.data';
 import {
   MODULE_TRANSACTION_PREFIX,
@@ -35,14 +34,14 @@ import { QueuedItemsMapper } from '@/routes/transactions/mappers/queued-items/qu
 import { TransactionPreviewMapper } from '@/routes/transactions/mappers/transaction-preview.mapper';
 import { TransactionsHistoryMapper } from '@/routes/transactions/mappers/transactions-history.mapper';
 import { TransferDetailsMapper } from '@/routes/transactions/mappers/transfers/transfer-details.mapper';
-import { IncomingTransferMapper } from '@/routes/transactions/mappers/transfers/transfer.mapper';
+import { TransferMapper } from '@/routes/transactions/mappers/transfers/transfer.mapper';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @Inject(ISafeRepository) private readonly safeRepository: SafeRepository,
     private readonly multisigTransactionMapper: MultisigTransactionMapper,
-    private readonly incomingTransferMapper: IncomingTransferMapper,
+    private readonly transferMapper: TransferMapper,
     private readonly moduleTransactionMapper: ModuleTransactionMapper,
     private readonly queuedItemsMapper: QueuedItemsMapper,
     private readonly transactionsHistoryMapper: TransactionsHistoryMapper,
@@ -176,6 +175,14 @@ export class TransactionsService {
     };
   }
 
+  async deleteTransaction(args: {
+    chainId: string;
+    safeTxHash: string;
+    signature: string;
+  }): Promise<void> {
+    return await this.safeRepository.deleteTransaction(args);
+  }
+
   async addConfirmation(args: {
     chainId: string;
     safeTxHash: string;
@@ -232,7 +239,8 @@ export class TransactionsService {
       domainTransactions.previous,
     );
 
-    return <Page<ModuleTransaction>>{
+    return {
+      count: domainTransactions.count,
       next: nextURL?.toString() ?? null,
       previous: previousURL?.toString() ?? null,
       results,
@@ -264,7 +272,7 @@ export class TransactionsService {
       transfers.results.map(
         async (transfer) =>
           new IncomingTransfer(
-            await this.incomingTransferMapper.mapTransfer(
+            await this.transferMapper.mapTransfer(
               args.chainId,
               transfer,
               safeInfo,
@@ -308,7 +316,6 @@ export class TransactionsService {
     safeAddress: string;
     paginationData: PaginationData;
     trusted?: boolean;
-    timezoneOffset: number;
   }): Promise<Page<QueuedItem>> {
     const pagination = this.getAdjustedPaginationForQueue(args.paginationData);
     const safeInfo = await this.safeRepository.getSafe({
@@ -331,7 +338,6 @@ export class TransactionsService {
       args.chainId,
       this.getPreviousPageLastNonce(transactions, args.paginationData),
       this.getNextPageFirstNonce(transactions),
-      args.timezoneOffset,
     );
 
     return {
@@ -359,7 +365,8 @@ export class TransactionsService {
     routeUrl: Readonly<URL>;
     safeAddress: string;
     paginationData: PaginationData;
-    timezoneOffset: number;
+    timezoneOffsetMs: number;
+    onlyTrusted: boolean;
   }): Promise<TransactionItemPage> {
     const paginationDataAdjusted = this.getAdjustedPaginationForHistory(
       args.paginationData,
@@ -389,7 +396,8 @@ export class TransactionsService {
       domainTransactions.results,
       safeInfo,
       args.paginationData.offset,
-      args.timezoneOffset,
+      args.timezoneOffsetMs,
+      args.onlyTrusted,
     );
 
     return {
@@ -490,12 +498,12 @@ export class TransactionsService {
   private getFirstTransactionNonce(
     page: Page<DomainMultisigTransaction>,
   ): number | null {
-    return head(page.results)?.nonce ?? null;
+    return page.results[0]?.nonce ?? null;
   }
 
   private getLastTransactionNonce(
     page: Page<DomainMultisigTransaction>,
   ): number | null {
-    return last(page.results)?.nonce ?? null;
+    return page.results.at(-1)?.nonce ?? null;
   }
 }

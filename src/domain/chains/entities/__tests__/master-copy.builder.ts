@@ -3,7 +3,7 @@ import { Builder, IBuilder } from '@/__tests__/builder';
 import { MasterCopy } from '@/domain/chains/entities/master-copies.entity';
 
 export function masterCopyBuilder(): IBuilder<MasterCopy> {
-  return Builder.new<MasterCopy>()
+  return new Builder<MasterCopy>()
     .with('address', faker.finance.ethereumAddress())
     .with('version', faker.system.semver())
     .with('deployer', faker.finance.ethereumAddress())

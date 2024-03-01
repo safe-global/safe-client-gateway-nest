@@ -10,8 +10,8 @@ import { AddressInfoHelper } from '@/routes/common/address-info/address-info.hel
 import { NULL_ADDRESS } from '@/routes/common/constants';
 import { AddressInfo } from '@/routes/common/entities/address-info.entity';
 import {
-  MultisigExecutionDetails,
   MultisigConfirmationDetails,
+  MultisigExecutionDetails,
 } from '@/routes/transactions/entities/transaction-details/multisig-execution-details.entity';
 
 @Injectable()

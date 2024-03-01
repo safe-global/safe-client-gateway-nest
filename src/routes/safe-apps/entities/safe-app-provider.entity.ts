@@ -3,7 +3,7 @@ import { SafeAppProvider as DomainSafeAppProvider } from '@/domain/safe-apps/ent
 
 export class SafeAppProvider implements DomainSafeAppProvider {
   @ApiProperty()
-  url: string;
+  url!: string;
   @ApiProperty()
-  name: string;
+  name!: string;
 }

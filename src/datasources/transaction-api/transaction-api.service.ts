@@ -5,7 +5,6 @@ import { ICacheService } from '@/datasources/cache/cache.service.interface';
 import { HttpErrorFactory } from '@/datasources/errors/http-error-factory';
 import { INetworkService } from '@/datasources/network/network.service.interface';
 import { Backbone } from '@/domain/backbone/entities/backbone.entity';
-import { Balance } from '@/domain/balances/entities/balance.entity';
 import { MasterCopy } from '@/domain/chains/entities/master-copies.entity';
 import { Collectible } from '@/domain/collectibles/entities/collectible.entity';
 import { Contract } from '@/domain/contracts/entities/contract.entity';
@@ -27,14 +26,13 @@ import { Transfer } from '@/domain/safe/entities/transfer.entity';
 import { Token } from '@/domain/tokens/entities/token.entity';
 import { AddConfirmationDto } from '@/domain/transactions/entities/add-confirmation.dto.entity';
 import { ProposeTransactionDto } from '@/domain/transactions/entities/propose-transaction.dto.entity';
-import { SimpleBalance } from '../../domain/balances/entities/simple-balance.entity';
+import { Balance } from '@/domain/balances/entities/balance.entity';
 
 export class TransactionApi implements ITransactionApi {
   private readonly defaultExpirationTimeInSeconds: number;
   private readonly defaultNotFoundExpirationTimeSeconds: number;
   private readonly tokenNotFoundExpirationTimeSeconds: number;
   private readonly contractNotFoundExpirationTimeSeconds: number;
-  private readonly isMessagesCacheEnabled: boolean;
 
   constructor(
     private readonly chainId: string,
@@ -61,9 +59,6 @@ export class TransactionApi implements ITransactionApi {
       this.configurationService.getOrThrow<number>(
         'expirationTimeInSeconds.notFound.contract',
       );
-    this.isMessagesCacheEnabled = this.configurationService.getOrThrow<boolean>(
-      'features.messagesCache',
-    );
   }
 
   async getBalances(args: {
@@ -72,35 +67,7 @@ export class TransactionApi implements ITransactionApi {
     excludeSpam?: boolean;
   }): Promise<Balance[]> {
     try {
-      const cacheDir = CacheRouter.getBalanceCacheDir({
-        chainId: this.chainId,
-        ...args,
-      });
-      const url = `${this.baseUrl}/api/v1/safes/${args.safeAddress}/balances/usd/`;
-      return await this.dataSource.get({
-        cacheDir,
-        url,
-        notFoundExpireTimeSeconds: this.defaultNotFoundExpirationTimeSeconds,
-        networkRequest: {
-          params: {
-            trusted: args.trusted,
-            exclude_spam: args.excludeSpam,
-          },
-        },
-        expireTimeSeconds: this.defaultExpirationTimeInSeconds,
-      });
-    } catch (error) {
-      throw this.httpErrorFactory.from(error);
-    }
-  }
-
-  async getSimpleBalances(args: {
-    safeAddress: string;
-    trusted?: boolean;
-    excludeSpam?: boolean;
-  }): Promise<SimpleBalance[]> {
-    try {
-      const cacheDir = CacheRouter.getSimpleBalancesCacheDir({
+      const cacheDir = CacheRouter.getBalancesCacheDir({
         chainId: this.chainId,
         ...args,
       });
@@ -123,18 +90,11 @@ export class TransactionApi implements ITransactionApi {
   }
 
   async clearLocalBalances(safeAddress: string): Promise<void> {
-    const balancesCacheKey = CacheRouter.getBalancesCacheKey({
+    const key = CacheRouter.getBalancesCacheKey({
       chainId: this.chainId,
       safeAddress,
     });
-    const simpleBalancesCacheKey = CacheRouter.getSimpleBalancesCacheKey({
-      chainId: this.chainId,
-      safeAddress,
-    });
-    await Promise.all([
-      this.cacheService.deleteByKey(balancesCacheKey),
-      this.cacheService.deleteByKey(simpleBalancesCacheKey),
-    ]);
+    await this.cacheService.deleteByKey(key);
   }
 
   async getDataDecoded(args: {
@@ -349,7 +309,7 @@ export class TransactionApi implements ITransactionApi {
     delegate: string;
     safeAddress: string;
     signature: string;
-  }): Promise<void> {
+  }): Promise<unknown> {
     try {
       const url = `${this.baseUrl}/api/v1/safes/${args.safeAddress}/delegates/${args.delegate}`;
       return await this.networkService.delete(url, {
@@ -477,6 +437,16 @@ export class TransactionApi implements ITransactionApi {
       return await this.networkService.post(url, {
         signature: args.addConfirmationDto.signedSafeTxHash,
       });
+    } catch (error) {
+      throw this.httpErrorFactory.from(error);
+    }
+  }
+
+  async getSafesByModule(moduleAddress: string): Promise<SafeList> {
+    try {
+      const url = `${this.baseUrl}/api/v1/modules/${moduleAddress}/safes/`;
+      const { data } = await this.networkService.get(url);
+      return data;
     } catch (error) {
       throw this.httpErrorFactory.from(error);
     }
@@ -613,6 +583,20 @@ export class TransactionApi implements ITransactionApi {
         url,
         notFoundExpireTimeSeconds: this.defaultNotFoundExpirationTimeSeconds,
         expireTimeSeconds: this.defaultExpirationTimeInSeconds,
+      });
+    } catch (error) {
+      throw this.httpErrorFactory.from(error);
+    }
+  }
+
+  async deleteTransaction(args: {
+    safeTxHash: string;
+    signature: string;
+  }): Promise<void> {
+    try {
+      const url = `${this.baseUrl}/api/v1/transactions/${args.safeTxHash}`;
+      await this.networkService.delete(url, {
+        signature: args.signature,
       });
     } catch (error) {
       throw this.httpErrorFactory.from(error);
@@ -834,9 +818,7 @@ export class TransactionApi implements ITransactionApi {
         cacheDir,
         url,
         notFoundExpireTimeSeconds: this.defaultNotFoundExpirationTimeSeconds,
-        expireTimeSeconds: this.isMessagesCacheEnabled
-          ? this.defaultExpirationTimeInSeconds
-          : undefined,
+        expireTimeSeconds: this.defaultExpirationTimeInSeconds,
       });
     } catch (error) {
       throw this.httpErrorFactory.from(error);
@@ -864,9 +846,7 @@ export class TransactionApi implements ITransactionApi {
             offset: args.offset,
           },
         },
-        expireTimeSeconds: this.isMessagesCacheEnabled
-          ? this.defaultExpirationTimeInSeconds
-          : undefined,
+        expireTimeSeconds: this.defaultExpirationTimeInSeconds,
       });
     } catch (error) {
       throw this.httpErrorFactory.from(error);

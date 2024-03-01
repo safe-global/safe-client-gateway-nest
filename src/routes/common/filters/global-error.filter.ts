@@ -16,7 +16,7 @@ export class GlobalErrorFilter implements ExceptionFilter {
     @Inject(LoggingService) private readonly loggingService: ILoggingService,
   ) {}
 
-  catch(exception: Error, host: ArgumentsHost): any {
+  catch(exception: Error, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
 
     const ctx = host.switchToHttp();

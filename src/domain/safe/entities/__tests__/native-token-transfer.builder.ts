@@ -3,7 +3,7 @@ import { Builder, IBuilder } from '@/__tests__/builder';
 import { NativeTokenTransfer } from '@/domain/safe/entities/transfer.entity';
 
 export function nativeTokenTransferBuilder(): IBuilder<NativeTokenTransfer> {
-  return Builder.new<NativeTokenTransfer>()
+  return new Builder<NativeTokenTransfer>()
     .with('blockNumber', faker.number.int())
     .with('executionDate', faker.date.recent())
     .with('from', faker.finance.ethereumAddress())

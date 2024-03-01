@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export enum ExecutionDetailsType {
+  Module = 'MODULE',
+  Multisig = 'MULTISIG',
+}
+
 export abstract class ExecutionDetails {
   @ApiProperty()
-  type: string;
+  type: ExecutionDetailsType;
 
-  protected constructor(type: string) {
+  protected constructor(type: ExecutionDetailsType) {
     this.type = type;
   }
 }

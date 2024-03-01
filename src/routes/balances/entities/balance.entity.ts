@@ -3,11 +3,11 @@ import { Token } from '@/routes/balances/entities/token.entity';
 
 export class Balance {
   @ApiProperty()
-  balance: string;
+  balance!: string;
   @ApiProperty()
-  fiatBalance: string;
+  fiatBalance!: string;
   @ApiProperty()
-  fiatConversion: string;
+  fiatConversion!: string;
   @ApiProperty()
-  tokenInfo: Token;
+  tokenInfo!: Token;
 }

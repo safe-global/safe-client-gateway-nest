@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class DeleteSafeDelegateDto {
   @ApiProperty()
-  delegate: string;
+  delegate!: string;
   @ApiProperty()
-  safe: string;
+  safe!: string;
   @ApiProperty()
-  signature: string;
+  signature!: string;
 }

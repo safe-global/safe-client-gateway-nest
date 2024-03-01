@@ -16,6 +16,12 @@ export interface ISafeRepository {
 
   clearSafe(args: { chainId: string; address: string }): Promise<void>;
 
+  isOwner(args: {
+    chainId: string;
+    safeAddress: string;
+    address: string;
+  }): Promise<boolean>;
+
   getCollectibleTransfers(args: {
     chainId: string;
     safeAddress: string;
@@ -137,6 +143,12 @@ export interface ISafeRepository {
     offset?: number;
   }): Promise<Page<MultisigTransaction>>;
 
+  deleteTransaction(args: {
+    chainId: string;
+    safeTxHash: string;
+    signature: string;
+  }): Promise<void>;
+
   getTransfer(args: { chainId: string; transferId: string }): Promise<Transfer>;
 
   getTransfers(args: {
@@ -160,4 +172,24 @@ export interface ISafeRepository {
     safeAddress: string;
     proposeTransactionDto: ProposeTransactionDto;
   }): Promise<unknown>;
+
+  /**
+   * Returns the nonce information for a Safe which includes its current nonce
+   * and the recommended nonce for transaction execution.
+   *
+   * The recommended nonce is executed by getting the maximum between the
+   * current Safe nonce and the last transaction nonce plus 1.
+   * If there is no last transaction, the Safe nonce is returned.
+   *
+   * @returns the nonce state of the safe
+   */
+  getNonces(args: {
+    chainId: string;
+    safeAddress: string;
+  }): Promise<{ currentNonce: number; recommendedNonce: number }>;
+
+  getSafesByModule(args: {
+    chainId: string;
+    moduleAddress: string;
+  }): Promise<SafeList>;
 }

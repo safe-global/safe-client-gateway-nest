@@ -3,11 +3,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class NativeCurrency implements DomainNativeCurrency {
   @ApiProperty()
-  decimals: number;
+  decimals!: number;
   @ApiProperty()
-  logoUri: string;
+  logoUri!: string;
   @ApiProperty()
-  name: string;
+  name!: string;
   @ApiProperty()
-  symbol: string;
+  symbol!: string;
 }

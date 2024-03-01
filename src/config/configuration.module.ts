@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ConfigFactory } from '@nestjs/config/dist/interfaces/config-factory.interface';
 import { IConfigurationService } from '@/config/configuration.service.interface';
 import { validate } from '@/config/configuration.validator';
-import configuration from '@/config/entities/configuration';
 import { NestConfigurationService } from '@/config/nest.configuration.service';
 
 /**
@@ -16,7 +15,7 @@ import { NestConfigurationService } from '@/config/nest.configuration.service';
 @Global()
 @Module({})
 export class ConfigurationModule {
-  static register(configFactory: ConfigFactory = configuration): DynamicModule {
+  static register(configFactory: ConfigFactory): DynamicModule {
     return {
       module: ConfigurationModule,
       imports: [

@@ -22,12 +22,12 @@ const mockLoggingService = {
 @Controller({ path: 'test' })
 class TestController {
   @Get('server-error')
-  getServerError() {
+  getServerError(): void {
     throw new HttpException('Some 500 error', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @Get('server-data-source-error')
-  getServerDataSourceError() {
+  getServerDataSourceError(): void {
     throw new DataSourceError(
       'Some DataSource error',
       HttpStatus.NOT_IMPLEMENTED,
@@ -35,22 +35,22 @@ class TestController {
   }
 
   @Get('server-error-non-http')
-  getNonHttpError() {
+  getNonHttpError(): void {
     throw new Error('Some random error');
   }
 
   @Get('client-error')
-  getClientError() {
+  getClientError(): void {
     throw new HttpException('Some 400 error', HttpStatus.METHOD_NOT_ALLOWED);
   }
 
   @Get('success')
-  getSuccess() {
+  getSuccess(): void {
     return;
   }
 
   @Get('success/:chainId')
-  getSuccessWithChainId() {
+  getSuccessWithChainId(): void {
     return;
   }
 }
@@ -77,8 +77,8 @@ describe('RouteLoggerInterceptor tests', () => {
   it('500 error triggers error level', async () => {
     await request(app.getHttpServer()).get('/test/server-error').expect(500);
 
-    expect(mockLoggingService.error).toBeCalledTimes(1);
-    expect(mockLoggingService.error).toBeCalledWith({
+    expect(mockLoggingService.error).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.error).toHaveBeenCalledWith({
       chain_id: null,
       client_ip: null,
       detail: 'Some 500 error',
@@ -89,9 +89,9 @@ describe('RouteLoggerInterceptor tests', () => {
       safe_app_user_agent: null,
       status_code: 500,
     });
-    expect(mockLoggingService.info).not.toBeCalled();
-    expect(mockLoggingService.debug).not.toBeCalled();
-    expect(mockLoggingService.warn).not.toBeCalled();
+    expect(mockLoggingService.info).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });
 
   it('500 Datasource error triggers error level', async () => {
@@ -104,8 +104,8 @@ describe('RouteLoggerInterceptor tests', () => {
       // (see expects below)
       .expect(500);
 
-    expect(mockLoggingService.error).toBeCalledTimes(1);
-    expect(mockLoggingService.error).toBeCalledWith({
+    expect(mockLoggingService.error).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.error).toHaveBeenCalledWith({
       chain_id: null,
       client_ip: null,
       detail: 'Some DataSource error',
@@ -116,16 +116,16 @@ describe('RouteLoggerInterceptor tests', () => {
       safe_app_user_agent: null,
       status_code: 501,
     });
-    expect(mockLoggingService.info).not.toBeCalled();
-    expect(mockLoggingService.debug).not.toBeCalled();
-    expect(mockLoggingService.warn).not.toBeCalled();
+    expect(mockLoggingService.info).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });
 
   it('400 error triggers info level', async () => {
     await request(app.getHttpServer()).get('/test/client-error').expect(405);
 
-    expect(mockLoggingService.info).toBeCalledTimes(1);
-    expect(mockLoggingService.info).toBeCalledWith({
+    expect(mockLoggingService.info).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.info).toHaveBeenCalledWith({
       chain_id: null,
       client_ip: null,
       detail: 'Some 400 error',
@@ -136,16 +136,16 @@ describe('RouteLoggerInterceptor tests', () => {
       safe_app_user_agent: null,
       status_code: 405,
     });
-    expect(mockLoggingService.error).not.toBeCalled();
-    expect(mockLoggingService.debug).not.toBeCalled();
-    expect(mockLoggingService.warn).not.toBeCalled();
+    expect(mockLoggingService.error).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });
 
   it('200 triggers info level', async () => {
     await request(app.getHttpServer()).get('/test/success').expect(200);
 
-    expect(mockLoggingService.info).toBeCalledTimes(1);
-    expect(mockLoggingService.info).toBeCalledWith({
+    expect(mockLoggingService.info).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.info).toHaveBeenCalledWith({
       chain_id: null,
       client_ip: null,
       detail: null,
@@ -156,9 +156,9 @@ describe('RouteLoggerInterceptor tests', () => {
       safe_app_user_agent: null,
       status_code: 200,
     });
-    expect(mockLoggingService.error).not.toBeCalled();
-    expect(mockLoggingService.debug).not.toBeCalled();
-    expect(mockLoggingService.warn).not.toBeCalled();
+    expect(mockLoggingService.error).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });
 
   it('200 with chainId logs chain id', async () => {
@@ -167,8 +167,8 @@ describe('RouteLoggerInterceptor tests', () => {
       .get(`/test/success/${chainId}`)
       .expect(200);
 
-    expect(mockLoggingService.info).toBeCalledTimes(1);
-    expect(mockLoggingService.info).toBeCalledWith({
+    expect(mockLoggingService.info).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.info).toHaveBeenCalledWith({
       chain_id: chainId,
       client_ip: null,
       detail: null,
@@ -179,9 +179,9 @@ describe('RouteLoggerInterceptor tests', () => {
       safe_app_user_agent: null,
       status_code: 200,
     });
-    expect(mockLoggingService.error).not.toBeCalled();
-    expect(mockLoggingService.debug).not.toBeCalled();
-    expect(mockLoggingService.warn).not.toBeCalled();
+    expect(mockLoggingService.error).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });
 
   it('non http error triggers error level', async () => {
@@ -189,8 +189,8 @@ describe('RouteLoggerInterceptor tests', () => {
       .get('/test/server-error-non-http')
       .expect(500);
 
-    expect(mockLoggingService.error).toBeCalledTimes(1);
-    expect(mockLoggingService.error).toBeCalledWith({
+    expect(mockLoggingService.error).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.error).toHaveBeenCalledWith({
       chain_id: null,
       client_ip: null,
       detail: 'Some random error',
@@ -201,9 +201,9 @@ describe('RouteLoggerInterceptor tests', () => {
       safe_app_user_agent: null,
       status_code: 500,
     });
-    expect(mockLoggingService.info).not.toBeCalled();
-    expect(mockLoggingService.debug).not.toBeCalled();
-    expect(mockLoggingService.warn).not.toBeCalled();
+    expect(mockLoggingService.info).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });
 
   it('Logs Safe-App-User-Agent header', async () => {
@@ -214,7 +214,7 @@ describe('RouteLoggerInterceptor tests', () => {
       .set('Safe-App-User-Agent', safeAppUserAgentHeader)
       .expect(200);
 
-    expect(mockLoggingService.info).toBeCalledWith({
+    expect(mockLoggingService.info).toHaveBeenCalledWith({
       chain_id: null,
       client_ip: null,
       detail: null,

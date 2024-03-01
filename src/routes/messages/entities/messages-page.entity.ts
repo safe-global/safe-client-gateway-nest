@@ -12,5 +12,5 @@ export class MessagePage extends Page<MessageItem | DateLabel> {
       { $ref: getSchemaPath(DateLabel) },
     ],
   })
-  results: (MessageItem | DateLabel)[];
+  results!: (MessageItem | DateLabel)[];
 }

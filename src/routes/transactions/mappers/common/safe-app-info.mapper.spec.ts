@@ -5,6 +5,7 @@ import { multisigTransactionBuilder } from '@/domain/safe/entities/__tests__/mul
 import { ILoggingService } from '@/logging/logging.interface';
 import { SafeAppInfo } from '@/routes/transactions/entities/safe-app-info.entity';
 import { SafeAppInfoMapper } from '@/routes/transactions/mappers/common/safe-app-info.mapper';
+import { SafeApp } from '@/domain/safe-apps/entities/safe-app.entity';
 
 describe('SafeAppInfo mapper (Unit)', () => {
   const safeAppsRepositoryMock = jest.mocked({
@@ -56,7 +57,7 @@ describe('SafeAppInfo mapper (Unit)', () => {
 
   it('should return null if no SafeApp is found and origin is not null', async () => {
     const chainId = faker.string.numeric();
-    const safeApps = [];
+    const safeApps: Array<SafeApp> = [];
     const transaction = multisigTransactionBuilder().build();
     safeAppsRepositoryMock.getSafeApps.mockResolvedValue(safeApps);
 

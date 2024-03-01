@@ -1,7 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { AddressInfo } from '@/routes/common/entities/address-info.entity';
 import { Token } from '@/routes/balances/entities/token.entity';
-import { ExecutionDetails } from '@/routes/transactions/entities/transaction-details/execution-details.entity';
+import {
+  ExecutionDetails,
+  ExecutionDetailsType,
+} from '@/routes/transactions/entities/transaction-details/execution-details.entity';
 
 export class MultisigConfirmationDetails {
   @ApiProperty()
@@ -71,7 +74,7 @@ export class MultisigExecutionDetails extends ExecutionDetails {
     gasTokenInfo: Token | null,
     trusted: boolean,
   ) {
-    super('MULTISIG');
+    super(ExecutionDetailsType.Multisig);
     this.submittedAt = submittedAt;
     this.nonce = nonce;
     this.safeTxGas = safeTxGas;

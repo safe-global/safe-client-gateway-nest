@@ -4,7 +4,7 @@ import { dataDecodedBuilder } from '@/domain/data-decoder/entities/__tests__/dat
 import { CreationTransaction } from '@/domain/safe/entities/creation-transaction.entity';
 
 export function creationTransactionBuilder(): IBuilder<CreationTransaction> {
-  return Builder.new<CreationTransaction>()
+  return new Builder<CreationTransaction>()
     .with('created', faker.date.recent())
     .with('creator', faker.finance.ethereumAddress())
     .with('transactionHash', faker.string.hexadecimal())

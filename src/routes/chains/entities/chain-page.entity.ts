@@ -4,5 +4,5 @@ import { Page } from '@/routes/common/entities/page.entity';
 
 export class ChainPage extends Page<Chain> {
   @ApiProperty({ type: Chain })
-  results: Chain[];
+  results!: Chain[];
 }

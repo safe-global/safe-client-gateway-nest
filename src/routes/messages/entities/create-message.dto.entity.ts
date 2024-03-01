@@ -4,7 +4,7 @@ export class CreateMessageDto {
   @ApiProperty()
   message: string | unknown;
   @ApiPropertyOptional({ type: Number, nullable: true })
-  safeAppId: number | null;
+  safeAppId!: number | null;
   @ApiProperty()
-  signature: string;
+  signature!: string;
 }
