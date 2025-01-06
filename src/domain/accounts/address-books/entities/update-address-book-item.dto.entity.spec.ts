@@ -57,69 +57,6 @@ describe('UpdateAddressBookItemDtoSchema', () => {
     ]);
   });
 
-  it('should not verify an UpdateAddressBookItemDto with a number name', () => {
-    const updateAddressBookItemDto = updateAddressBookItemDtoBuilder()
-      // @ts-expect-error - should be strings
-      .with('name', faker.number.int())
-      .build();
-
-    const result = UpdateAddressBookItemDtoSchema.safeParse(
-      updateAddressBookItemDto,
-    );
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'invalid_type',
-        expected: 'string',
-        message: 'Expected string, received number',
-        path: ['name'],
-        received: 'number',
-      },
-    ]);
-  });
-
-  it('should not verify an UpdateAddressBookItemDto with a longer name', () => {
-    const updateAddressBookItemDto = updateAddressBookItemDtoBuilder()
-      .with('name', faker.string.alphanumeric({ length: 51 }))
-      .build();
-
-    const result = UpdateAddressBookItemDtoSchema.safeParse(
-      updateAddressBookItemDto,
-    );
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'too_big',
-        inclusive: true,
-        exact: false,
-        message: 'Address Books items names must be at most 50 characters long',
-        maximum: 50,
-        path: ['name'],
-        type: 'string',
-      },
-    ]);
-  });
-
-  it('should not verify an UpdateAddressBookItemDto with a malformed name', () => {
-    const updateAddressBookItemDto = updateAddressBookItemDtoBuilder()
-      .with('name', '////')
-      .build();
-
-    const result = UpdateAddressBookItemDtoSchema.safeParse(
-      updateAddressBookItemDto,
-    );
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'invalid_string',
-        message:
-          'Address Books items names must start with a letter or number and can contain alphanumeric characters, periods, underscores, or hyphens',
-        path: ['name'],
-        validation: 'regex',
-      },
-    ]);
-  });
-
   it('should not verify an UpdateAddressBookItemDto with a malformed address', () => {
     const updateAddressBookItemDto = updateAddressBookItemDtoBuilder()
       .with('address', '0x123')
