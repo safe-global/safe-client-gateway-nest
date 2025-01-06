@@ -37,6 +37,7 @@ import { tokenBuilder } from '@/domain/tokens/__tests__/token.builder';
 import { TestLoggingModule } from '@/logging/__tests__/test.logging.module';
 import { RequestScopedLoggingModule } from '@/logging/logging.module';
 import { NULL_ADDRESS } from '@/routes/common/constants';
+import { rawify } from '@/validation/entities/raw.entity';
 import { faker } from '@faker-js/faker';
 import type { INestApplication } from '@nestjs/common';
 import { NotFoundException, ServiceUnavailableException } from '@nestjs/common';
@@ -109,13 +110,13 @@ describe('TransactionsViewController tests', () => {
     const dataDecoded = dataDecodedBuilder().build();
     networkService.get.mockImplementation(({ url }) => {
       if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
     networkService.post.mockImplementation(({ url }) => {
       if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-        return Promise.resolve({ data: dataDecoded, status: 200 });
+        return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -150,27 +151,27 @@ describe('TransactionsViewController tests', () => {
       const sellToken = tokenBuilder().with('address', order.sellToken).build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/orders/${order.uid}`) {
-          return Promise.resolve({ data: order, status: 200 });
+          return Promise.resolve({ data: rawify(order), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.buyToken}`
         ) {
-          return Promise.resolve({ data: buyToken, status: 200 });
+          return Promise.resolve({ data: rawify(buyToken), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.sellToken}`
         ) {
-          return Promise.resolve({ data: sellToken, status: 200 });
+          return Promise.resolve({ data: rawify(sellToken), status: 200 });
         }
         return Promise.reject(new Error(`Could not match ${url}`));
       });
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -255,29 +256,29 @@ describe('TransactionsViewController tests', () => {
         .build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (
           url ===
           `${chain.transactionService}/api/v1/tokens/${buyToken.address}`
         ) {
-          return Promise.resolve({ data: buyToken, status: 200 });
+          return Promise.resolve({ data: rawify(buyToken), status: 200 });
         }
         if (
           url ===
           `${chain.transactionService}/api/v1/tokens/${sellToken.address}`
         ) {
-          return Promise.resolve({ data: sellToken, status: 200 });
+          return Promise.resolve({ data: rawify(sellToken), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/app_data/${appDataHash}`) {
-          return Promise.resolve({ data: fullAppData, status: 200 });
+          return Promise.resolve({ data: rawify(fullAppData), status: 200 });
         }
         return Promise.reject(new Error(`Could not match ${url}`));
       });
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -314,7 +315,7 @@ describe('TransactionsViewController tests', () => {
         .build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/orders/${order.uid}`) {
           return Promise.reject({ status: 500 });
@@ -324,7 +325,7 @@ describe('TransactionsViewController tests', () => {
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -359,10 +360,10 @@ describe('TransactionsViewController tests', () => {
       const sellToken = tokenBuilder().with('address', order.sellToken).build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/orders/${order.uid}`) {
-          return Promise.resolve({ data: order, status: 200 });
+          return Promise.resolve({ data: rawify(order), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.buyToken}`
@@ -372,14 +373,14 @@ describe('TransactionsViewController tests', () => {
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.sellToken}`
         ) {
-          return Promise.resolve({ data: sellToken, status: 200 });
+          return Promise.resolve({ data: rawify(sellToken), status: 200 });
         }
         return Promise.reject(new Error(`Could not match ${url}`));
       });
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -414,15 +415,15 @@ describe('TransactionsViewController tests', () => {
       const buyToken = tokenBuilder().with('address', order.sellToken).build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/orders/${order.uid}`) {
-          return Promise.resolve({ data: order, status: 200 });
+          return Promise.resolve({ data: rawify(order), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.buyToken}`
         ) {
-          return Promise.resolve({ data: buyToken, status: 200 });
+          return Promise.resolve({ data: rawify(buyToken), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.sellToken}`
@@ -434,7 +435,7 @@ describe('TransactionsViewController tests', () => {
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -471,27 +472,27 @@ describe('TransactionsViewController tests', () => {
       const sellToken = tokenBuilder().with('address', order.sellToken).build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/orders/${order.uid}`) {
-          return Promise.resolve({ data: order, status: 200 });
+          return Promise.resolve({ data: rawify(order), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.buyToken}`
         ) {
-          return Promise.resolve({ data: buyToken, status: 200 });
+          return Promise.resolve({ data: rawify(buyToken), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.sellToken}`
         ) {
-          return Promise.resolve({ data: sellToken, status: 200 });
+          return Promise.resolve({ data: rawify(sellToken), status: 200 });
         }
         return Promise.reject(new Error(`Could not match ${url}`));
       });
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -528,27 +529,27 @@ describe('TransactionsViewController tests', () => {
       const sellToken = tokenBuilder().with('address', order.sellToken).build();
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === `${swapsApiUrl}/api/v1/orders/${order.uid}`) {
-          return Promise.resolve({ data: order, status: 200 });
+          return Promise.resolve({ data: rawify(order), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.buyToken}`
         ) {
-          return Promise.resolve({ data: buyToken, status: 200 });
+          return Promise.resolve({ data: rawify(buyToken), status: 200 });
         }
         if (
           url === `${chain.transactionService}/api/v1/tokens/${order.sellToken}`
         ) {
-          return Promise.resolve({ data: sellToken, status: 200 });
+          return Promise.resolve({ data: rawify(sellToken), status: 200 });
         }
         return Promise.reject(new Error(`Could not match ${url}`));
       });
       networkService.post.mockImplementation(({ url }) => {
         if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
           return Promise.resolve({
-            data: dataDecoded,
+            data: rawify(dataDecoded),
             status: 200,
           });
         }
@@ -595,25 +596,25 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/kiln-stats`:
                 return Promise.resolve({
-                  data: { data: dedicatedStakingStats },
+                  data: rawify({ data: dedicatedStakingStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/network-stats`:
                 return Promise.resolve({
-                  data: { data: networkStats },
+                  data: rawify({ data: networkStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -622,7 +623,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -699,25 +703,25 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/kiln-stats`:
                 return Promise.resolve({
-                  data: { data: dedicatedStakingStats },
+                  data: rawify({ data: dedicatedStakingStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/network-stats`:
                 return Promise.resolve({
-                  data: { data: networkStats },
+                  data: rawify({ data: networkStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -726,7 +730,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -802,25 +809,25 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/kiln-stats`:
                 return Promise.resolve({
-                  data: { data: dedicatedStakingStats },
+                  data: rawify({ data: dedicatedStakingStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/network-stats`:
                 return Promise.resolve({
-                  data: { data: networkStats },
+                  data: rawify({ data: networkStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -918,29 +925,29 @@ describe('TransactionsViewController tests', () => {
             .encode();
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/network-stats`) {
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/stakes`) {
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             }
@@ -948,7 +955,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1012,7 +1022,7 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.reject(new NotFoundException());
@@ -1021,7 +1031,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1056,11 +1069,11 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
@@ -1068,7 +1081,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1104,11 +1120,11 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
@@ -1116,7 +1132,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1152,11 +1171,11 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
@@ -1164,7 +1183,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1199,11 +1221,11 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
@@ -1211,7 +1233,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1247,11 +1272,11 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
@@ -1260,7 +1285,7 @@ describe('TransactionsViewController tests', () => {
             }
             if (url === `${stakingApiUrl}/v1/eth/network-stats`) {
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             }
@@ -1268,7 +1293,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1304,17 +1332,17 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
@@ -1325,7 +1353,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1391,20 +1422,20 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/network-stats`:
                 return Promise.resolve({
-                  data: { data: networkStats },
+                  data: rawify({ data: networkStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -1413,7 +1444,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1488,20 +1522,20 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/network-stats`:
                 return Promise.resolve({
-                  data: { data: networkStats },
+                  data: rawify({ data: networkStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -1577,14 +1611,14 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.reject(new NotFoundException());
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
@@ -1592,7 +1626,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1630,17 +1667,17 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
@@ -1648,7 +1685,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1687,17 +1727,17 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
@@ -1705,7 +1745,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1744,17 +1787,17 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
@@ -1762,7 +1805,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1801,17 +1847,17 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.get.mockImplementation(({ url }) => {
             if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             }
             if (url === `${stakingApiUrl}/v1/deployments`) {
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             }
             if (url === `${stakingApiUrl}/v1/eth/kiln-stats`) {
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             }
@@ -1822,7 +1868,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1882,15 +1931,15 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/network-stats`:
                 return Promise.resolve({
-                  data: { data: networkStats },
+                  data: rawify({ data: networkStats }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
@@ -1901,7 +1950,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -1985,15 +2037,15 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -2002,7 +2054,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -2071,15 +2126,15 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
                 return Promise.resolve({
-                  data: { data: stakes },
+                  data: rawify({ data: stakes }),
                   status: 200,
                 });
               default:
@@ -2147,7 +2202,7 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.reject(new NotFoundException());
               default:
@@ -2156,7 +2211,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -2196,10 +2254,10 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               default:
@@ -2208,7 +2266,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -2249,10 +2310,10 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               default:
@@ -2261,7 +2322,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -2301,10 +2365,10 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               default:
@@ -2313,7 +2377,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });
@@ -2377,10 +2444,10 @@ describe('TransactionsViewController tests', () => {
           networkService.get.mockImplementation(({ url }) => {
             switch (url) {
               case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-                return Promise.resolve({ data: chain, status: 200 });
+                return Promise.resolve({ data: rawify(chain), status: 200 });
               case `${stakingApiUrl}/v1/deployments`:
                 return Promise.resolve({
-                  data: { data: [deployment] },
+                  data: rawify({ data: [deployment] }),
                   status: 200,
                 });
               case `${stakingApiUrl}/v1/eth/stakes`:
@@ -2391,7 +2458,10 @@ describe('TransactionsViewController tests', () => {
           });
           networkService.post.mockImplementation(({ url }) => {
             if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-              return Promise.resolve({ data: dataDecoded, status: 200 });
+              return Promise.resolve({
+                data: rawify(dataDecoded),
+                status: 200,
+              });
             }
             return Promise.reject(new Error(`Could not match ${url}`));
           });

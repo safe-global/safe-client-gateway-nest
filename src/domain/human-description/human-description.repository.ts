@@ -34,7 +34,7 @@ export class HumanDescriptionRepository implements IHumanDescriptionRepository {
     functionSignatureHash: FunctionSignatureHash;
     to: string;
     data: `0x${string}`;
-  }): HumanDescriptionFragment[] {
+  }): Array<HumanDescriptionFragment> {
     const template = this._getTemplate(args.functionSignatureHash);
     return template.parse(args.to, args.data);
   }

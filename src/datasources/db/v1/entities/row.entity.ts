@@ -9,6 +9,6 @@ export type Row = z.infer<typeof RowSchema>;
  */
 export const RowSchema = z.object({
   id: z.number().int(),
-  created_at: z.coerce.date(),
+  created_at: z.coerce.date(), // @TODO when migrated all the entities to TypeOrm Remove `.coerce`
   updated_at: z.coerce.date(),
 });

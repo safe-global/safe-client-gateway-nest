@@ -10,9 +10,9 @@ export class DataDecoded implements DomainDataDecoded {
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
-  constructor(method: string, parameters: DataDecodedParameter[] | null) {
+  constructor(method: string, parameters: Array<DataDecodedParameter> | null) {
     this.method = method;
     this.parameters = parameters;
   }

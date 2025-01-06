@@ -14,10 +14,6 @@ import { ILoggingService, LoggingService } from '@/logging/logging.interface';
 import { Raw } from '@/validation/entities/raw.entity';
 import { Inject, Injectable } from '@nestjs/common';
 
-/**
- * TODO: Move all usage of Raw to CacheFirstDataSource after fully migrated
- * to "Raw" type implementation.
- */
 @Injectable()
 export class ConfigApi implements IConfigApi {
   private readonly baseUri: string;
@@ -57,7 +53,7 @@ export class ConfigApi implements IConfigApi {
       const url = `${this.baseUri}/api/v1/chains`;
       const params = { limit: args.limit, offset: args.offset };
       const cacheDir = CacheRouter.getChainsCacheDir(args);
-      return await this.dataSource.get<Raw<Chain>>({
+      return await this.dataSource.get<Chain>({
         cacheDir,
         url,
         notFoundExpireTimeSeconds: this.defaultNotFoundExpirationTimeSeconds,
@@ -73,7 +69,7 @@ export class ConfigApi implements IConfigApi {
     try {
       const url = `${this.baseUri}/api/v1/chains/${chainId}`;
       const cacheDir = CacheRouter.getChainCacheDir(chainId);
-      return await this.dataSource.get<Raw<Chain>>({
+      return await this.dataSource.get<Chain>({
         cacheDir,
         url,
         notFoundExpireTimeSeconds: this.defaultNotFoundExpirationTimeSeconds,
@@ -103,7 +99,7 @@ export class ConfigApi implements IConfigApi {
     clientUrl?: string;
     onlyListed?: boolean;
     url?: string;
-  }): Promise<Raw<SafeApp[]>> {
+  }): Promise<Raw<Array<SafeApp>>> {
     try {
       const providerUrl = `${this.baseUri}/api/v1/safe-apps/`;
       const params = {

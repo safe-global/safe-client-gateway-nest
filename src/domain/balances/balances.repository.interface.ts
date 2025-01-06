@@ -17,7 +17,7 @@ export interface IBalancesRepository {
     fiatCode: string;
     trusted?: boolean;
     excludeSpam?: boolean;
-  }): Promise<Balance[]>;
+  }): Promise<Array<Balance>>;
 
   /**
    * Clears any stored local balance data of {@link safeAddress} on {@link chainId}
@@ -31,7 +31,7 @@ export interface IBalancesRepository {
    * Gets the list of supported fiat codes.
    * @returns an alphabetically ordered list of uppercase strings representing the supported fiat codes.
    */
-  getFiatCodes(): Promise<string[]>;
+  getFiatCodes(): Promise<Array<string>>;
 
   /**
    * Clears the API associated with {@link chainId}

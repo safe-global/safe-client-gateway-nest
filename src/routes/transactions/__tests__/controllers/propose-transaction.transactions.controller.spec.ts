@@ -36,6 +36,7 @@ import { PostgresDatabaseModule } from '@/datasources/db/v1/postgres-database.mo
 import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Propose transaction - Transactions Controller (Unit)', () => {
   let app: INestApplication<Server>;
@@ -121,24 +122,24 @@ describe('Propose transaction - Transactions Controller (Unit)', () => {
       const getGasTokenContractUrl = `${chain.transactionService}/api/v1/tokens/${transaction.gasToken}`;
       switch (url) {
         case getChainUrl:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case getMultisigTransactionUrl:
           return Promise.resolve({
-            data: multisigToJson(transaction),
+            data: rawify(multisigToJson(transaction)),
             status: 200,
           });
         case getMultisigTransactionsUrl:
-          return Promise.resolve({ data: transactions, status: 200 });
+          return Promise.resolve({ data: rawify(transactions), status: 200 });
         case getSafeUrl:
-          return Promise.resolve({ data: safe, status: 200 });
+          return Promise.resolve({ data: rawify(safe), status: 200 });
         case getSafeAppsUrl:
-          return Promise.resolve({ data: safeApps, status: 200 });
+          return Promise.resolve({ data: rawify(safeApps), status: 200 });
         case getContractUrl:
-          return Promise.resolve({ data: contract, status: 200 });
+          return Promise.resolve({ data: rawify(contract), status: 200 });
         case getTokenUrl:
-          return Promise.resolve({ data: token, status: 200 });
+          return Promise.resolve({ data: rawify(token), status: 200 });
         case getGasTokenContractUrl:
-          return Promise.resolve({ data: gasToken, status: 200 });
+          return Promise.resolve({ data: rawify(gasToken), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }
@@ -147,7 +148,7 @@ describe('Propose transaction - Transactions Controller (Unit)', () => {
       const proposeTransactionUrl = `${chain.transactionService}/api/v1/safes/${safeAddress}/multisig-transactions/`;
       switch (url) {
         case proposeTransactionUrl:
-          return Promise.resolve({ data: {}, status: 200 });
+          return Promise.resolve({ data: rawify({}), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }

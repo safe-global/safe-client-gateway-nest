@@ -36,7 +36,7 @@ function allowedAppsFactory(
   configurationService: IConfigurationService,
 ): Set<string> {
   const allowedApps =
-    configurationService.getOrThrow<string[]>('swaps.allowedApps');
+    configurationService.getOrThrow<Array<string>>('swaps.allowedApps');
   return new Set(allowedApps);
 }
 

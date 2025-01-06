@@ -6,7 +6,12 @@ export const DeploymentProductTypes = ['defi', 'pooling', 'dedicated'] as const;
 
 export const DeploymentChains = ['eth', 'arb', 'bsc', 'matic', 'op'] as const;
 
-export const DeploymentStatuses = ['active', 'pending', 'disabled'] as const;
+export const DeploymentStatuses = [
+  'active',
+  'deposit_paused',
+  'pending',
+  'disabled',
+] as const;
 
 export const DeploymentSchema = z.object({
   id: z.string().uuid(),

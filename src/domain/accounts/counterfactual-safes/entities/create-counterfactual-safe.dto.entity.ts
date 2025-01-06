@@ -6,7 +6,7 @@ export class CreateCounterfactualSafeDto
 {
   chainId: string;
   fallbackHandler: `0x${string}`;
-  owners: `0x${string}`[];
+  owners: Array<`0x${string}`>;
   predictedAddress: `0x${string}`;
   saltNonce: string;
   singletonAddress: `0x${string}`;

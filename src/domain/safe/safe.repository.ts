@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { Page } from '@/domain/entities/page.entity';
 import { ITransactionApiManager } from '@/domain/interfaces/transaction-api.manager.interface';
 import { CreationTransaction } from '@/domain/safe/entities/creation-transaction.entity';

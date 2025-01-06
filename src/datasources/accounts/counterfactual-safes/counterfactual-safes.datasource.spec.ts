@@ -64,7 +64,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should create a Counterfactual Safe', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const createCounterfactualSafeDto =
         createCounterfactualSafeDtoBuilder().build();
@@ -92,7 +92,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should create a Counterfactual Safe if the rate limit is not hit', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const creationRateLimitCalls = faker.number.int({ min: 5, max: 10 });
       const createCounterfactualSafes = faker.helpers.multiple(
@@ -154,7 +154,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should fail if the rate limit is hit', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const creationRateLimitCalls = faker.number.int({ min: 5, max: 10 });
       const createCounterfactualSafes = faker.helpers.multiple(
@@ -204,7 +204,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should delete the cache for the account Counterfactual Safes', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       await target.createCounterfactualSafe({
         account,
@@ -236,7 +236,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should get a Counterfactual Safe', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafe = await target.createCounterfactualSafe({
         account,
@@ -255,7 +255,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('returns a Counterfactual Safe from cache', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafe = await target.createCounterfactualSafe({
         account,
@@ -338,7 +338,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should get the Counterfactual Safes for an address', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafes = await Promise.all([
         target.createCounterfactualSafe({
@@ -364,7 +364,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should get the Counterfactual Safes for an account from cache', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafes = await Promise.all([
         target.createCounterfactualSafe({
@@ -412,7 +412,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should delete a Counterfactual Safe', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafe = await target.createCounterfactualSafe({
         account,
@@ -446,7 +446,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should clear the cache on Counterfactual Safe deletion', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafe = await target.createCounterfactualSafe({
         account,
@@ -498,7 +498,7 @@ describe('CounterfactualSafesDatasource tests', () => {
     it('should delete all the Counterfactual Safes for an account', async () => {
       const createAccountDto = createAccountDtoBuilder().build();
       const [account] = await sql<
-        Account[]
+        Array<Account>
       >`INSERT INTO accounts (address, name, name_hash) VALUES (${createAccountDto.address}, ${createAccountDto.name}, ${faker.string.alphanumeric(32)}) RETURNING *`;
       const counterfactualSafes = await Promise.all([
         target.createCounterfactualSafe({

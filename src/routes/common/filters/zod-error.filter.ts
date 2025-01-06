@@ -14,7 +14,7 @@ import { ZodErrorWithCode } from '@/validation/pipes/validation.pipe';
  *
  * It builds a JSON payload which contains a code and a message.
  * The message is read from the initial {@link ZodIssue} and the code
- * from {@link ZodErrorWithCode.code} or 500 if {@link ZodError}.
+ * from {@link ZodErrorWithCode.code} or 502 if {@link ZodError}.
  */
 @Catch(ZodError, ZodErrorWithCode)
 export class ZodErrorFilter implements ExceptionFilter {
@@ -32,9 +32,9 @@ export class ZodErrorFilter implements ExceptionFilter {
       });
     } else {
       // Don't expose validation as it may contain sensitive data
-      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal server error',
+      response.status(HttpStatus.BAD_GATEWAY).json({
+        statusCode: HttpStatus.BAD_GATEWAY,
+        message: 'Bad gateway',
       });
     }
   }

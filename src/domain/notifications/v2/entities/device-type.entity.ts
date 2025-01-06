@@ -1,5 +1,5 @@
 export enum DeviceType {
-  ANDROID = 'ANDROID',
-  IOS = 'IOS',
-  WEB = 'WEB',
+  Android = 'ANDROID',
+  Ios = 'IOS',
+  Web = 'WEB',
 }

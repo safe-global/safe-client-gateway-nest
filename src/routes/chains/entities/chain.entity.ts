@@ -62,7 +62,7 @@ export class Chain {
   @ApiProperty()
   beaconChainExplorerUriTemplate: ApiBeaconChainExplorerUriTemplate;
   @ApiProperty()
-  disabledWallets: string[];
+  disabledWallets: Array<string>;
   @ApiPropertyOptional({ type: String, nullable: true })
   ensRegistryAddress: `0x${string}` | null;
   @ApiProperty()
@@ -70,7 +70,7 @@ export class Chain {
   @ApiProperty()
   contractAddresses: ContractAddresses;
   @ApiProperty()
-  features: string[];
+  features: Array<string>;
   @ApiProperty({
     type: 'array',
     items: {
@@ -94,6 +94,8 @@ export class Chain {
   shortName: string;
   @ApiProperty()
   theme: ApiTheme;
+  @ApiPropertyOptional({ type: String, nullable: true })
+  recommendedMasterCopyVersion: string | null;
 
   constructor(args: {
     chainId: string;
@@ -104,8 +106,8 @@ export class Chain {
     transactionService: string;
     blockExplorerUriTemplate: BlockExplorerUriTemplate;
     beaconChainExplorerUriTemplate: BeaconChainExplorerUriTemplate;
-    disabledWallets: string[];
-    features: string[];
+    disabledWallets: Array<string>;
+    features: Array<string>;
     gasPrice: Array<GasPriceOracle | GasPriceFixed | GasPriceFixedEIP1559>;
     publicRpcUri: RpcUri;
     rpcUri: RpcUri;
@@ -117,6 +119,7 @@ export class Chain {
     chainLogoUri: string | null;
     balancesProvider: BalancesProvider;
     contractAddresses: ContractAddresses;
+    recommendedMasterCopyVersion: string | null;
   }) {
     this.chainId = args.chainId;
     this.chainName = args.chainName;
@@ -139,5 +142,6 @@ export class Chain {
     this.theme = args.theme;
     this.balancesProvider = args.balancesProvider;
     this.contractAddresses = args.contractAddresses;
+    this.recommendedMasterCopyVersion = args.recommendedMasterCopyVersion;
   }
 }

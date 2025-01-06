@@ -35,7 +35,7 @@ export class LimitAddressesMapper {
     chainId: string;
     to: `0x${string}`;
     data: `0x${string}`;
-  }): Promise<readonly `0x${string}`[]> {
+  }): Promise<ReadonlyArray<`0x${string}`>> {
     const safeBeingRecovered = await this.getSafeBeingRecovered(args);
     if (safeBeingRecovered) {
       return [safeBeingRecovered];
@@ -448,7 +448,7 @@ export class LimitAddressesMapper {
 
   private getOwnersFromCreateProxyWithNonce(
     data: `0x${string}`,
-  ): readonly `0x${string}`[] {
+  ): ReadonlyArray<`0x${string}`> {
     const decodedProxyFactory = this.proxyFactoryDecoder.decodeFunctionData({
       data,
     });

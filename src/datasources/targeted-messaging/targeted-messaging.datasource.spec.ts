@@ -115,6 +115,7 @@ describe('TargetedMessagingDataSource tests', () => {
         sourceFile: dto.sourceFile,
         sourceFileProcessedDate: null,
         sourceFileChecksum: null,
+        targetAll: dto.targetAll,
         created_at: expect.any(Date),
         updated_at: expect.any(Date),
       });
@@ -132,6 +133,24 @@ describe('TargetedMessagingDataSource tests', () => {
     });
   });
 
+  describe('getOutreachOrFail', () => {
+    it('gets an outreach successfully', async () => {
+      const dto = createOutreachDtoBuilder().build();
+      const created = await target.createOutreach(dto);
+
+      const result = await target.getOutreachOrFail(created.id);
+      expect(result.targetAll).toStrictEqual(dto.targetAll);
+    });
+
+    it('throws if the outreach does not exist', async () => {
+      const nonExistentId = faker.number.int({ min: 1000, max: 9999 });
+
+      await expect(target.getOutreachOrFail(nonExistentId)).rejects.toThrow(
+        'Outreach not found',
+      );
+    });
+  });
+
   describe('updateOutreach', () => {
     it('should update an outreach successfully', async () => {
       const dto = createOutreachDtoBuilder().build();
@@ -144,7 +163,6 @@ describe('TargetedMessagingDataSource tests', () => {
         teamName: faker.string.alphanumeric(),
         type: faker.string.alphanumeric(),
       };
-
       const result = await target.updateOutreach(updateOutreachDto);
 
       expect(result).toStrictEqual({
@@ -158,6 +176,7 @@ describe('TargetedMessagingDataSource tests', () => {
         sourceFile: dto.sourceFile,
         sourceFileProcessedDate: dto.sourceFileProcessedDate,
         sourceFileChecksum: dto.sourceFileChecksum,
+        targetAll: dto.targetAll,
         created_at: expect.any(Date),
         updated_at: expect.any(Date),
       });

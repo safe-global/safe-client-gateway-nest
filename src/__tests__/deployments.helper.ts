@@ -69,7 +69,7 @@ const assetsDir = path.join(
 );
 
 type VersionsByChainIdByDeploymentMap = {
-  [contractAlias: string]: { [chainId: string]: string[] | undefined };
+  [contractAlias: string]: { [chainId: string]: Array<string> | undefined };
 };
 
 export function getVersionsByChainIdByDeploymentMap(): VersionsByChainIdByDeploymentMap {

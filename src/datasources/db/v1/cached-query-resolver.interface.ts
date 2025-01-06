@@ -4,7 +4,7 @@ import type postgres from 'postgres';
 export const ICachedQueryResolver = Symbol('ICachedQueryResolver');
 
 export interface ICachedQueryResolver {
-  get<T extends postgres.MaybeRow[]>(args: {
+  get<T extends Array<postgres.MaybeRow>>(args: {
     cacheDir: CacheDir;
     query: postgres.PendingQuery<T>;
     ttl: number;

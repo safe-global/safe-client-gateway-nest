@@ -12,5 +12,5 @@ export class UpsertAccountDataSettingsDto
   implements DomainUpsertAccountDataSettingsDto
 {
   @ApiProperty({ type: UpsertAccountDataSettingDto, isArray: true })
-  accountDataSettings!: UpsertAccountDataSettingDto[];
+  accountDataSettings!: Array<UpsertAccountDataSettingDto>;
 }

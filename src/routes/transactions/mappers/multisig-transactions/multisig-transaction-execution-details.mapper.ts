@@ -104,7 +104,7 @@ export class MultisigTransactionExecutionDetailsMapper {
   private async _getRejectors(
     chainId: string,
     transaction: MultisigTransaction,
-  ): Promise<AddressInfo[]> {
+  ): Promise<Array<AddressInfo>> {
     const rejectionTxsPage = await this.safeRepository.getMultisigTransactions({
       chainId: chainId,
       safeAddress: transaction.safe,

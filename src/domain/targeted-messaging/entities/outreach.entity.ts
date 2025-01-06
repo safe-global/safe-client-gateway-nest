@@ -18,4 +18,5 @@ export const OutreachSchema = RowSchema.extend({
   sourceFile: z.string().nullish().default(null),
   sourceFileProcessedDate: z.coerce.date().nullish().default(null),
   sourceFileChecksum: z.string().nullish().default(null),
+  targetAll: z.boolean(),
 });

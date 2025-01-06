@@ -28,18 +28,18 @@ export interface IAccountsRepository {
     address: `0x${string}`;
   }): Promise<void>;
 
-  getDataTypes(): Promise<AccountDataType[]>;
+  getDataTypes(): Promise<Array<AccountDataType>>;
 
   getAccountDataSettings(args: {
     authPayload: AuthPayload;
     address: `0x${string}`;
-  }): Promise<AccountDataSetting[]>;
+  }): Promise<Array<AccountDataSetting>>;
 
   upsertAccountDataSettings(args: {
     authPayload: AuthPayload;
     address: `0x${string}`;
     upsertAccountDataSettingsDto: UpsertAccountDataSettingsDto;
-  }): Promise<AccountDataSetting[]>;
+  }): Promise<Array<AccountDataSetting>>;
 }
 
 @Module({

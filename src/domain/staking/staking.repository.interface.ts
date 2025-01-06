@@ -32,7 +32,7 @@ export interface IStakingRepository {
     chainId: string;
     safeAddress: `0x${string}`;
     validatorsPublicKeys: Array<`0x${string}`>;
-  }): Promise<Stake[]>;
+  }): Promise<Array<Stake>>;
 
   clearStakes(args: {
     chainId: string;

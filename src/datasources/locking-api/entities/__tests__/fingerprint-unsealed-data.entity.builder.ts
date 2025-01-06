@@ -18,6 +18,7 @@ export function fingerprintLocationSpoofingBuilder(): IBuilder<FingerprintLocati
 export function fingerprintVpnBuilder(): IBuilder<FingerprintVpn> {
   return new Builder<FingerprintVpn>().with('data', {
     result: faker.datatype.boolean(),
+    confidence: 'high',
   });
 }
 

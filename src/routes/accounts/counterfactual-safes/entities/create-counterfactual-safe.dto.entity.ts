@@ -9,7 +9,7 @@ export class CreateCounterfactualSafeDto
   @ApiProperty()
   fallbackHandler!: `0x${string}`;
   @ApiProperty()
-  owners!: `0x${string}`[];
+  owners!: Array<`0x${string}`>;
   @ApiProperty()
   predictedAddress!: `0x${string}`;
   @ApiProperty()

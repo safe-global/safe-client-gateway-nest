@@ -61,9 +61,9 @@ export class RichDecodedInfo {
       ],
     },
   })
-  fragments: RichDecodedInfoFragment[];
+  fragments: Array<RichDecodedInfoFragment>;
 
-  constructor(fragments: RichDecodedInfoFragment[]) {
+  constructor(fragments: Array<RichDecodedInfoFragment>) {
     this.fragments = fragments;
   }
 }

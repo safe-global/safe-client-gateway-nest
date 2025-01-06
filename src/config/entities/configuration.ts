@@ -239,6 +239,8 @@ export default () => ({
     accounts: process.env.FF_ACCOUNTS?.toLowerCase() === 'true',
     pushNotifications:
       process.env.FF_PUSH_NOTIFICATIONS?.toLowerCase() === 'true',
+    hookHttpPostEvent:
+      process.env.FF_HOOK_HTTP_POST_EVENT?.toLowerCase() === 'true',
     improvedAddressPoisoning:
       process.env.FF_IMPROVED_ADDRESS_POISONING?.toLowerCase() === 'true',
   },
@@ -268,6 +270,7 @@ export default () => ({
   log: {
     level: process.env.LOG_LEVEL || 'debug',
     silent: process.env.LOG_SILENT?.toLowerCase() === 'true',
+    prettyColorize: process.env.LOG_PRETTY_COLORIZE?.toLowerCase() === 'true',
   },
   owners: {
     // There is no hook to invalidate the owners, so defaulting 0 disables the cache
@@ -371,6 +374,7 @@ export default () => ({
     api: {
       1: 'https://api.cow.fi/mainnet',
       100: 'https://api.cow.fi/xdai',
+      8453: 'https://api.cow.fi/base',
       42161: 'https://api.cow.fi/arbitrum_one',
       11155111: 'https://api.cow.fi/sepolia',
     },

@@ -27,7 +27,7 @@ export class FingerprintApiService implements IIdentityApi {
         'locking.eligibility.fingerprintEncryptionKey',
       );
     this.nonEligibleCountryCodes = this.configurationService.getOrThrow<
-      string[]
+      Array<string>
     >('locking.eligibility.nonEligibleCountryCodes');
   }
 
@@ -39,7 +39,7 @@ export class FingerprintApiService implements IIdentityApi {
     return {
       requestId,
       isAllowed: this.isAllowed(unsealedData),
-      isVpn: unsealedData.products.vpn?.data?.result === true,
+      isVpn: this.isVpn(unsealedData),
     };
   }
 
@@ -71,6 +71,14 @@ export class FingerprintApiService implements IIdentityApi {
     // Both IP geolocation results must be either null or not in the non-eligible countries list.
     return ipCountryCodes.every(
       (code) => code === null || !this.nonEligibleCountryCodes.includes(code),
+    );
+  }
+
+  private isVpn(unsealedData: FingerprintUnsealedData): boolean {
+    return (
+      unsealedData.products.vpn?.data?.result === true &&
+      (unsealedData.products.vpn?.data?.confidence === 'medium' ||
+        unsealedData.products.vpn?.data?.confidence === 'high')
     );
   }
 }

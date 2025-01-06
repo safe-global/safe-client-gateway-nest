@@ -630,7 +630,7 @@ describe('AccountsDatasource tests', () => {
       const insertedDataTypes =
         await sql`INSERT INTO account_data_types ${sql(accountDataTypes, 'name', 'is_active')} returning *`;
       const [inactiveDataType] = await sql<
-        AccountDataType[]
+        Array<AccountDataType>
       >`SELECT * FROM account_data_types WHERE is_active IS FALSE`;
       const accountDataSettingRows = insertedDataTypes.map((dataType) => ({
         account_id: account.id,

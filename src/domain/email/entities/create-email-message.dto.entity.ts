@@ -1,5 +1,5 @@
 export class CreateEmailMessageDto {
-  to!: string[];
+  to!: Array<string>;
   template!: string;
   subject!: string;
   substitutions!: Record<string, unknown> | null;

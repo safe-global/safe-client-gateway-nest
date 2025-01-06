@@ -34,10 +34,10 @@ export class TransferMapper {
 
   async mapTransfers(args: {
     chainId: string;
-    transfers: Transfer[];
+    transfers: Array<Transfer>;
     safe: Safe;
     onlyTrusted: boolean;
-  }): Promise<Transaction[]> {
+  }): Promise<Array<Transaction>> {
     const transactions = await Promise.all(
       args.transfers.map((transfer) =>
         this.mapTransfer(args.chainId, transfer, args.safe),

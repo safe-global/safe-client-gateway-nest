@@ -12,9 +12,9 @@ export interface IPricesApi {
 
   getTokenPrices(args: {
     chain: Chain;
-    tokenAddresses: string[];
+    tokenAddresses: Array<string>;
     fiatCode: string;
-  }): Promise<Raw<AssetPrice[]>>;
+  }): Promise<Raw<Array<AssetPrice>>>;
 
-  getFiatCodes(): Promise<Raw<string[]>>;
+  getFiatCodes(): Promise<Raw<Array<string>>>;
 }

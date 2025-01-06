@@ -55,6 +55,11 @@ class TestController {
     return body;
   }
 
+  @Post('zod-standard')
+  zodStandardError(): number {
+    return z.number().parse('string');
+  }
+
   @Get('non-zod-exception')
   nonZodException(): void {
     throw new Error('Some random error');
@@ -84,7 +89,7 @@ describe('ZodErrorFilter tests', () => {
     await app.close();
   });
 
-  it('ZodError exception returns first issue', async () => {
+  it('ZodErrorWithCode exception returns first issue', async () => {
     await request(app.getHttpServer())
       .post('/zod-exception')
       .send({ value: faker.number.int() })
@@ -99,7 +104,7 @@ describe('ZodErrorFilter tests', () => {
       });
   });
 
-  it('ZodError union exception returns first issue of first union issue', async () => {
+  it('ZodErrorWithCode union exception returns first issue of first union issue', async () => {
     await request(app.getHttpServer())
       .post('/zod-union-exception')
       .send({ value: faker.datatype.boolean() })
@@ -114,7 +119,7 @@ describe('ZodErrorFilter tests', () => {
       });
   });
 
-  it('ZodError nested union exception returns first issue of nested union issue', async () => {
+  it('ZodErrorWithCode nested union exception returns first issue of nested union issue', async () => {
     await request(app.getHttpServer())
       .post('/zod-union-exception')
       .send({
@@ -133,7 +138,17 @@ describe('ZodErrorFilter tests', () => {
       });
   });
 
-  it('non-ZodError exception returns correct error code and message', async () => {
+  it('ZodError returns 502', async () => {
+    await request(app.getHttpServer())
+      .post('/zod-standard')
+      .expect(502)
+      .expect({
+        statusCode: 502,
+        message: 'Bad gateway',
+      });
+  });
+
+  it('non-ZodError/ZodErrorWithCode exception returns correct error code and message', async () => {
     await request(app.getHttpServer())
       .get('/non-zod-exception')
       .expect(500)

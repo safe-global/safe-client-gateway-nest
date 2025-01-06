@@ -36,6 +36,7 @@ describe('TransferDetails mapper (Unit)', () => {
       detailedExecutionInfo: null,
       txHash: transfer.transactionHash,
       safeAppInfo: null,
+      note: null,
     });
   });
 });

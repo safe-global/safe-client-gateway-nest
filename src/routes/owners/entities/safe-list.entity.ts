@@ -3,5 +3,5 @@ import { SafeList as DomainSafeList } from '@/domain/safe/entities/safe-list.ent
 
 export class SafeList implements DomainSafeList {
   @ApiProperty()
-  safes!: `0x${string}`[];
+  safes!: Array<`0x${string}`>;
 }

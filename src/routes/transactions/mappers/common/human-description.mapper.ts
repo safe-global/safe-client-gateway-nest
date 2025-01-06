@@ -110,10 +110,10 @@ export class HumanDescriptionMapper {
   }
 
   private async enrichFragments(
-    fragments: HumanDescriptionFragment[],
+    fragments: Array<HumanDescriptionFragment>,
     transaction: MultisigTransaction | ModuleTransaction,
     chainId: string,
-  ): Promise<RichDecodedInfoFragment[]> {
+  ): Promise<Array<RichDecodedInfoFragment>> {
     return Promise.all(
       fragments.map(async (fragment) => {
         switch (fragment.type) {
@@ -159,10 +159,10 @@ export class HumanDescriptionMapper {
   }
 
   private async enrichSafeAppInfo(
-    fragments: RichDecodedInfoFragment[],
+    fragments: Array<RichDecodedInfoFragment>,
     transaction: MultisigTransaction | ModuleTransaction,
     chainId: string,
-  ): Promise<RichDecodedInfoFragment[]> {
+  ): Promise<Array<RichDecodedInfoFragment>> {
     const safeAppInfo = isMultisigTransaction(transaction)
       ? await this.safeAppInfoMapper.mapSafeAppInfo(chainId, transaction)
       : null;

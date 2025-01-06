@@ -20,7 +20,7 @@ export interface IConfigApi {
     clientUrl?: string;
     onlyListed?: boolean;
     url?: string;
-  }): Promise<Raw<SafeApp[]>>;
+  }): Promise<Raw<Array<SafeApp>>>;
 
   clearSafeApps(chainId: string): Promise<void>;
 }

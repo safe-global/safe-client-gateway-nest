@@ -15,19 +15,19 @@ export class SafeApp {
   @ApiProperty()
   description: string;
   @ApiProperty()
-  chainIds: string[];
+  chainIds: Array<string>;
   @ApiPropertyOptional({ type: SafeAppProvider, nullable: true })
   provider: SafeAppProvider | null;
   @ApiProperty()
   accessControl: SafeAppAccessControl;
   @ApiProperty()
-  tags: string[];
+  tags: Array<string>;
   @ApiProperty({ type: String, isArray: true })
-  features: string[];
+  features: Array<string>;
   @ApiPropertyOptional({ type: String, nullable: true })
   developerWebsite: string | null;
   @ApiProperty({ type: SafeAppSocialProfile, isArray: true })
-  socialProfiles: SafeAppSocialProfile[];
+  socialProfiles: Array<SafeAppSocialProfile>;
   @ApiProperty()
   featured: boolean;
 
@@ -37,13 +37,13 @@ export class SafeApp {
     name: string,
     iconUrl: string | null,
     description: string,
-    chainIds: string[],
+    chainIds: Array<string>,
     provider: SafeAppProvider | null,
     accessControl: SafeAppAccessControl,
-    tags: string[],
-    features: string[],
+    tags: Array<string>,
+    features: Array<string>,
     developerWebsite: string | null,
-    socialProfiles: SafeAppSocialProfile[],
+    socialProfiles: Array<SafeAppSocialProfile>,
     featured: boolean,
   ) {
     this.id = id;

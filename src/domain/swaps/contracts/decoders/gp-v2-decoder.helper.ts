@@ -773,7 +773,7 @@ export class GPv2Decoder extends AbiDecoder<typeof GPv2Abi> {
   }
 
   // Counts smallest mask needed to store input options in masked bitfield
-  private mask(options: readonly unknown[]): number {
+  private mask(options: ReadonlyArray<unknown>): number {
     const num = options.length;
     const bitCount = 32 - Math.clz32(num - 1);
     return (1 << bitCount) - 1;

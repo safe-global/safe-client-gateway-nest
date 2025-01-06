@@ -46,4 +46,6 @@ export class TransactionDetails {
   txHash!: string | null;
   @ApiPropertyOptional({ type: SafeAppInfo, nullable: true })
   safeAppInfo!: SafeAppInfo | null;
+  @ApiPropertyOptional({ type: String, nullable: true })
+  note!: string | null;
 }

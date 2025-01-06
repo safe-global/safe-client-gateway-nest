@@ -1,12 +1,8 @@
-import { UpsertSubscriptionsDto } from '@/routes/notifications/v1/entities/upsert-subscriptions.dto.entity';
-import { FirebaseNotification } from '@/datasources/push-notifications-api/entities/firebase-notification.entity';
-import { PushNotificationsApiModule } from '@/datasources/push-notifications-api/push-notifications-api.module';
-import { UUID } from 'crypto';
-import { NotificationsRepositoryV2 } from '@/domain/notifications/v2/notifications.repository';
-import { Module } from '@nestjs/common';
-import { NotificationsDatasourceModule } from '@/datasources/notifications/notifications.datasource.module';
-import { NotificationType } from '@/domain/notifications/v2/entities/notification-type.entity';
-import { AuthPayload } from '@/domain/auth/entities/auth-payload.entity';
+import type { UpsertSubscriptionsDto } from '@/domain/notifications/v2/entities/upsert-subscriptions.dto.entity';
+import type { FirebaseNotification } from '@/datasources/push-notifications-api/entities/firebase-notification.entity';
+import type { UUID } from 'crypto';
+import type { AuthPayload } from '@/domain/auth/entities/auth-payload.entity';
+import type { NotificationType } from '@/datasources/notifications/entities/notification-type.entity.db';
 
 export const INotificationsRepositoryV2 = Symbol('INotificationsRepositoryV2');
 
@@ -50,15 +46,3 @@ export interface INotificationsRepositoryV2 {
 
   deleteDevice(deviceUuid: UUID): Promise<void>;
 }
-
-@Module({
-  imports: [PushNotificationsApiModule, NotificationsDatasourceModule],
-  providers: [
-    {
-      provide: INotificationsRepositoryV2,
-      useClass: NotificationsRepositoryV2,
-    },
-  ],
-  exports: [INotificationsRepositoryV2],
-})
-export class NotificationsRepositoryV2Module {}

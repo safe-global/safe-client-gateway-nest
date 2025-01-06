@@ -30,9 +30,14 @@ export function buildLenientPageSchema<T extends z.ZodTypeAny>(
       return result.success ? [result.data] : [];
     });
 
+    // Note: @TODO The `results` object includes a `count` property, which the client is not currently using.
+    // We validate the chains and subtract the invalid ones from the count.
+    // However, due to pagination, we can only validate the chains on the current page,
+    // meaning the count may still include invalid chains from subsequent pages.
+    // For now, it's acceptable to ignore these inaccuracies in the count.
+    // That said, we should address this issue in the future to ensure the count is fully accurate.
     return {
       ...data,
-      count: results.length,
       results,
     };
   });

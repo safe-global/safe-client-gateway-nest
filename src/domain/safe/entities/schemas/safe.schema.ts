@@ -3,7 +3,10 @@ import { z } from 'zod';
 
 export const SafeSchema = z.object({
   address: AddressSchema,
-  nonce: z.number(),
+  // nonce was changed from a number to string on the the Transaction Service
+  // @see https://github.com/safe-global/safe-transaction-service/pull/2367
+  // TODO: only allow strings after Transaction Service is on prod.
+  nonce: z.union([z.number(), z.string()]).pipe(z.coerce.number()),
   threshold: z.number(),
   owners: z.array(AddressSchema),
   masterCopy: AddressSchema,

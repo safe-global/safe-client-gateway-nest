@@ -17,7 +17,7 @@ export class SafeAppsService {
     chainId: string;
     clientUrl?: string;
     url?: string;
-  }): Promise<SafeApp[]> {
+  }): Promise<Array<SafeApp>> {
     const result = await this.safeAppsRepository.getSafeApps({
       ...args,
       onlyListed: true,

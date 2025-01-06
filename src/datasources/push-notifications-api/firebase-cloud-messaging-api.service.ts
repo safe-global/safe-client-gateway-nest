@@ -13,6 +13,10 @@ import { IPushNotificationsApi } from '@/domain/interfaces/push-notifications-ap
 import { Inject, Injectable } from '@nestjs/common';
 import { FirebaseNotification } from '@/datasources/push-notifications-api/entities/firebase-notification.entity';
 import { IJwtService } from '@/datasources/jwt/jwt.service.interface';
+import {
+  FirebaseOauth2Token,
+  FirebaseOauth2TokenSchema,
+} from '@/datasources/push-notifications-api/entities/firebase-oauth2-token.entity';
 
 @Injectable()
 export class FirebaseCloudMessagingApiService implements IPushNotificationsApi {
@@ -105,17 +109,15 @@ export class FirebaseCloudMessagingApiService implements IPushNotificationsApi {
       return cachedToken;
     }
 
-    const { data } = await this.networkService.post<{
-      access_token: string;
-      expires_in: number;
-      token_type: string;
-    }>({
-      url: FirebaseCloudMessagingApiService.OAuth2TokenUrl,
-      data: {
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        assertion: this.getAssertion(),
-      },
-    });
+    const data = await this.networkService
+      .post<FirebaseOauth2Token>({
+        url: FirebaseCloudMessagingApiService.OAuth2TokenUrl,
+        data: {
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          assertion: this.getAssertion(),
+        },
+      })
+      .then((response) => FirebaseOauth2TokenSchema.parse(response.data));
 
     // Token cached according to issuance
     await this.cacheService.hSet(

@@ -50,7 +50,7 @@ function configureCookies(app: INestApplication): void {
   app.use(cookieParser());
 }
 
-export const DEFAULT_CONFIGURATION: ((app: INestApplication) => void)[] = [
+export const DEFAULT_CONFIGURATION: Array<(app: INestApplication) => void> = [
   configureVersioning,
   configureShutdownHooks,
   configureSwagger,
@@ -69,9 +69,9 @@ export const DEFAULT_CONFIGURATION: ((app: INestApplication) => void)[] = [
  * the steps taken to configure the application
  */
 export abstract class AppProvider<T> {
-  protected abstract readonly configuration: ((
-    app: INestApplication,
-  ) => void)[];
+  protected abstract readonly configuration: Array<
+    (app: INestApplication) => void
+  >;
 
   public async provide(module: T): Promise<INestApplication> {
     const app = await this.getApp(module);
@@ -89,7 +89,7 @@ export abstract class AppProvider<T> {
  * service
  */
 export class DefaultAppProvider<T> extends AppProvider<T> {
-  protected readonly configuration: ((app: INestApplication) => void)[] =
+  protected readonly configuration: Array<(app: INestApplication) => void> =
     DEFAULT_CONFIGURATION;
 
   protected getApp(module: T): Promise<INestApplication> {

@@ -8,7 +8,7 @@ export class CounterfactualSafe {
   @ApiProperty()
   fallbackHandler: `0x${string}`;
   @ApiProperty({ type: String, isArray: true })
-  owners: `0x${string}`[];
+  owners: Array<`0x${string}`>;
   @ApiProperty()
   predictedAddress: `0x${string}`;
   @ApiProperty()
@@ -22,7 +22,7 @@ export class CounterfactualSafe {
     chainId: string,
     creator: `0x${string}`,
     fallbackHandler: `0x${string}`,
-    owners: `0x${string}`[],
+    owners: Array<`0x${string}`>,
     predictedAddress: `0x${string}`,
     saltNonce: string,
     singletonAddress: `0x${string}`,

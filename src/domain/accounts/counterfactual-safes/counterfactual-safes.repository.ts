@@ -47,7 +47,7 @@ export class CounterfactualSafesRepository
    */
   async getCounterfactualSafes(
     address: `0x${string}`,
-  ): Promise<CounterfactualSafe[]> {
+  ): Promise<Array<CounterfactualSafe>> {
     return this.datasource.getCounterfactualSafesForAddress(address);
   }
 

@@ -14,10 +14,6 @@ import {
 import type { Relay } from '@/domain/relay/entities/relay.entity';
 import type { Raw } from '@/validation/entities/raw.entity';
 
-/**
- * TODO: Move all usage of Raw to NetworkService after fully migrated
- * to "Raw" type implementation.
- */
 @Injectable()
 export class GelatoApi implements IRelayApi {
   /**
@@ -56,7 +52,7 @@ export class GelatoApi implements IRelayApi {
 
     try {
       const url = `${this.baseUri}/relays/v2/sponsored-call`;
-      const { data } = await this.networkService.post<Raw<Relay>>({
+      const { data } = await this.networkService.post<Relay>({
         url,
         data: {
           sponsorApiKey,

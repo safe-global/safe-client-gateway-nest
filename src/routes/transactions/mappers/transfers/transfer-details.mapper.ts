@@ -32,6 +32,7 @@ export class TransferDetailsMapper {
       detailedExecutionInfo: null,
       txHash: transfer.transactionHash,
       safeAppInfo: null,
+      note: null,
     };
   }
 }

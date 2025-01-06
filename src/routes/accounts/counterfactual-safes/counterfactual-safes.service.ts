@@ -24,7 +24,7 @@ export class CounterfactualSafesService {
 
   async getCounterfactualSafes(
     address: `0x${string}`,
-  ): Promise<CounterfactualSafe[]> {
+  ): Promise<Array<CounterfactualSafe>> {
     const domainCounterfactualSafes =
       await this.repository.getCounterfactualSafes(address);
     return domainCounterfactualSafes.map((counterfactualSafe) =>

@@ -660,7 +660,7 @@ describe('Chain schemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should exclude invalid Chain items, adjusting the count accordingly', () => {
+    it('should exclude invalid Chain items', () => {
       const chains = faker.helpers.multiple(() => chainBuilder().build(), {
         count: { min: 1, max: 5 },
       });
@@ -674,10 +674,6 @@ describe('Chain schemas', () => {
       const result = ChainLenientPageSchema.safeParse(chainPage);
 
       expect(result.success).toBe(true);
-      expect(result.success && result.data.results.length).toBe(
-        chains.length - 1,
-      );
-      expect(result.success && result.data.count).toBe(chains.length - 1);
     });
   });
 });

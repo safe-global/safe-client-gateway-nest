@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class UpdateTimestampTrigger1727701600427 implements MigrationInterface {
   name = 'UpdateTimestampTrigger1727701600427';

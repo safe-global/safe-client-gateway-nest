@@ -33,13 +33,14 @@ import { PostgresDatabaseModule } from '@/datasources/db/v1/postgres-database.mo
 import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Zerion Collectibles Controller', () => {
   let app: INestApplication<Server>;
   let safeConfigUrl: string;
   let networkService: jest.MockedObjectDeep<INetworkService>;
   let zerionBaseUri: string;
-  let zerionChainIds: string[];
+  let zerionChainIds: Array<string>;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -149,10 +150,10 @@ describe('Zerion Collectibles Controller', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${zerionBaseUri}/v1/wallets/${safeAddress}/nft-positions`:
               return Promise.resolve({
-                data: zerionApiCollectiblesResponse,
+                data: rawify(zerionApiCollectiblesResponse),
                 status: 200,
               });
             default:
@@ -299,10 +300,10 @@ describe('Zerion Collectibles Controller', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${zerionBaseUri}/v1/wallets/${safeAddress}/nft-positions`:
               return Promise.resolve({
-                data: zerionApiCollectiblesResponse,
+                data: rawify(zerionApiCollectiblesResponse),
                 status: 200,
               });
             default:
@@ -371,10 +372,10 @@ describe('Zerion Collectibles Controller', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${zerionBaseUri}/v1/wallets/${safeAddress}/nft-positions`:
               return Promise.resolve({
-                data: zerionApiCollectiblesResponse,
+                data: rawify(zerionApiCollectiblesResponse),
                 status: 200,
               });
             default:
@@ -442,10 +443,10 @@ describe('Zerion Collectibles Controller', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${zerionBaseUri}/v1/wallets/${safeAddress}/nft-positions`:
               return Promise.resolve({
-                data: zerionApiCollectiblesResponse,
+                data: rawify(zerionApiCollectiblesResponse),
                 status: 200,
               });
             default:

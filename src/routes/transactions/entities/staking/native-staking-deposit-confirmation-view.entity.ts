@@ -29,7 +29,7 @@ export class NativeStakingDepositConfirmationView
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
   @ApiProperty()
   estimatedEntryTime: number;
@@ -72,7 +72,7 @@ export class NativeStakingDepositConfirmationView
 
   constructor(args: {
     method: string;
-    parameters: DataDecodedParameter[] | null;
+    parameters: Array<DataDecodedParameter> | null;
     status: StakingStatus;
     estimatedEntryTime: number;
     estimatedExitTime: number;

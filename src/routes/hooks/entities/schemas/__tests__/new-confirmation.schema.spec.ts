@@ -6,7 +6,7 @@ import { getAddress } from 'viem';
 import { ZodError } from 'zod';
 
 describe('NewConfirmationEventSchema', () => {
-  it('should validate a new confrimation event', () => {
+  it('should validate a new confirmation event', () => {
     const newConfirmationEvent = newConfirmationEventBuilder().build();
 
     const result = NewConfirmationEventSchema.safeParse(newConfirmationEvent);

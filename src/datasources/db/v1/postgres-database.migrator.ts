@@ -42,7 +42,7 @@ export class PostgresDatabaseMigrator {
    */
   async migrate(
     path = PostgresDatabaseMigrator.MIGRATIONS_FOLDER,
-  ): Promise<Migration[]> {
+  ): Promise<Array<Migration>> {
     const migrations = this.getMigrations(path);
 
     await this.assertMigrationsTable();

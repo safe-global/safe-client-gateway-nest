@@ -14,7 +14,7 @@ export interface ISafeAppsRepository {
     clientUrl?: string;
     onlyListed?: boolean;
     url?: string;
-  }): Promise<SafeApp[]>;
+  }): Promise<Array<SafeApp>>;
 
   /**
    * Triggers the removal of the safe apps data stored in the DataSource (e.g., cache)

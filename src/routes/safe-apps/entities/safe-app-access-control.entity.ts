@@ -8,5 +8,5 @@ export class SafeAppAccessControl implements DomainSafeAppAccessControl {
   @ApiProperty()
   type!: SafeAppAccessControlPolicies;
   @ApiPropertyOptional({ type: String, isArray: true, nullable: true })
-  value!: string[] | null;
+  value!: Array<string> | null;
 }

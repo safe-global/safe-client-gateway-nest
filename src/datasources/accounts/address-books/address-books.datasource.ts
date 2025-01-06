@@ -12,7 +12,7 @@ import { Account } from '@/domain/accounts/entities/account.entity';
 import { IAddressBooksDatasource } from '@/domain/interfaces/address-books.datasource.interface';
 import { IEncryptionApiManager } from '@/domain/interfaces/encryption-api.manager.interface';
 import { Inject, Injectable } from '@nestjs/common';
-import { max } from 'lodash';
+import max from 'lodash/max';
 import postgres from 'postgres';
 
 @Injectable()
@@ -48,7 +48,7 @@ export class AddressBooksDatasource implements IAddressBooksDatasource {
     chainId: string;
   }): Promise<AddressBook> {
     const [dbAddressBook] = await this.sql<
-      DbAddressBook[]
+      Array<DbAddressBook>
     >`SELECT * FROM address_books WHERE account_id = ${args.account.id} AND chain_id = ${args.chainId}`;
     if (!dbAddressBook) throw new AddressBookNotFoundError();
     return this.addressBookMapper.map(dbAddressBook);
@@ -106,7 +106,7 @@ export class AddressBooksDatasource implements IAddressBooksDatasource {
   }): Promise<DbAddressBook> {
     const encryptionApi = await this.encryptionApiManager.getApi();
     const encryptedBlob = await encryptionApi.encryptBlob([]);
-    const [dbAddressBook] = await this.sql<DbAddressBook[]>`
+    const [dbAddressBook] = await this.sql<Array<DbAddressBook>>`
       INSERT INTO address_books (account_id, chain_id, data, key, iv)
       VALUES (
         ${args.account.id},
@@ -124,7 +124,7 @@ export class AddressBooksDatasource implements IAddressBooksDatasource {
   ): Promise<DbAddressBook> {
     const encryptionApi = await this.encryptionApiManager.getApi();
     const encryptedBlob = await encryptionApi.encryptBlob(addressBook.data);
-    const [dbAddressBook] = await this.sql<DbAddressBook[]>`
+    const [dbAddressBook] = await this.sql<Array<DbAddressBook>>`
       UPDATE address_books
       SET data = ${encryptedBlob.encryptedData},
           key = ${encryptedBlob.encryptedDataKey},

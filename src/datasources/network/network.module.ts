@@ -7,6 +7,7 @@ import {
   NetworkRequestError,
   NetworkResponseError,
 } from '@/datasources/network/entities/network.error.entity';
+import type { Raw } from '@/validation/entities/raw.entity';
 
 export type FetchClient = <T>(
   url: string,
@@ -43,7 +44,7 @@ function fetchClientFactory(
     }
 
     // We validate data so don't need worry about casting `null` response
-    const data = (await response.json().catch(() => null)) as T;
+    const data = (await response.json().catch(() => null)) as Raw<T>;
 
     if (!response.ok) {
       throw new NetworkResponseError(urlObject, response, data);

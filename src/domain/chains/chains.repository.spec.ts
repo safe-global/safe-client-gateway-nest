@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker/.';
-import { chunk } from 'lodash';
+import chunk from 'lodash/chunk';
 import { getAddress } from 'viem';
 import { chainBuilder } from '@/domain/chains/entities/__tests__/chain.builder';
 import {

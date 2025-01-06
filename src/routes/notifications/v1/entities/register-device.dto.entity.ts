@@ -27,5 +27,5 @@ export class RegisterDeviceDto {
     type: 'array',
     items: { $ref: getSchemaPath(SafeRegistration) },
   })
-  safeRegistrations!: SafeRegistration[];
+  safeRegistrations!: Array<SafeRegistration>;
 }

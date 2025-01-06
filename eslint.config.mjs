@@ -32,6 +32,12 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'warn',
       'no-nested-ternary': 'error',
+      '@typescript-eslint/array-type': [
+        'error',
+        {
+          default: 'generic',
+        },
+      ],
       'no-restricted-imports': [
         'error',
         {

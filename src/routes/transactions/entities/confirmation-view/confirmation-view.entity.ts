@@ -8,7 +8,7 @@ import { NativeStakingWithdrawConfirmationView } from '@/routes/transactions/ent
 
 export interface Baseline {
   method: string;
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 }
 
 export enum DecodedType {
@@ -40,11 +40,11 @@ export class BaselineConfirmationView implements Baseline {
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
   constructor(args: {
     method: string;
-    parameters: DataDecodedParameter[] | null;
+    parameters: Array<DataDecodedParameter> | null;
   }) {
     this.method = args.method;
     this.parameters = args.parameters;

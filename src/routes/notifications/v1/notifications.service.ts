@@ -121,19 +121,17 @@ export class NotificationsService {
   }
 
   private getErrorMessage(
-    registrationResults: PromiseSettledResult<DomainSafeRegistration>[],
-    safeRegistrations: SafeRegistration[],
+    registrationResults: Array<PromiseSettledResult<DomainSafeRegistration>>,
+    safeRegistrations: Array<SafeRegistration>,
   ): string {
-    const successChainIds = (
-      registrationResults.filter(
-        ({ status }) => status === 'fulfilled',
-      ) as PromiseFulfilledResult<DomainSafeRegistration>[]
-    ).map((registrationResult) => registrationResult.value.chainId);
+    const failedRegistrationChainIds = registrationResults
+      .map((result, index) => ({
+        result,
+        safeRegistration: safeRegistrations[index],
+      }))
+      .filter(({ result }) => result.status === 'rejected')
+      .map(({ safeRegistration }) => safeRegistration.chainId);
 
-    const erroredChainIds = safeRegistrations
-      .map((safeRegistration) => safeRegistration.chainId)
-      .filter((chainId) => !successChainIds.includes(chainId));
-
-    return `Push notification registration failed for chain IDs: ${erroredChainIds}`;
+    return `Push notification registration failed for chain IDs: ${failedRegistrationChainIds}`;
   }
 }

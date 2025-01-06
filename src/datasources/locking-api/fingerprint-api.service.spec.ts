@@ -64,7 +64,9 @@ describe('FingerprintApiService', () => {
           locationSpoofing: fingerprintLocationSpoofingBuilder()
             .with('data', { result: false })
             .build(),
-          vpn: fingerprintVpnBuilder().with('data', { result: false }).build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: false, confidence: 'high' })
+            .build(),
         })
         .build();
       (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
@@ -93,7 +95,9 @@ describe('FingerprintApiService', () => {
           locationSpoofing: fingerprintLocationSpoofingBuilder()
             .with('data', { result: false })
             .build(),
-          vpn: fingerprintVpnBuilder().with('data', { result: false }).build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: false, confidence: 'high' })
+            .build(),
         })
         .build();
       (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
@@ -122,7 +126,9 @@ describe('FingerprintApiService', () => {
           locationSpoofing: fingerprintLocationSpoofingBuilder()
             .with('data', { result: false })
             .build(),
-          vpn: fingerprintVpnBuilder().with('data', { result: true }).build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: true, confidence: 'high' })
+            .build(),
         })
         .build();
       (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
@@ -144,7 +150,9 @@ describe('FingerprintApiService', () => {
           locationSpoofing: fingerprintLocationSpoofingBuilder()
             .with('data', { result: false })
             .build(),
-          vpn: fingerprintVpnBuilder().with('data', { result: true }).build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: true, confidence: 'high' })
+            .build(),
         })
         .build();
       (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
@@ -201,6 +209,94 @@ describe('FingerprintApiService', () => {
         requestId: eligibilityRequest.requestId,
         isAllowed: false,
         isVpn: vpn.data?.result,
+      });
+    });
+
+    it('should return isVpn:false for a low confidence score', async () => {
+      const eligibilityRequest = eligibilityRequestBuilder().build();
+      const unsealedData = fingerprintUnsealedDataBuilder()
+        .with('products', {
+          ipInfo: null,
+          locationSpoofing: fingerprintLocationSpoofingBuilder().build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: true, confidence: 'low' })
+            .build(),
+        })
+        .build();
+      (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
+
+      const result = await service.checkEligibility(eligibilityRequest);
+
+      expect(result).toEqual({
+        requestId: eligibilityRequest.requestId,
+        isAllowed: expect.anything(),
+        isVpn: false,
+      });
+    });
+
+    it('should return isVpn:true for a medium confidence score', async () => {
+      const eligibilityRequest = eligibilityRequestBuilder().build();
+      const unsealedData = fingerprintUnsealedDataBuilder()
+        .with('products', {
+          ipInfo: null,
+          locationSpoofing: fingerprintLocationSpoofingBuilder().build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: true, confidence: 'medium' })
+            .build(),
+        })
+        .build();
+      (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
+
+      const result = await service.checkEligibility(eligibilityRequest);
+
+      expect(result).toEqual({
+        requestId: eligibilityRequest.requestId,
+        isAllowed: expect.anything(),
+        isVpn: true,
+      });
+    });
+
+    it('should return isVpn:true for a high confidence score', async () => {
+      const eligibilityRequest = eligibilityRequestBuilder().build();
+      const unsealedData = fingerprintUnsealedDataBuilder()
+        .with('products', {
+          ipInfo: null,
+          locationSpoofing: fingerprintLocationSpoofingBuilder().build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: true, confidence: 'high' })
+            .build(),
+        })
+        .build();
+      (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
+
+      const result = await service.checkEligibility(eligibilityRequest);
+
+      expect(result).toEqual({
+        requestId: eligibilityRequest.requestId,
+        isAllowed: expect.anything(),
+        isVpn: true,
+      });
+    });
+
+    it('should return isVpn:false for an unknown confidence score', async () => {
+      const eligibilityRequest = eligibilityRequestBuilder().build();
+      const unsealedData = fingerprintUnsealedDataBuilder()
+        .with('products', {
+          ipInfo: null,
+          locationSpoofing: fingerprintLocationSpoofingBuilder().build(),
+          vpn: fingerprintVpnBuilder()
+            .with('data', { result: true, confidence: 'unknown' })
+            .build(),
+        })
+        .build();
+      (unsealEventsResponse as jest.Mock).mockResolvedValue(unsealedData);
+
+      const result = await service.checkEligibility(eligibilityRequest);
+
+      expect(result).toEqual({
+        requestId: eligibilityRequest.requestId,
+        isAllowed: expect.anything(),
+        isVpn: false,
       });
     });
   });

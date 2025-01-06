@@ -2,6 +2,7 @@ import { safeBuilder } from '@/domain/safe/entities/__tests__/safe.builder';
 import { SafeSchema } from '@/domain/safe/entities/schemas/safe.schema';
 import { faker } from '@faker-js/faker';
 import { getAddress } from 'viem';
+import { ZodError } from 'zod';
 
 describe('SafeSchema', () => {
   it('should validate a valid Safe', () => {
@@ -10,6 +11,16 @@ describe('SafeSchema', () => {
     const result = SafeSchema.safeParse(safe);
 
     expect(result.success).toBe(true);
+  });
+
+  it('should coerce a string nonce to a number', () => {
+    const safe = safeBuilder()
+      .with('nonce', faker.string.numeric() as unknown as number)
+      .build();
+
+    const result = SafeSchema.safeParse(safe);
+
+    expect(result.success && result.data.nonce).toBe(Number(safe.nonce));
   });
 
   it.each([
@@ -30,39 +41,87 @@ describe('SafeSchema', () => {
     );
   });
 
-  ['nonce' as const, 'threshold' as const].forEach((field) => {
-    it(`should allow an integer ${field}`, () => {
-      const safe = safeBuilder()
-        .with(field, faker.number.int({ min: 1 }))
-        .build();
+  it('should allow an integer nonce', () => {
+    const safe = safeBuilder()
+      .with('nonce', faker.number.int({ min: 0 }))
+      .build();
 
-      const result = SafeSchema.safeParse(safe);
+    const result = SafeSchema.safeParse(safe);
 
-      expect(result.success).toBe(true);
-    });
+    expect(result.success).toBe(true);
+  });
 
-    it.each([
-      ['boolean', faker.datatype.boolean()],
-      ['undefined', undefined],
-      ['null', null],
-      ['string', faker.string.numeric()],
-    ])(`should not allow a %s ${field}`, (type, value) => {
-      const safe = safeBuilder()
-        .with(field, value as unknown as number)
-        .build();
+  it.each([
+    ['boolean' as const, faker.datatype.boolean(), undefined],
+    ['undefined' as const, undefined, 'Required'],
+    ['null' as const, null, undefined],
+  ])('should not allow a %s nonce', (type, value, message) => {
+    const safe = safeBuilder()
+      .with('nonce', value as unknown as number)
+      .build();
 
-      const result = SafeSchema.safeParse(safe);
+    const result = SafeSchema.safeParse(safe);
 
-      expect(!result.success && result.error.issues).toStrictEqual([
-        {
-          code: 'invalid_type',
-          expected: expect.any(String),
-          received: type,
-          path: [field],
-          message: expect.any(String),
-        },
-      ]);
-    });
+    expect(!result.success && result.error.issues).toStrictEqual([
+      {
+        code: 'invalid_union',
+        unionErrors: [
+          new ZodError([
+            {
+              code: 'invalid_type',
+              expected: 'number',
+              received: type,
+              path: ['nonce'],
+              message: message ?? `Expected number, received ${type}`,
+            },
+          ]),
+          new ZodError([
+            {
+              code: 'invalid_type',
+              expected: 'string',
+              received: type,
+              path: ['nonce'],
+              message: message ?? `Expected string, received ${type}`,
+            },
+          ]),
+        ],
+        path: ['nonce'],
+        message: 'Invalid input',
+      },
+    ]);
+  });
+
+  it('should allow an integer threshold', () => {
+    const safe = safeBuilder()
+      .with('threshold', faker.number.int({ min: 1 }))
+      .build();
+
+    const result = SafeSchema.safeParse(safe);
+
+    expect(result.success).toBe(true);
+  });
+
+  it.each([
+    ['boolean', faker.datatype.boolean()],
+    ['undefined', undefined],
+    ['null', null],
+    ['string', faker.string.numeric()],
+  ])('should not allow a %s threshold', (type, value) => {
+    const safe = safeBuilder()
+      .with('threshold', value as unknown as number)
+      .build();
+
+    const result = SafeSchema.safeParse(safe);
+
+    expect(!result.success && result.error.issues).toStrictEqual([
+      {
+        code: 'invalid_type',
+        expected: expect.any(String),
+        received: type,
+        path: ['threshold'],
+        message: expect.any(String),
+      },
+    ]);
   });
 
   it.each(['owners' as const, 'modules' as const])(
@@ -127,9 +186,44 @@ describe('SafeSchema', () => {
     },
   );
 
+  it('should not allow optional nonce', () => {
+    const safe = safeBuilder().build();
+    // @ts-expect-error nonce is not optional
+    delete safe.nonce;
+
+    const result = SafeSchema.safeParse(safe);
+
+    expect(!result.success && result.error.issues).toStrictEqual([
+      {
+        code: 'invalid_union',
+        message: 'Invalid input',
+        path: ['nonce'],
+        unionErrors: [
+          new ZodError([
+            {
+              code: 'invalid_type',
+              expected: 'number',
+              received: 'undefined',
+              path: ['nonce'],
+              message: 'Required',
+            },
+          ]),
+          new ZodError([
+            {
+              code: 'invalid_type',
+              expected: 'string',
+              received: 'undefined',
+              path: ['nonce'],
+              message: 'Required',
+            },
+          ]),
+        ],
+      },
+    ]);
+  });
+
   it.each([
     'address' as const,
-    'nonce' as const,
     'threshold' as const,
     'owners' as const,
     'masterCopy' as const,

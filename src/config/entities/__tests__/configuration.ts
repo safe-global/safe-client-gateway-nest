@@ -155,6 +155,7 @@ export default (): ReturnType<typeof configuration> => ({
     counterfactualBalances: false,
     accounts: false,
     pushNotifications: false,
+    hookHttpPostEvent: false,
     improvedAddressPoisoning: false,
   },
   httpClient: { requestTimeout: faker.number.int() },
@@ -175,6 +176,7 @@ export default (): ReturnType<typeof configuration> => ({
   log: {
     level: 'debug',
     silent: process.env.LOG_SILENT?.toLowerCase() === 'true',
+    prettyColorize: process.env.LOG_PRETTY_COLORIZE?.toLowerCase() === 'true',
   },
   mappings: {
     imitation: {
@@ -250,6 +252,7 @@ export default (): ReturnType<typeof configuration> => ({
     api: {
       1: faker.internet.url({ appendSlash: false }),
       100: faker.internet.url({ appendSlash: false }),
+      8453: faker.internet.url({ appendSlash: false }),
       42161: faker.internet.url({ appendSlash: false }),
       11155111: faker.internet.url({ appendSlash: false }),
     },

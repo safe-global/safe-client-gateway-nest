@@ -51,6 +51,7 @@ export class SafesController {
   @ApiQuery({ name: 'trusted', required: false, type: Boolean })
   @ApiQuery({ name: 'exclude_spam', required: false, type: Boolean })
   @Get('safes')
+  @ApiOkResponse({ type: SafeOverview, isArray: true })
   async getSafeOverview(
     @Query('currency') currency: string,
     @Query('safes', new ValidationPipe(Caip10AddressesSchema))

@@ -124,7 +124,7 @@ describe('KilnDecoder', () => {
       const data = faker.string.hexadecimal({ length: 514 }) as `0x${string}`;
       const topics = [
         faker.string.hexadecimal({ length: 64 }) as `0x${string}`,
-      ] as [signature: `0x${string}`, ...args: `0x${string}`[]];
+      ] as [signature: `0x${string}`, ...args: Array<`0x${string}`>];
 
       expect(kilnDecoder.decodeDepositEvent({ data, topics })).toBe(null);
     });
@@ -153,7 +153,7 @@ describe('KilnDecoder', () => {
       const data = faker.string.hexadecimal({ length: 514 }) as `0x${string}`;
       const topics = [
         faker.string.hexadecimal({ length: 64 }) as `0x${string}`,
-      ] as [signature: `0x${string}`, ...args: `0x${string}`[]];
+      ] as [signature: `0x${string}`, ...args: Array<`0x${string}`>];
 
       expect(kilnDecoder.decodeWithdrawal({ data, topics })).toBe(null);
     });

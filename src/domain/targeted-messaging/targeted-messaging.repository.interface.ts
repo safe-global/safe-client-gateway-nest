@@ -1,5 +1,6 @@
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
 import { SafeRepositoryModule } from '@/domain/safe/safe.repository.interface';
+import { Outreach } from '@/domain/targeted-messaging/entities/outreach.entity';
 import { Submission } from '@/domain/targeted-messaging/entities/submission.entity';
 import { TargetedSafe } from '@/domain/targeted-messaging/entities/targeted-safe.entity';
 import { TargetedMessagingRepository } from '@/domain/targeted-messaging/targeted-messaging.repository';
@@ -14,6 +15,13 @@ export interface ITargetedMessagingRepository {
     outreachId: number;
     safeAddress: `0x${string}`;
   }): Promise<TargetedSafe>;
+
+  addSafeToOutreach(args: {
+    outreachId: number;
+    safeAddress: `0x${string}`;
+  }): Promise<Array<TargetedSafe>>;
+
+  getOutreachOrFail(outreachId: number): Promise<Outreach>;
 
   getSubmission(args: {
     chainId: string;

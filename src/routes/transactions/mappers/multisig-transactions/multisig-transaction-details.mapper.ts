@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { MultisigTransaction } from '@/domain/safe/entities/multisig-transaction.entity';
 import { Safe } from '@/domain/safe/entities/safe.entity';
 import { AddressInfoHelper } from '@/routes/common/address-info/address-info.helper';
@@ -15,6 +15,7 @@ import { TransactionDataMapper } from '@/routes/transactions/mappers/common/tran
 import { MultisigTransactionInfoMapper } from '@/routes/transactions/mappers/common/transaction-info.mapper';
 import { MultisigTransactionExecutionDetailsMapper } from '@/routes/transactions/mappers/multisig-transactions/multisig-transaction-execution-details.mapper';
 import { MultisigTransactionStatusMapper } from '@/routes/transactions/mappers/multisig-transactions/multisig-transaction-status.mapper';
+import { MultisigTransactionNoteMapper } from '@/routes/transactions/mappers/multisig-transactions/multisig-transaction-note.mapper';
 
 @Injectable()
 export class MultisigTransactionDetailsMapper {
@@ -25,6 +26,7 @@ export class MultisigTransactionDetailsMapper {
     private readonly transactionDataMapper: TransactionDataMapper,
     private readonly safeAppInfoMapper: SafeAppInfoMapper,
     private readonly multisigTransactionExecutionDetailsMapper: MultisigTransactionExecutionDetailsMapper,
+    private readonly noteMapper: MultisigTransactionNoteMapper,
   ) {}
 
   async mapDetails(
@@ -33,6 +35,7 @@ export class MultisigTransactionDetailsMapper {
     safe: Safe,
   ): Promise<TransactionDetails> {
     const txStatus = this.statusMapper.mapTransactionStatus(transaction, safe);
+    const note = this.noteMapper.mapTxNote(transaction);
     const [
       isTrustedDelegateCall,
       addressInfoIndex,
@@ -79,6 +82,7 @@ export class MultisigTransactionDetailsMapper {
       txHash: transaction.transactionHash,
       detailedExecutionInfo,
       safeAppInfo,
+      note,
     };
   }
 

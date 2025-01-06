@@ -41,7 +41,7 @@ describe('FakeCacheService', () => {
   });
 
   it('clears keys', async () => {
-    const actions: Promise<void>[] = [];
+    const actions: Array<Promise<void>> = [];
     for (let i = 0; i < 5; i++) {
       actions.push(
         target.hSet(
@@ -63,7 +63,7 @@ describe('FakeCacheService', () => {
     const firstResult = await target.increment(key, undefined);
     expect(firstResult).toEqual(1);
 
-    const results: number[] = [];
+    const results: Array<number> = [];
     for (let i = 0; i < 5; i++) {
       results.push(await target.increment(key, undefined));
     }

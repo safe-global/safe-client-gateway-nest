@@ -50,6 +50,7 @@ import { PostgresDatabaseModuleV2 } from '@/datasources/db/v2/postgres-database.
 import { TestPostgresDatabaseModuleV2 } from '@/datasources/db/v2/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
   let app: INestApplication<Server>;
@@ -123,35 +124,35 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/kiln-stats`:
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             default:
@@ -160,7 +161,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -269,45 +270,45 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/kiln-stats`:
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${depositContractResponse.address}`:
               return Promise.resolve({
-                data: depositContractResponse,
+                data: rawify(depositContractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${depositTokenResponse.address}`:
               return Promise.resolve({
-                data: depositTokenResponse,
+                data: rawify(depositTokenResponse),
                 status: 200,
               });
             default:
@@ -316,7 +317,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -404,24 +405,24 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.reject({
                 status: 500,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -430,7 +431,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -470,25 +471,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -497,7 +498,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -538,25 +539,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -565,7 +566,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -604,25 +605,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -631,7 +632,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -671,25 +672,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -698,7 +699,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -739,10 +740,10 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/kiln-stats`:
@@ -751,22 +752,22 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -775,7 +776,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -816,15 +817,15 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/kiln-stats`:
               return Promise.resolve({
-                data: { data: dedicatedStakingStats },
+                data: rawify({ data: dedicatedStakingStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
@@ -833,17 +834,17 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -852,7 +853,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -906,30 +907,30 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             default:
@@ -938,7 +939,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1042,45 +1043,45 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${requestValidatorsExiContractResponse.address}`:
               return Promise.resolve({
-                data: requestValidatorsExiContractResponse,
+                data: rawify(requestValidatorsExiContractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${requestValidatorsExitTokenResponse.address}`:
               return Promise.resolve({
-                data: requestValidatorsExitTokenResponse,
+                data: rawify(requestValidatorsExitTokenResponse),
                 status: 200,
               });
             default:
@@ -1089,7 +1090,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1167,24 +1168,24 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.reject({
                 status: 500,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1193,7 +1194,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1242,25 +1243,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1269,7 +1270,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1320,25 +1321,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1347,7 +1348,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1396,25 +1397,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1423,7 +1424,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1477,10 +1478,10 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
@@ -1489,22 +1490,22 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1513,7 +1514,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1564,15 +1565,15 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/network-stats`:
               return Promise.resolve({
-                data: { data: networkStats },
+                data: rawify({ data: networkStats }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
@@ -1581,17 +1582,17 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1600,7 +1601,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1661,25 +1662,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             default:
@@ -1688,7 +1689,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1796,40 +1797,40 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
               return Promise.resolve({
-                data: { data: stakes },
+                data: rawify({ data: stakes }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${tokenResponse.address}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${batchWithdrawCLFeeContractResponse.address}`:
               return Promise.resolve({
-                data: batchWithdrawCLFeeContractResponse,
+                data: rawify(batchWithdrawCLFeeContractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${batchWithdrawCLFeeTokenResponse.address}`:
               return Promise.resolve({
-                data: batchWithdrawCLFeeTokenResponse,
+                data: rawify(batchWithdrawCLFeeTokenResponse),
                 status: 200,
               });
             default:
@@ -1838,7 +1839,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1917,24 +1918,24 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.reject({
                 status: 500,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -1943,7 +1944,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -1997,25 +1998,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -2024,7 +2025,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -2079,25 +2080,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -2106,7 +2107,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -2159,25 +2160,25 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/tokens/${previewTransactionDto.to}`:
               return Promise.resolve({
-                data: tokenResponse,
+                data: rawify(tokenResponse),
                 status: 200,
               });
             default:
@@ -2186,7 +2187,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });
@@ -2237,10 +2238,10 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         networkService.get.mockImplementation(({ url }) => {
           switch (url) {
             case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-              return Promise.resolve({ data: chain, status: 200 });
+              return Promise.resolve({ data: rawify(chain), status: 200 });
             case `${stakingApiUrl}/v1/deployments`:
               return Promise.resolve({
-                data: { data: [deployment] },
+                data: rawify({ data: [deployment] }),
                 status: 200,
               });
             case `${stakingApiUrl}/v1/eth/stakes`:
@@ -2249,12 +2250,12 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
               });
             case `${chain.transactionService}/api/v1/safes/${safe.address}`:
               return Promise.resolve({
-                data: safe,
+                data: rawify(safe),
                 status: 200,
               });
             case `${chain.transactionService}/api/v1/contracts/${contractResponse.address}`:
               return Promise.resolve({
-                data: contractResponse,
+                data: rawify(contractResponse),
                 status: 200,
               });
             default:
@@ -2263,7 +2264,7 @@ describe('Preview transaction - Kiln - Transactions Controller (Unit)', () => {
         });
         networkService.post.mockImplementation(({ url }) => {
           if (url === `${chain.transactionService}/api/v1/data-decoder/`) {
-            return Promise.resolve({ data: dataDecoded, status: 200 });
+            return Promise.resolve({ data: rawify(dataDecoded), status: 200 });
           }
           return Promise.reject(new Error(`Could not match ${url}`));
         });

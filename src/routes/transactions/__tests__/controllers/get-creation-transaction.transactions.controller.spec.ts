@@ -25,6 +25,7 @@ import {
 import { safeBuilder } from '@/domain/safe/entities/__tests__/safe.builder';
 import { TestLoggingModule } from '@/logging/__tests__/test.logging.module';
 import { RequestScopedLoggingModule } from '@/logging/logging.module';
+import { rawify } from '@/validation/entities/raw.entity';
 import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
@@ -80,10 +81,10 @@ describe('Get creation transaction', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case getChainUrl:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case getCreationTransactionUrl:
           return Promise.resolve({
-            data: creationTransactionToJson(creationTransaction),
+            data: rawify(creationTransactionToJson(creationTransaction)),
             status: 200,
           });
         default:
@@ -112,7 +113,7 @@ describe('Get creation transaction', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case getChainUrl:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case getCreationTransactionUrl:
           return Promise.reject(
             new NetworkResponseError(new URL(getCreationTransactionUrl), {
@@ -139,7 +140,7 @@ describe('Get creation transaction', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case getChainUrl:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case getCreationTransactionUrl:
           return Promise.reject(new Error());
         default:
@@ -166,7 +167,7 @@ describe('Get creation transaction', () => {
           return Promise.reject(new Error());
         case getCreationTransactionUrl:
           return Promise.resolve({
-            data: creationTransactionToJson(creationTransaction),
+            data: rawify(creationTransactionToJson(creationTransaction)),
             status: 200,
           });
         default:

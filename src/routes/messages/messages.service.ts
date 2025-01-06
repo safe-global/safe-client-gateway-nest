@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy';
 import { Message as DomainMessage } from '@/domain/messages/entities/message.entity';
 import { MessagesRepository } from '@/domain/messages/messages.repository';
 import { IMessagesRepository } from '@/domain/messages/messages.repository.interface';
@@ -96,8 +96,8 @@ export class MessagesService {
    * @returns ordered tuples containing [timestamp, message[]]
    */
   private getOrderedGroups(
-    messages: DomainMessage[],
-  ): [number, DomainMessage[]][] {
+    messages: Array<DomainMessage>,
+  ): Array<[number, Array<DomainMessage>]> {
     const groups = groupBy(messages, (m) =>
       Date.UTC(
         m.created.getUTCFullYear(),

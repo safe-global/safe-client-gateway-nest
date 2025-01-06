@@ -36,6 +36,7 @@ import { PostgresDatabaseModule } from '@/datasources/db/v1/postgres-database.mo
 import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 // TODO: Migrate to E2E tests as TransactionEventType events are already being received via queue.
 // Add *_DELEGATE event tests here if we unskip this
@@ -186,7 +187,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -210,7 +211,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/1`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', '1').build(),
+            data: rawify(chainBuilder().with('chainId', '1').build()),
             status: 200,
           });
         default:
@@ -297,11 +298,11 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chain,
+            data: rawify(chain),
             status: 200,
           });
         case `${chain.transactionService}/api/v1/safes/${safeAddress}`:
-          return Promise.resolve({ data: safe, status: 200 });
+          return Promise.resolve({ data: rawify(safe), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }
@@ -356,7 +357,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -413,7 +414,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -462,7 +463,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -517,7 +518,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -577,11 +578,11 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chain,
+            data: rawify(chain),
             status: 200,
           });
         case `${chain.transactionService}/api/v1/safes/${safeAddress}`:
-          return Promise.resolve({ data: safe, status: 200 });
+          return Promise.resolve({ data: rawify(safe), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }
@@ -633,7 +634,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -682,7 +683,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -726,7 +727,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -795,7 +796,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -842,7 +843,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -878,7 +879,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }
@@ -913,7 +914,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chain.chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chain.chainId).build()),
             status: 200,
           });
         default:
@@ -944,7 +945,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -977,7 +978,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -1010,7 +1011,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -1044,7 +1045,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', chainId).build(),
+            data: rawify(chainBuilder().with('chainId', chainId).build()),
             status: 200,
           });
         default:
@@ -1083,7 +1084,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
           return Promise.resolve({
-            data: chain,
+            data: rawify(chain),
             status: 200,
           });
         default:
@@ -1114,7 +1115,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${data.chainId}`:
           return Promise.resolve({
-            data: chainBuilder().with('chainId', data.chainId).build(),
+            data: rawify(chainBuilder().with('chainId', data.chainId).build()),
             status: 200,
           });
         default:

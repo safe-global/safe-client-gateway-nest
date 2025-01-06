@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { NetworkResponseError } from '@/datasources/network/entities/network.error.entity';
 import { DataSourceError } from '@/domain/errors/data-source.error';
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 /**
  * Maps a {@link NetworkError} or {@link Error} into a {@link DataSourceError}

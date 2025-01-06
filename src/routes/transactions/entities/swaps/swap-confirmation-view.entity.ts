@@ -25,7 +25,7 @@ export class CowSwapConfirmationView implements Baseline, OrderInfo {
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
   // OrderInfo implementation
   @ApiProperty({ description: 'The order UID' })

@@ -59,7 +59,7 @@ export class ChainsController {
   @Get('/:chainId/about/master-copies')
   async getMasterCopies(
     @Param('chainId') chainId: string,
-  ): Promise<MasterCopy[]> {
+  ): Promise<Array<MasterCopy>> {
     return this.chainsService.getMasterCopies(chainId);
   }
 

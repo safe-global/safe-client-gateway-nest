@@ -1,9 +1,9 @@
 import { AuthPayload } from '@/domain/auth/entities/auth-payload.entity';
-import { NotificationType } from '@/domain/notifications/v2/entities/notification-type.entity';
-import { UpsertSubscriptionsDto } from '@/routes/notifications/v1/entities/upsert-subscriptions.dto.entity';
-import { INotificationsRepositoryV2 } from '@/domain/notifications/v2/notifications.repository.interface';
+import { UpsertSubscriptionsDto } from '@/domain/notifications/v2/entities/upsert-subscriptions.dto.entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { UUID } from 'crypto';
+import { NotificationType } from '@/datasources/notifications/entities/notification-type.entity.db';
+import { INotificationsRepositoryV2 } from '@/domain/notifications/v2/notifications.repository.interface';
 
 @Injectable()
 export class NotificationsServiceV2 {
@@ -12,7 +12,7 @@ export class NotificationsServiceV2 {
     private readonly notificationsRepository: INotificationsRepositoryV2,
   ) {}
 
-  upsertSubscriptions(args: {
+  async upsertSubscriptions(args: {
     authPayload: AuthPayload;
     upsertSubscriptionsDto: UpsertSubscriptionsDto;
   }): Promise<{
@@ -20,24 +20,25 @@ export class NotificationsServiceV2 {
   }> {
     return this.notificationsRepository.upsertSubscriptions(args);
   }
-  getSafeSubscription(args: {
+
+  async getSafeSubscription(args: {
     authPayload: AuthPayload;
     deviceUuid: UUID;
     chainId: string;
     safeAddress: `0x${string}`;
   }): Promise<Array<NotificationType>> {
-    return this.notificationsRepository.getSafeSubscription(args);
+    return await this.notificationsRepository.getSafeSubscription(args);
   }
 
-  deleteSubscription(args: {
+  async deleteSubscription(args: {
     deviceUuid: UUID;
     chainId: string;
     safeAddress: `0x${string}`;
   }): Promise<void> {
-    return this.notificationsRepository.deleteSubscription(args);
+    await this.notificationsRepository.deleteSubscription(args);
   }
 
-  deleteDevice(deviceUuid: UUID): Promise<void> {
-    return this.notificationsRepository.deleteDevice(deviceUuid);
+  async deleteDevice(deviceUuid: UUID): Promise<void> {
+    await this.notificationsRepository.deleteDevice(deviceUuid);
   }
 }

@@ -13,10 +13,7 @@ import {
 } from '@/routes/hooks/entities/event-type.entity';
 import { LoggingService, ILoggingService } from '@/logging/logging.interface';
 import { Event } from '@/routes/hooks/entities/event.entity';
-import {
-  INotificationsRepositoryV2,
-  NotificationsRepositoryV2Module,
-} from '@/domain/notifications/v2/notifications.repository.interface';
+import { INotificationsRepositoryV2 } from '@/domain/notifications/v2/notifications.repository.interface';
 import { DeletedMultisigTransactionEvent } from '@/routes/hooks/entities/schemas/deleted-multisig-transaction.schema';
 import { ExecutedTransactionEvent } from '@/routes/hooks/entities/schemas/executed-transaction.schema';
 import { IncomingEtherEvent } from '@/routes/hooks/entities/schemas/incoming-ether.schema';
@@ -37,6 +34,7 @@ import {
   IDelegatesV2Repository,
 } from '@/domain/delegate/v2/delegates.v2.repository.interface';
 import { UUID } from 'crypto';
+import { NotificationsRepositoryV2Module } from '@/domain/notifications/v2/notifications.repository.module';
 
 type EventToNotify =
   | DeletedMultisigTransactionEvent

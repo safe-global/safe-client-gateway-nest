@@ -23,13 +23,13 @@ export class AddressBook {
   @ApiProperty()
   chainId: string;
   @ApiProperty({ type: AddressBookItem, isArray: true })
-  data: AddressBookItem[];
+  data: Array<AddressBookItem>;
 
   constructor(
     id: string,
     accountId: string,
     chainId: string,
-    data: AddressBookItem[],
+    data: Array<AddressBookItem>,
   ) {
     this.id = id;
     this.accountId = accountId;

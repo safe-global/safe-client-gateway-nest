@@ -28,7 +28,7 @@ function getPrevOwner(ownerToRemove: Hex, owners?: Safe['owners']): Hex {
 // setup
 
 type SetupArgs = {
-  owners: Hex[];
+  owners: Array<Hex>;
   threshold: bigint;
   to: Hex;
   data: Hex;

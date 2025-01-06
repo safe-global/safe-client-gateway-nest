@@ -12,9 +12,11 @@ export const ITargetedMessagingDatasource = Symbol(
 export interface ITargetedMessagingDatasource {
   createOutreach(createOutreachDto: CreateOutreachDto): Promise<Outreach>;
 
+  getOutreachOrFail(outreachId: number): Promise<Outreach>;
+
   updateOutreach(updateOutreachDto: UpdateOutreachDto): Promise<Outreach>;
 
-  getUnprocessedOutreaches(): Promise<Outreach[]>;
+  getUnprocessedOutreaches(): Promise<Array<Outreach>>;
 
   markOutreachAsProcessed(outreach: Outreach): Promise<Outreach>;
 

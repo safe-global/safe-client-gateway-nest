@@ -30,6 +30,7 @@ import { safeBuilder } from '@/domain/safe/entities/__tests__/safe.builder';
 import type { MultisigTransaction } from '@/domain/safe/entities/multisig-transaction.entity';
 import { TestLoggingModule } from '@/logging/__tests__/test.logging.module';
 import { RequestScopedLoggingModule } from '@/logging/logging.module';
+import { rawify } from '@/validation/entities/raw.entity';
 import { faker } from '@faker-js/faker';
 import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
@@ -91,24 +92,24 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
       const getMultisigTransactionsUrl = `${chain.transactionService}/api/v1/safes/${safe.address}/multisig-transactions/`;
       const getSafeUrl = `${chain.transactionService}/api/v1/safes/${safe.address}`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       if (url === getMultisigTransactionsUrl) {
         return Promise.resolve({
-          data: { ...page, count: faker.word.words() },
+          data: rawify({ ...page, count: faker.word.words() }),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safe, status: 200 });
+        return Promise.resolve({ data: rawify(safe), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
 
     await request(app.getHttpServer())
       .get(`/v1/chains/${chainId}/safes/${safe.address}/transactions/queued`)
-      .expect(500)
-      .expect({ statusCode: 500, message: 'Internal server error' });
+      .expect(502)
+      .expect({ statusCode: 502, message: 'Bad gateway' });
   });
 
   it('should get a transactions queue with labels and conflict headers', async () => {
@@ -127,7 +128,7 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
         .build(),
     ];
     const contractResponse = contractBuilder().build();
-    const transactions: MultisigTransaction[] = [
+    const transactions: Array<MultisigTransaction> = [
       multisigToJson(
         multisigTransactionBuilder()
           .with('safe', safeAddress)
@@ -191,27 +192,27 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
       const getSafeUrl = `${chainResponse.transactionService}/api/v1/safes/${safeAddress}`;
       const getContractUrlPattern = `${chainResponse.transactionService}/api/v1/contracts/`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chainResponse, status: 200 });
+        return Promise.resolve({ data: rawify(chainResponse), status: 200 });
       }
       if (url === getMultisigTransactionsUrl) {
         return Promise.resolve({
-          data: {
+          data: rawify({
             count: 6,
             next: null,
             previous: null,
             results: transactions,
-          },
+          }),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safeResponse, status: 200 });
+        return Promise.resolve({ data: rawify(safeResponse), status: 200 });
       }
       if (url === getSafeAppsUrl) {
-        return Promise.resolve({ data: safeAppsResponse, status: 200 });
+        return Promise.resolve({ data: rawify(safeAppsResponse), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
-        return Promise.resolve({ data: contractResponse, status: 200 });
+        return Promise.resolve({ data: rawify(contractResponse), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -304,7 +305,7 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
         .with('name', faker.word.words())
         .build(),
     ];
-    const transactions: MultisigTransaction[] = [
+    const transactions: Array<MultisigTransaction> = [
       multisigToJson(
         multisigTransactionBuilder()
           .with('safe', safeAddress)
@@ -385,11 +386,11 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
       const getSafeUrl = `${chainResponse.transactionService}/api/v1/safes/${safeAddress}`;
       const getContractUrlPattern = `${chainResponse.transactionService}/api/v1/contracts/`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chainResponse, status: 200 });
+        return Promise.resolve({ data: rawify(chainResponse), status: 200 });
       }
       if (url === getMultisigTransactionsUrl) {
         return Promise.resolve({
-          data: {
+          data: rawify({
             count: 20,
             next: `${faker.internet.url({
               appendSlash: false,
@@ -398,18 +399,18 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
               appendSlash: false,
             })}/?limit=10&offset=30`,
             results: transactions,
-          },
+          }),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safeResponse, status: 200 });
+        return Promise.resolve({ data: rawify(safeResponse), status: 200 });
       }
       if (url === getSafeAppsUrl) {
-        return Promise.resolve({ data: safeAppsResponse, status: 200 });
+        return Promise.resolve({ data: rawify(safeAppsResponse), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
-        return Promise.resolve({ data: contractResponse, status: 200 });
+        return Promise.resolve({ data: rawify(contractResponse), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -501,7 +502,7 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
       .with('nonce', 1)
       .build();
     const safeAppsResponse = [safeAppBuilder().build()];
-    const transactions: MultisigTransaction[] = [
+    const transactions: Array<MultisigTransaction> = [
       multisigToJson(
         multisigTransactionBuilder()
           .with('safe', safeAddress)
@@ -526,7 +527,7 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
       const getSafeUrl = `${chainResponse.transactionService}/api/v1/safes/${safeAddress}`;
       const getContractUrlPattern = `${chainResponse.transactionService}/api/v1/contracts/`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chainResponse, status: 200 });
+        return Promise.resolve({ data: rawify(chainResponse), status: 200 });
       }
       if (url === getMultisigTransactionsUrl) {
         if (!networkRequest?.params) {
@@ -535,23 +536,23 @@ describe('List queued transactions by Safe - Transactions Controller (Unit)', ()
         expect(networkRequest.params.trusted).toBe(false);
 
         return Promise.resolve({
-          data: {
+          data: rawify({
             count: 2,
             next: null,
             previous: null,
             results: transactions,
-          },
+          }),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safeResponse, status: 200 });
+        return Promise.resolve({ data: rawify(safeResponse), status: 200 });
       }
       if (url === getSafeAppsUrl) {
-        return Promise.resolve({ data: safeAppsResponse, status: 200 });
+        return Promise.resolve({ data: rawify(safeAppsResponse), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
-        return Promise.resolve({ data: contractResponse, status: 200 });
+        return Promise.resolve({ data: rawify(contractResponse), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });

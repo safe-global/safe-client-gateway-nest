@@ -58,14 +58,14 @@ export class AccountsRepository implements IAccountsRepository {
     return this.datasource.deleteAccount(args.address);
   }
 
-  async getDataTypes(): Promise<AccountDataType[]> {
+  async getDataTypes(): Promise<Array<AccountDataType>> {
     return this.datasource.getDataTypes();
   }
 
   async getAccountDataSettings(args: {
     authPayload: AuthPayload;
     address: `0x${string}`;
-  }): Promise<AccountDataSetting[]> {
+  }): Promise<Array<AccountDataSetting>> {
     if (!args.authPayload.isForSigner(args.address)) {
       throw new UnauthorizedException();
     }
@@ -77,7 +77,7 @@ export class AccountsRepository implements IAccountsRepository {
     authPayload: AuthPayload;
     address: `0x${string}`;
     upsertAccountDataSettingsDto: UpsertAccountDataSettingsDto;
-  }): Promise<AccountDataSetting[]> {
+  }): Promise<Array<AccountDataSetting>> {
     const { address, upsertAccountDataSettingsDto } = args;
     if (!args.authPayload.isForSigner(args.address)) {
       throw new UnauthorizedException();

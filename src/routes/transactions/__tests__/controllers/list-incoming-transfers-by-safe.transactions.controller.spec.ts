@@ -43,6 +43,7 @@ import { PostgresDatabaseModuleV2 } from '@/datasources/db/v2/postgres-database.
 import { TestPostgresDatabaseModuleV2 } from '@/datasources/db/v2/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('List incoming transfers by Safe - Transactions Controller (Unit)', () => {
   let app: INestApplication<Server>;
@@ -117,7 +118,7 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
     const limit = faker.number.int({ min: 0, max: 100 });
     const offset = faker.number.int({ min: 0, max: 100 });
     networkService.get.mockResolvedValueOnce({
-      data: chainResponse,
+      data: rawify(chainResponse),
       status: 200,
     });
     const error = new NetworkResponseError(
@@ -157,27 +158,30 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
     const safeAddress = faker.finance.ethereumAddress();
     const chainResponse = chainBuilder().with('chainId', chainId).build();
     networkService.get.mockResolvedValueOnce({
-      data: chainResponse,
+      data: rawify(chainResponse),
       status: 200,
     });
     networkService.get.mockResolvedValueOnce({
-      data: { results: ['invalidData'] },
+      data: rawify({ results: ['invalidData'] }),
       status: 200,
     });
 
     await request(app.getHttpServer())
       .get(`/v1/chains/${chainId}/safes/${safeAddress}/incoming-transfers`)
-      .expect(500)
-      .expect({ statusCode: 500, message: 'Internal server error' });
+      .expect(502)
+      .expect({ statusCode: 502, message: 'Bad gateway' });
   });
 
   it('Failure: data page validation fails', async () => {
     const chain = chainBuilder().build();
     const safe = safeBuilder().build();
     const page = pageBuilder().build();
-    networkService.get.mockResolvedValueOnce({ data: chain, status: 200 });
     networkService.get.mockResolvedValueOnce({
-      data: { ...page, next: faker.datatype.boolean() },
+      data: rawify(chain),
+      status: 200,
+    });
+    networkService.get.mockResolvedValueOnce({
+      data: rawify({ ...page, next: faker.datatype.boolean() }),
       status: 200,
     });
 
@@ -185,7 +189,8 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
       .get(
         `/v1/chains/${chain.chainId}/safes/${safe.address}/incoming-transfers/`,
       )
-      .expect({ statusCode: 500, message: 'Internal server error' });
+      .expect(502)
+      .expect({ statusCode: 502, message: 'Bad gateway' });
   });
 
   it('Should get a trusted ERC20 incoming transfer mapped to the expected format', async () => {
@@ -210,24 +215,26 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
       const getContractUrlPattern = `${chain.transactionService}/api/v1/contracts/`;
       const getTokenUrlPattern = `${chain.transactionService}/api/v1/tokens/${erc20Transfer.tokenAddress}`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       if (url === getIncomingTransfersUrl) {
         return Promise.resolve({
-          data: pageBuilder()
-            .with('results', [erc20TransferToJson(erc20Transfer)])
-            .build(),
+          data: rawify(
+            pageBuilder()
+              .with('results', [erc20TransferToJson(erc20Transfer)])
+              .build(),
+          ),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safe, status: 200 });
+        return Promise.resolve({ data: rawify(safe), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
         return Promise.reject({ detail: 'Not found' });
       }
       if (url === getTokenUrlPattern) {
-        return Promise.resolve({ data: token, status: 200 });
+        return Promise.resolve({ data: rawify(token), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -295,24 +302,26 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
       const getContractUrlPattern = `${chain.transactionService}/api/v1/contracts/`;
       const getTokenUrlPattern = `${chain.transactionService}/api/v1/tokens/${erc20Transfer.tokenAddress}`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       if (url === getIncomingTransfersUrl) {
         return Promise.resolve({
-          data: pageBuilder()
-            .with('results', [erc20TransferToJson(erc20Transfer)])
-            .build(),
+          data: rawify(
+            pageBuilder()
+              .with('results', [erc20TransferToJson(erc20Transfer)])
+              .build(),
+          ),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safe, status: 200 });
+        return Promise.resolve({ data: rawify(safe), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
         return Promise.reject({ detail: 'Not found' });
       }
       if (url === getTokenUrlPattern) {
-        return Promise.resolve({ data: token, status: 200 });
+        return Promise.resolve({ data: rawify(token), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -379,24 +388,26 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
       const getContractUrlPattern = `${chain.transactionService}/api/v1/contracts/`;
       const getTokenUrlPattern = `${chain.transactionService}/api/v1/tokens/${erc20Transfer.tokenAddress}`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       if (url === getIncomingTransfersUrl) {
         return Promise.resolve({
-          data: pageBuilder()
-            .with('results', [erc20TransferToJson(erc20Transfer)])
-            .build(),
+          data: rawify(
+            pageBuilder()
+              .with('results', [erc20TransferToJson(erc20Transfer)])
+              .build(),
+          ),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safe, status: 200 });
+        return Promise.resolve({ data: rawify(safe), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
         return Promise.reject({ detail: 'Not found' });
       }
       if (url === getTokenUrlPattern) {
-        return Promise.resolve({ data: token, status: 200 });
+        return Promise.resolve({ data: rawify(token), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -432,24 +443,26 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
       const getContractUrlPattern = `${chain.transactionService}/api/v1/contracts/`;
       const getTokenUrlPattern = `${chain.transactionService}/api/v1/tokens/${erc721Transfer.tokenAddress}`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       if (url === getIncomingTransfersUrl) {
         return Promise.resolve({
-          data: pageBuilder()
-            .with('results', [erc721TransferToJson(erc721Transfer)])
-            .build(),
+          data: rawify(
+            pageBuilder()
+              .with('results', [erc721TransferToJson(erc721Transfer)])
+              .build(),
+          ),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safe, status: 200 });
+        return Promise.resolve({ data: rawify(safe), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
         return Promise.reject({ detail: 'Not found' });
       }
       if (url === getTokenUrlPattern) {
-        return Promise.resolve({ data: token, status: 200 });
+        return Promise.resolve({ data: rawify(token), status: 200 });
       }
       return Promise.reject(new Error(`Could not match ${url}`));
     });
@@ -506,18 +519,20 @@ describe('List incoming transfers by Safe - Transactions Controller (Unit)', () 
       const getSafeUrl = `${chain.transactionService}/api/v1/safes/${safe.address}`;
       const getContractUrlPattern = `${chain.transactionService}/api/v1/contracts/`;
       if (url === getChainUrl) {
-        return Promise.resolve({ data: chain, status: 200 });
+        return Promise.resolve({ data: rawify(chain), status: 200 });
       }
       if (url === getIncomingTransfersUrl) {
         return Promise.resolve({
-          data: pageBuilder()
-            .with('results', [nativeTokenTransferToJson(nativeTokenTransfer)])
-            .build(),
+          data: rawify(
+            pageBuilder()
+              .with('results', [nativeTokenTransferToJson(nativeTokenTransfer)])
+              .build(),
+          ),
           status: 200,
         });
       }
       if (url === getSafeUrl) {
-        return Promise.resolve({ data: safe, status: 200 });
+        return Promise.resolve({ data: rawify(safe), status: 200 });
       }
       if (url.includes(getContractUrlPattern)) {
         return Promise.reject({ detail: 'Not found', status: 404 });

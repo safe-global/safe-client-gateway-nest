@@ -28,7 +28,7 @@ export class HumanDescriptionTemplate {
    * Store the regex matches as an array instead of an iterable so that it can be restarted
    * @private
    */
-  private readonly templateMatches: SafeRegExpExecArray[];
+  private readonly templateMatches: Array<SafeRegExpExecArray>;
 
   constructor(
     functionSignature: string,
@@ -52,13 +52,13 @@ export class HumanDescriptionTemplate {
    * @param to - the target address of the transaction
    * @param data - the raw data of the transaction
    */
-  parse(to: string, data: `0x${string}`): HumanDescriptionFragment[] {
+  parse(to: string, data: `0x${string}`): Array<HumanDescriptionFragment> {
     const { args } = decodeFunctionData({
       abi: this.functionAbi,
       data,
     });
 
-    const fragments: HumanDescriptionFragment[] = [];
+    const fragments: Array<HumanDescriptionFragment> = [];
 
     for (const match of this.templateMatches) {
       if ('textToken' in match.groups && match.groups.textToken !== undefined) {
@@ -97,7 +97,7 @@ export class HumanDescriptionTemplate {
     to: string,
     tokenType: string,
     index: number,
-    args: readonly unknown[],
+    args: ReadonlyArray<unknown>,
   ): HumanDescriptionFragment {
     const value = args[index];
 

@@ -27,6 +27,7 @@ import { getAddress } from 'viem';
 import type { ILoggingService } from '@/logging/logging.interface';
 import { indexingStatusBuilder } from '@/domain/chains/entities/__tests__/indexing-status.builder';
 import { fakeJson } from '@/__tests__/faker';
+import { rawify } from '@/validation/entities/raw.entity';
 
 const dataSource = {
   get: jest.fn(),
@@ -116,7 +117,7 @@ describe('TransactionApi', () => {
       const decodedData = dataDecodedBuilder().build();
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: decodedData,
+        data: rawify(decodedData),
       });
 
       const actual = await service.getDataDecoded({ data, to });
@@ -174,7 +175,7 @@ describe('TransactionApi', () => {
       const data = backboneBuilder().build();
       const getBackboneUrl = `${baseUrl}/api/v1/about`;
       const cacheDir = new CacheDir(`${chainId}_backbone`, '');
-      mockDataSource.get.mockResolvedValueOnce(data);
+      mockDataSource.get.mockResolvedValueOnce(rawify(data));
 
       const actual = await service.getBackbone();
 
@@ -226,7 +227,7 @@ describe('TransactionApi', () => {
       const singletons = [singletonBuilder().build()];
       const getSingletonsUrl = `${baseUrl}/api/v1/about/singletons/`;
       const cacheDir = new CacheDir(`${chainId}_singletons`, '');
-      mockDataSource.get.mockResolvedValueOnce(singletons);
+      mockDataSource.get.mockResolvedValueOnce(rawify(singletons));
 
       const actual = await service.getSingletons();
 
@@ -278,7 +279,7 @@ describe('TransactionApi', () => {
       const indexingStatus = indexingStatusBuilder().build();
       const getIndexingStatusUrl = `${baseUrl}/api/v1/about/indexing/`;
       const cacheDir = new CacheDir(`${chainId}_indexing`, '');
-      mockDataSource.get.mockResolvedValueOnce(indexingStatus);
+      mockDataSource.get.mockResolvedValueOnce(rawify(indexingStatus));
 
       const actual = await service.getIndexingStatus();
 
@@ -329,7 +330,7 @@ describe('TransactionApi', () => {
       const safe = safeBuilder().build();
       const getSafeUrl = `${baseUrl}/api/v1/safes/${safe.address}`;
       const cacheDir = new CacheDir(`${chainId}_safe_${safe.address}`, '');
-      mockDataSource.get.mockResolvedValueOnce(safe);
+      mockDataSource.get.mockResolvedValueOnce(rawify(safe));
 
       const actual = await service.getSafe(safe.address);
 
@@ -398,7 +399,10 @@ describe('TransactionApi', () => {
         '',
       );
       cacheService.hGet.mockResolvedValueOnce(undefined);
-      networkService.get.mockResolvedValueOnce({ status: 200, data: safe });
+      networkService.get.mockResolvedValueOnce({
+        status: 200,
+        data: rawify(safe),
+      });
 
       const actual = await service.isSafe(safe.address);
 
@@ -425,7 +429,10 @@ describe('TransactionApi', () => {
       );
       const isSafe = faker.datatype.boolean();
       cacheService.hGet.mockResolvedValueOnce(JSON.stringify(isSafe));
-      networkService.get.mockResolvedValueOnce({ status: 200, data: safe });
+      networkService.get.mockResolvedValueOnce({
+        status: 200,
+        data: rawify(safe),
+      });
 
       const actual = await service.isSafe(safe.address);
 
@@ -443,7 +450,10 @@ describe('TransactionApi', () => {
         '',
       );
       cacheService.hGet.mockResolvedValueOnce(undefined);
-      networkService.get.mockResolvedValueOnce({ status: 404, data: null });
+      networkService.get.mockResolvedValueOnce({
+        status: 404,
+        data: rawify(null),
+      });
 
       const actual = await service.isSafe(safe.address);
 
@@ -521,7 +531,7 @@ describe('TransactionApi', () => {
         `${chainId}_contract_${contract.address}`,
         '',
       );
-      mockDataSource.get.mockResolvedValueOnce(contract);
+      mockDataSource.get.mockResolvedValueOnce(rawify(contract));
 
       const actual = await service.getContract(contract.address);
 
@@ -580,7 +590,7 @@ describe('TransactionApi', () => {
         `${chainId}_delegates_${delegate.safe}`,
         `${delegate.delegate}_${delegate.delegator}_${delegate.label}_${limit}_${offset}`,
       );
-      mockDataSource.get.mockResolvedValueOnce(delegatesPage);
+      mockDataSource.get.mockResolvedValueOnce(rawify(delegatesPage));
 
       const actual = await service.getDelegates({
         ...delegate,
@@ -664,7 +674,7 @@ describe('TransactionApi', () => {
       const postDelegateUrl = `${baseUrl}/api/v1/delegates/`;
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.postDelegate({
@@ -731,7 +741,7 @@ describe('TransactionApi', () => {
       const deleteDelegateUrl = `${baseUrl}/api/v1/delegates/${delegate.delegate}`;
       networkService.delete.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.deleteDelegate({
@@ -800,7 +810,7 @@ describe('TransactionApi', () => {
       const deleteSafeDelegateUrl = `${baseUrl}/api/v1/safes/${delegate.safe}/delegates/${delegate.delegate}`;
       networkService.delete.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.deleteSafeDelegate({
@@ -872,7 +882,7 @@ describe('TransactionApi', () => {
       );
       networkService.get.mockResolvedValueOnce({
         status: 200,
-        data: transfer,
+        data: rawify(transfer),
       });
 
       const actual = await service.getTransfer(transfer.transferId);
@@ -937,7 +947,7 @@ describe('TransactionApi', () => {
       );
       networkService.get.mockResolvedValueOnce({
         status: 200,
-        data: transfersPage,
+        data: rawify(transfersPage),
       });
 
       const actual = await service.getTransfers({
@@ -1060,7 +1070,7 @@ describe('TransactionApi', () => {
       );
       networkService.get.mockResolvedValueOnce({
         status: 200,
-        data: incomingTransfersPage,
+        data: rawify(incomingTransfersPage),
       });
 
       const actual = await service.getIncomingTransfers({
@@ -1186,7 +1196,7 @@ describe('TransactionApi', () => {
       const postConfirmationUrl = `${baseUrl}/api/v1/multisig-transactions/${safeTxHash}/confirmations/`;
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.postConfirmation({
@@ -1253,7 +1263,7 @@ describe('TransactionApi', () => {
       };
       const getSafesByModuleUrl = `${baseUrl}/api/v1/modules/${moduleAddress}/safes/`;
       mockNetworkService.get.mockResolvedValueOnce({
-        data: safesByModule,
+        data: rawify(safesByModule),
         status: 200,
       });
 
@@ -1307,7 +1317,7 @@ describe('TransactionApi', () => {
         `${chainId}_module_transaction_${moduleTransactionId}`,
         '',
       );
-      mockDataSource.get.mockResolvedValueOnce(moduleTransaction);
+      mockDataSource.get.mockResolvedValueOnce(rawify(moduleTransaction));
 
       const actual = await service.getModuleTransaction(moduleTransactionId);
 
@@ -1373,7 +1383,7 @@ describe('TransactionApi', () => {
         `${chainId}_module_transactions_${moduleTransaction.safe}`,
         `${moduleTransaction.to}_${moduleTransaction.module}_${moduleTransaction.transactionHash}_${limit}_${offset}`,
       );
-      mockDataSource.get.mockResolvedValueOnce(moduleTransactionsPage);
+      mockDataSource.get.mockResolvedValueOnce(rawify(moduleTransactionsPage));
 
       const actual = await service.getModuleTransactions({
         safeAddress: moduleTransaction.safe,
@@ -1489,7 +1499,9 @@ describe('TransactionApi', () => {
         `${chainId}_multisig_transactions_${multisigTransaction.safe}`,
         `${ordering}_${multisigTransaction.isExecuted}_${multisigTransaction.trusted}_${executedDateGte}_${executedDateLte}_${multisigTransaction.to}_${multisigTransaction.value}_${multisigTransaction.nonce}_${multisigTransaction.nonce}_${limit}_${offset}`,
       );
-      mockDataSource.get.mockResolvedValueOnce(multisigTransactionsPage);
+      mockDataSource.get.mockResolvedValueOnce(
+        rawify(multisigTransactionsPage),
+      );
 
       const actual = await service.getMultisigTransactions({
         safeAddress: multisigTransaction.safe,
@@ -1626,7 +1638,7 @@ describe('TransactionApi', () => {
         `${chainId}_multisig_transaction_${multisigTransaction.safeTxHash}`,
         '',
       );
-      mockDataSource.get.mockResolvedValueOnce(multisigTransaction);
+      mockDataSource.get.mockResolvedValueOnce(rawify(multisigTransaction));
 
       const actual = await service.getMultisigTransaction(
         multisigTransaction.safeTxHash,
@@ -1688,7 +1700,7 @@ describe('TransactionApi', () => {
       const deleteTransactionUrl = `${baseUrl}/api/v1/multisig-transactions/${safeTxHash}`;
       networkService.delete.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.deleteTransaction({
@@ -1766,7 +1778,7 @@ describe('TransactionApi', () => {
         `${chainId}_creation_transaction_${safeAddress}`,
         '',
       );
-      mockDataSource.get.mockResolvedValueOnce(creationTransaction);
+      mockDataSource.get.mockResolvedValueOnce(rawify(creationTransaction));
 
       const actual = await service.getCreationTransaction(safeAddress);
 
@@ -1837,7 +1849,7 @@ describe('TransactionApi', () => {
         `${chainId}_all_transactions_${safeAddress}`,
         `${ordering}_${executed}_${queued}_${limit}_${offset}`,
       );
-      mockDataSource.get.mockResolvedValueOnce(allTransactionsPage);
+      mockDataSource.get.mockResolvedValueOnce(rawify(allTransactionsPage));
 
       const actual = await service.getAllTransactions({
         safeAddress,
@@ -1947,7 +1959,7 @@ describe('TransactionApi', () => {
       const token = tokenBuilder().build();
       const getTokenUrl = `${baseUrl}/api/v1/tokens/${token.address}`;
       const cacheDir = new CacheDir(`${chainId}_token_${token.address}`, '');
-      mockDataSource.get.mockResolvedValueOnce(token);
+      mockDataSource.get.mockResolvedValueOnce(rawify(token));
 
       const actual = await service.getToken(token.address);
 
@@ -2003,7 +2015,7 @@ describe('TransactionApi', () => {
       const offset = faker.number.int();
       const getTokensUrl = `${baseUrl}/api/v1/tokens/`;
       const cacheDir = new CacheDir(`${chainId}_tokens`, `${limit}_${offset}`);
-      mockDataSource.get.mockResolvedValueOnce(tokensPage);
+      mockDataSource.get.mockResolvedValueOnce(rawify(tokensPage));
 
       const actual = await service.getTokens({
         limit,
@@ -2083,7 +2095,7 @@ describe('TransactionApi', () => {
       };
       const getSafesByOwnerUrl = `${baseUrl}/api/v1/owners/${owner}/safes/`;
       const cacheDir = new CacheDir(`${chainId}_owner_safes_${owner}`, '');
-      mockDataSource.get.mockResolvedValueOnce(safeList);
+      mockDataSource.get.mockResolvedValueOnce(rawify(safeList));
 
       const actual = await service.getSafesByOwner(owner);
 
@@ -2153,7 +2165,7 @@ describe('TransactionApi', () => {
       const postDeviceRegistrationUrl = `${baseUrl}/api/v1/notifications/devices/`;
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.postDeviceRegistration({
@@ -2218,7 +2230,7 @@ describe('TransactionApi', () => {
       const deleteDeviceRegistrationUrl = `${baseUrl}/api/v1/notifications/devices/${uuid}`;
       networkService.delete.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.deleteDeviceRegistration(uuid);
@@ -2268,7 +2280,7 @@ describe('TransactionApi', () => {
       const deleteSafeRegistrationUrl = `${baseUrl}/api/v1/notifications/devices/${uuid}/safes/${safeAddress}`;
       networkService.delete.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.deleteSafeRegistration({ uuid, safeAddress });
@@ -2324,7 +2336,7 @@ describe('TransactionApi', () => {
       };
       const getEstimationUrl = `${baseUrl}/api/v1/safes/${safeAddress}/multisig-transactions/estimations/`;
       networkService.post.mockResolvedValueOnce({
-        data: estimation,
+        data: rawify(estimation),
         status: 200,
       });
 
@@ -2397,7 +2409,7 @@ describe('TransactionApi', () => {
       const getMessageByHashUrl = `${baseUrl}/api/v1/messages/${messageHash}`;
       const message = messageBuilder().build();
       const cacheDir = new CacheDir(`${chainId}_message_${messageHash}`, '');
-      mockDataSource.get.mockResolvedValueOnce(message);
+      mockDataSource.get.mockResolvedValueOnce(rawify(message));
 
       const actual = await service.getMessageByHash(messageHash);
 
@@ -2458,7 +2470,7 @@ describe('TransactionApi', () => {
         `${chainId}_messages_${safeAddress}`,
         `${limit}_${offset}`,
       );
-      mockDataSource.get.mockResolvedValueOnce(message);
+      mockDataSource.get.mockResolvedValueOnce(rawify(message));
 
       const actual = await service.getMessagesBySafe({
         safeAddress,
@@ -2540,7 +2552,7 @@ describe('TransactionApi', () => {
       const postMultisigTransactionUrl = `${baseUrl}/api/v1/safes/${safeAddress}/multisig-transactions/`;
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.postMultisigTransaction({
@@ -2610,7 +2622,7 @@ describe('TransactionApi', () => {
       const postMessageUrl = `${baseUrl}/api/v1/safes/${safeAddress}/messages/`;
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.postMessage({
@@ -2688,7 +2700,7 @@ describe('TransactionApi', () => {
       const postMessageSignatureUrl = `${baseUrl}/api/v1/messages/${messageHash}/signatures/`;
       networkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {},
+        data: rawify({}),
       });
 
       await service.postMessageSignature({
@@ -2820,7 +2832,7 @@ describe('TransactionApi', () => {
         `${holeskyChainId}_tokens`,
         `${limit}_${offset}`,
       );
-      mockDataSource.get.mockResolvedValueOnce(tokensPage);
+      mockDataSource.get.mockResolvedValueOnce(rawify(tokensPage));
 
       const actual = await service.getTokens({
         limit,

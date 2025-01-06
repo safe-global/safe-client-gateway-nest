@@ -27,6 +27,7 @@ import { NetworkService } from '@/datasources/network/network.service.interface'
 import { addConfirmationDtoBuilder } from '@/routes/transactions/__tests__/entities/add-confirmation.dto.builder';
 import { getAddress } from 'viem';
 import type { Server } from 'net';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Add transaction confirmations - Transactions Controller (Unit)', () => {
   let app: INestApplication<Server>;
@@ -98,21 +99,24 @@ describe('Add transaction confirmations - Transactions Controller (Unit)', () =>
       const getToTokenUrl = `${chain.transactionService}/api/v1/tokens/${transaction.to}`;
       switch (url) {
         case getChainUrl:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case getMultisigTransactionUrl:
-          return Promise.resolve({ data: transaction, status: 200 });
+          return Promise.resolve({ data: rawify(transaction), status: 200 });
         case getMultisigTransactionsUrl:
-          return Promise.resolve({ data: rejectionTxsPage, status: 200 });
+          return Promise.resolve({
+            data: rawify(rejectionTxsPage),
+            status: 200,
+          });
         case getSafeUrl:
-          return Promise.resolve({ data: safe, status: 200 });
+          return Promise.resolve({ data: rawify(safe), status: 200 });
         case getSafeAppsUrl:
-          return Promise.resolve({ data: safeApps, status: 200 });
+          return Promise.resolve({ data: rawify(safeApps), status: 200 });
         case getGasTokenContractUrl:
-          return Promise.resolve({ data: gasToken, status: 200 });
+          return Promise.resolve({ data: rawify(gasToken), status: 200 });
         case getToContractUrl:
-          return Promise.resolve({ data: contract, status: 200 });
+          return Promise.resolve({ data: rawify(contract), status: 200 });
         case getToTokenUrl:
-          return Promise.resolve({ data: token, status: 200 });
+          return Promise.resolve({ data: rawify(token), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }
@@ -121,7 +125,7 @@ describe('Add transaction confirmations - Transactions Controller (Unit)', () =>
       const postConfirmationUrl = `${chain.transactionService}/api/v1/multisig-transactions/${safeTxHash}/confirmations/`;
       switch (url) {
         case postConfirmationUrl:
-          return Promise.resolve({ data: {}, status: 200 });
+          return Promise.resolve({ data: rawify({}), status: 200 });
         default:
           return Promise.reject(new Error(`Could not match ${url}`));
       }

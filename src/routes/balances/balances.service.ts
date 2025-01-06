@@ -7,7 +7,7 @@ import { Balance } from '@/routes/balances/entities/balance.entity';
 import { Balances } from '@/routes/balances/entities/balances.entity';
 import { TokenType } from '@/routes/balances/entities/token-type.entity';
 import { NULL_ADDRESS } from '@/routes/common/constants';
-import { orderBy } from 'lodash';
+import orderBy from 'lodash/orderBy';
 import { getNumberString } from '@/domain/common/utils/utils';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class BalancesService {
       ...args,
       chain,
     });
-    const balances: Balance[] = domainBalances.map((balance) =>
+    const balances: Array<Balance> = domainBalances.map((balance) =>
       this._mapBalance(balance, chain.nativeCurrency),
     );
     const fiatTotal = balances
@@ -80,7 +80,7 @@ export class BalancesService {
     };
   }
 
-  async getSupportedFiatCodes(): Promise<string[]> {
+  async getSupportedFiatCodes(): Promise<Array<string>> {
     return this.balancesRepository.getFiatCodes();
   }
 }

@@ -20,7 +20,7 @@ export interface ICounterfactualSafesDatasource {
 
   getCounterfactualSafesForAddress(
     address: `0x${string}`,
-  ): Promise<CounterfactualSafe[]>;
+  ): Promise<Array<CounterfactualSafe>>;
 
   deleteCounterfactualSafe(args: {
     account: Account;

@@ -54,6 +54,7 @@ import { PostgresDatabaseModule } from '@/datasources/db/v1/postgres-database.mo
 import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Transactions History Controller (Unit) - Imitation Transactions', () => {
   let app: INestApplication<Server>;
@@ -333,32 +334,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         ];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -604,32 +605,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
 
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -876,32 +877,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
 
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -1067,32 +1068,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
 
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -1365,32 +1366,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         ];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -1645,32 +1646,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         ];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -1926,32 +1927,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         ];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -2206,32 +2207,32 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         ];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
           if (url === getImitationTokenAddressUrl) {
             return Promise.resolve({
-              data: imitationToken,
+              data: rawify(imitationToken),
               status: 200,
             });
           }
@@ -2532,20 +2533,20 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
       ];
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         }
         if (url === getAllTransactionsUrl) {
           return Promise.resolve({
-            data: pageBuilder().with('results', results).build(),
+            data: rawify(pageBuilder().with('results', results).build()),
             status: 200,
           });
         }
         if (url === getSafeUrl) {
-          return Promise.resolve({ data: safe, status: 200 });
+          return Promise.resolve({ data: rawify(safe), status: 200 });
         }
         if (url === getTokenAddressUrl) {
           return Promise.resolve({
-            data: multisigToken,
+            data: rawify(multisigToken),
             status: 200,
           });
         }
@@ -2554,7 +2555,7 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
           `${chain.transactionService}/api/v1/tokens/${imitationWithDifferentDecimalsToken.address}`
         ) {
           return Promise.resolve({
-            data: imitationWithDifferentDecimalsToken,
+            data: rawify(imitationWithDifferentDecimalsToken),
             status: 200,
           });
         }
@@ -2830,20 +2831,20 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         const results = [imitationIncomingTransaction, multisigTransaction];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
@@ -2960,26 +2961,26 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
 
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
@@ -3224,20 +3225,20 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         const results = [imitationIncomingTransaction, multisigTransaction];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
@@ -3314,26 +3315,26 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
 
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }
@@ -3620,20 +3621,20 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         const results = [aboveLimitIncomingTransaction, multisigTransaction];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
@@ -3758,26 +3759,26 @@ describe('Transactions History Controller (Unit) - Imitation Transactions', () =
         ];
         networkService.get.mockImplementation(({ url }) => {
           if (url === `${safeConfigUrl}/api/v1/chains/${chain.chainId}`) {
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           }
           if (url === getAllTransactionsUrl) {
             return Promise.resolve({
-              data: pageBuilder().with('results', results).build(),
+              data: rawify(pageBuilder().with('results', results).build()),
               status: 200,
             });
           }
           if (url === getSafeUrl) {
-            return Promise.resolve({ data: safe, status: 200 });
+            return Promise.resolve({ data: rawify(safe), status: 200 });
           }
           if (url === getTokenAddressUrl) {
             return Promise.resolve({
-              data: multisigToken,
+              data: rawify(multisigToken),
               status: 200,
             });
           }
           if (url === getNotImitatedTokenAddressUrl) {
             return Promise.resolve({
-              data: notImitatedMultisigToken,
+              data: rawify(notImitatedMultisigToken),
               status: 200,
             });
           }

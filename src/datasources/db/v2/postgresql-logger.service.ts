@@ -22,7 +22,7 @@ export class PostgresqlLogger extends AbstractLogger {
    */
   protected writeLog(
     level: LogLevel,
-    logMessage: LogMessage | LogMessage[],
+    logMessage: LogMessage | Array<LogMessage>,
   ): void {
     const messages = this.prepareLogMessages(logMessage, {
       highlightSql: false,

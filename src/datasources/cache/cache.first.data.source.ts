@@ -20,8 +20,8 @@ import {
   Transaction,
 } from '@/domain/safe/entities/transaction.entity';
 import { IConfigurationService } from '@/config/configuration.service.interface';
-import { isArray } from 'lodash';
 import { Safe } from '@/domain/safe/entities/safe.entity';
+import { Raw } from '@/validation/entities/raw.entity';
 
 /**
  * A data source which tries to retrieve values from cache using
@@ -70,7 +70,7 @@ export class CacheFirstDataSource {
     notFoundExpireTimeSeconds: number;
     networkRequest?: NetworkRequest;
     expireTimeSeconds?: number;
-  }): Promise<T> {
+  }): Promise<Raw<T>> {
     const cached = await this.cacheService.hGet(args.cacheDir);
     if (cached != null) return this._getFromCachedData(args.cacheDir, cached);
 
@@ -117,7 +117,7 @@ export class CacheFirstDataSource {
     url: string;
     networkRequest?: NetworkRequest;
     expireTimeSeconds?: number;
-  }): Promise<T> {
+  }): Promise<Raw<T>> {
     const { key, field } = args.cacheDir;
     this.loggingService.debug({ type: 'cache_miss', key, field });
     const startTimeMs = Date.now();
@@ -143,7 +143,7 @@ export class CacheFirstDataSource {
         this.logTransactionsCacheWrite(
           startTimeMs,
           args.cacheDir,
-          data as Page<Transaction>,
+          data as unknown as Page<Transaction>,
         );
       }
 
@@ -151,7 +151,7 @@ export class CacheFirstDataSource {
         this.logSafeMetadataCacheWrite(
           startTimeMs,
           args.cacheDir,
-          data as Safe,
+          data as unknown as Safe,
         );
       }
 
@@ -231,7 +231,7 @@ export class CacheFirstDataSource {
       cacheWriteTime: new Date(),
       requestStartTime: new Date(requestStartTime),
       txHashes:
-        isArray(data?.results) && // no validation executed yet at this point
+        Array.isArray(data?.results) && // no validation executed yet at this point
         data.results.map((transaction) => {
           if (isMultisigTransaction(transaction)) {
             return {

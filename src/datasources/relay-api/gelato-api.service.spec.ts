@@ -9,6 +9,7 @@ import { NetworkResponseError } from '@/datasources/network/entities/network.err
 import { DataSourceError } from '@/domain/errors/data-source.error';
 import { FakeCacheService } from '@/datasources/cache/__tests__/fake.cache.service';
 import { CacheDir } from '@/datasources/cache/entities/cache-dir.entity';
+import { rawify } from '@/validation/entities/raw.entity';
 
 const mockNetworkService = jest.mocked({
   post: jest.fn(),
@@ -67,9 +68,9 @@ describe('GelatoApi', () => {
       fakeConfigurationService.set(`relay.apiKey.${chainId}`, apiKey);
       mockNetworkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {
+        data: rawify({
           taskId,
-        },
+        }),
       });
 
       await target.relay({
@@ -100,9 +101,9 @@ describe('GelatoApi', () => {
       fakeConfigurationService.set(`relay.apiKey.${chainId}`, apiKey);
       mockNetworkService.post.mockResolvedValueOnce({
         status: 200,
-        data: {
+        data: rawify({
           taskId,
-        },
+        }),
       });
 
       await target.relay({

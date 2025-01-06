@@ -55,7 +55,7 @@ export class CounterfactualSafesDatasource
     createCounterfactualSafeDto: CreateCounterfactualSafeDto;
   }): Promise<CounterfactualSafe> {
     await this.checkCreationRateLimit(args.account);
-    const [counterfactualSafe] = await this.sql<CounterfactualSafe[]>`
+    const [counterfactualSafe] = await this.sql<Array<CounterfactualSafe>>`
       INSERT INTO counterfactual_safes 
       ${this.sql([this.mapCreationDtoToRow(args.account, args.createCounterfactualSafeDto)])}
       RETURNING *`;
@@ -76,10 +76,10 @@ export class CounterfactualSafesDatasource
       args.predictedAddress,
     );
     const [counterfactualSafe] = await this.cachedQueryResolver.get<
-      CounterfactualSafe[]
+      Array<CounterfactualSafe>
     >({
       cacheDir,
-      query: this.sql<CounterfactualSafe[]>`
+      query: this.sql<Array<CounterfactualSafe>>`
         SELECT * FROM counterfactual_safes 
         WHERE account_id = (SELECT id FROM accounts WHERE address = ${args.address})
           AND chain_id = ${args.chainId}
@@ -96,11 +96,11 @@ export class CounterfactualSafesDatasource
 
   getCounterfactualSafesForAddress(
     address: `0x${string}`,
-  ): Promise<CounterfactualSafe[]> {
+  ): Promise<Array<CounterfactualSafe>> {
     const cacheDir = CacheRouter.getCounterfactualSafesCacheDir(address);
-    return this.cachedQueryResolver.get<CounterfactualSafe[]>({
+    return this.cachedQueryResolver.get<Array<CounterfactualSafe>>({
       cacheDir,
-      query: this.sql<CounterfactualSafe[]>`
+      query: this.sql<Array<CounterfactualSafe>>`
         SELECT * FROM counterfactual_safes WHERE account_id = 
           (SELECT id FROM accounts WHERE address = ${address})`,
       ttl: this.defaultExpirationTimeInSeconds,
@@ -136,10 +136,10 @@ export class CounterfactualSafesDatasource
   }
 
   async deleteCounterfactualSafesForAccount(account: Account): Promise<void> {
-    let deleted: CounterfactualSafe[] = [];
+    let deleted: Array<CounterfactualSafe> = [];
     try {
       const rows = await this.sql<
-        CounterfactualSafe[]
+        Array<CounterfactualSafe>
       >`DELETE FROM counterfactual_safes WHERE account_id = ${account.id} RETURNING *`;
       deleted = rows;
     } finally {

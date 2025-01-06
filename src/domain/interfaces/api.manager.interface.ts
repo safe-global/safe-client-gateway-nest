@@ -1,5 +1,5 @@
 export interface IApiManager<T> {
-  getApi(chainId: string, ...rest: unknown[]): Promise<T>;
+  getApi(chainId: string, ...rest: Array<unknown>): Promise<T>;
 
   destroyApi(chainId: string): void;
 }

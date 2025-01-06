@@ -122,6 +122,7 @@ describe('OutreachFileProcessor', () => {
       createOutreachDtoBuilder()
         .with('sourceFile', null)
         .with('sourceFileChecksum', expectedChecksum)
+        .with('targetAll', false)
         .build(),
     );
     const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -138,6 +139,25 @@ describe('OutreachFileProcessor', () => {
     );
   });
 
+  it('should not attempt to process Outreach data files when tageting all safes', async () => {
+    const created = await targetedMessagingDatasource.createOutreach(
+      createOutreachDtoBuilder()
+        .with('sourceFile', null)
+        .with('sourceFileChecksum', null)
+        .with('targetAll', true)
+        .build(),
+    );
+
+    await fileProcessor.onModuleInit();
+
+    expect(
+      await targetedMessagingDatasource.getUnprocessedOutreaches(),
+    ).toHaveLength(1);
+    expect(mockLoggingService.info).toHaveBeenCalledWith(
+      `[Outreach ${created.id}] Targeting all safes. No file to process`,
+    );
+  });
+
   it('should not process Outreach data files with bad checksum', async () => {
     const sourceFile = path.resolve(baseDir, fileName);
     const expectedChecksum = faker.string.alphanumeric();
@@ -145,6 +165,7 @@ describe('OutreachFileProcessor', () => {
       createOutreachDtoBuilder()
         .with('sourceFile', sourceFile)
         .with('sourceFileChecksum', expectedChecksum)
+        .with('targetAll', false)
         .build(),
     );
     const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -173,6 +194,7 @@ describe('OutreachFileProcessor', () => {
         createOutreachDtoBuilder()
           .with('sourceFile', badSourceFile)
           .with('sourceFileChecksum', checksum)
+          .with('targetAll', false)
           .build(),
       );
       const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -204,6 +226,7 @@ describe('OutreachFileProcessor', () => {
         createOutreachDtoBuilder()
           .with('sourceFile', badSourceFile)
           .with('sourceFileChecksum', checksum)
+          .with('targetAll', false)
           .build(),
       );
       const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -232,6 +255,7 @@ describe('OutreachFileProcessor', () => {
         .with('sourceId', outreachFile.campaign_id)
         .with('sourceFile', sourceFile)
         .with('sourceFileChecksum', fileChecksum)
+        .with('targetAll', false)
         .build(),
     );
     const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -255,6 +279,7 @@ describe('OutreachFileProcessor', () => {
         .with('sourceId', outreachFile.campaign_id)
         .with('sourceFile', sourceFile)
         .with('sourceFileChecksum', fileChecksum)
+        .with('targetAll', false)
         .build(),
     );
     const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -292,6 +317,7 @@ describe('OutreachFileProcessor', () => {
         .with('sourceId', outreachFile.campaign_id)
         .with('sourceFile', sourceFile)
         .with('sourceFileChecksum', fileChecksum)
+        .with('targetAll', false)
         .build(),
     );
     const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();
@@ -300,7 +326,7 @@ describe('OutreachFileProcessor', () => {
     await fileProcessor.onModuleInit();
 
     // assert the Targeted Safes were created
-    const targetedSafes: DbTargetedSafe[] =
+    const targetedSafes: Array<DbTargetedSafe> =
       await sql`SELECT * FROM targeted_safes WHERE outreach_id = ${created.id}`;
     expect(targetedSafes).toHaveLength(outreachFile.safe_addresses.length);
     // assert the Targeted Safes addresses were checksummed
@@ -319,6 +345,7 @@ describe('OutreachFileProcessor', () => {
         .with('sourceId', outreachFile.campaign_id)
         .with('sourceFile', sourceFile)
         .with('sourceFileChecksum', fileChecksum)
+        .with('targetAll', false)
         .build(),
     );
     const lockCacheKey = CacheRouter.getOutreachFileProcessorCacheDir();

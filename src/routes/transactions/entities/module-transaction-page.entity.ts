@@ -4,5 +4,5 @@ import { ModuleTransaction } from '@/routes/transactions/entities/module-transac
 
 export class ModuleTransactionPage extends Page<ModuleTransaction> {
   @ApiProperty({ type: ModuleTransaction, isArray: true })
-  results!: ModuleTransaction[];
+  results!: Array<ModuleTransaction>;
 }

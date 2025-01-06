@@ -30,7 +30,7 @@ export class CachedQueryResolver implements ICachedQueryResolver {
    * @param ttl time to live for the cache
    * @returns content from cache or query result
    */
-  async get<T extends postgres.MaybeRow[]>(args: {
+  async get<T extends Array<postgres.MaybeRow>>(args: {
     cacheDir: CacheDir;
     query: postgres.PendingQuery<T>;
     ttl: number;

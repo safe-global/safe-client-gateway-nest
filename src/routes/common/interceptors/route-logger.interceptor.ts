@@ -12,6 +12,8 @@ import { Observable, tap } from 'rxjs';
 import { formatRouteLogMessage } from '@/logging/utils';
 import { DataSourceError } from '@/domain/errors/data-source.error';
 import { Request, Response } from 'express';
+import isNumber from 'lodash/isNumber';
+import { ZodErrorWithCode } from '@/validation/pipes/validation.pipe';
 
 /**
  * The {@link RouteLoggerInterceptor} is an interceptor that logs the requests
@@ -67,6 +69,10 @@ export class RouteLoggerInterceptor implements NestInterceptor {
       statusCode = error.getStatus();
     } else if (error instanceof DataSourceError) {
       statusCode = error.code ?? HttpStatus.INTERNAL_SERVER_ERROR;
+    } else if (error instanceof ZodErrorWithCode) {
+      statusCode = error.code;
+    } else if ('code' in error && isNumber(error.code)) {
+      statusCode = error.code;
     } else {
       statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     }

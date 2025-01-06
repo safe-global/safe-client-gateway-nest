@@ -29,7 +29,7 @@ export class CowSwapTwapConfirmationView implements Baseline, TwapOrderInfo {
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
   // TwapOrderInfo implementation
   @ApiProperty({
@@ -144,7 +144,7 @@ export class CowSwapTwapConfirmationView implements Baseline, TwapOrderInfo {
 
   constructor(args: {
     method: string;
-    parameters: DataDecodedParameter[] | null;
+    parameters: Array<DataDecodedParameter> | null;
     status: OrderStatus;
     kind: OrderKind.Sell;
     class: OrderClass.Limit;

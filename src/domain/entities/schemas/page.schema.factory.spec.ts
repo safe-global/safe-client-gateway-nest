@@ -174,7 +174,7 @@ describe('Page schema factory', () => {
       },
     );
 
-    it('should remove invalid items from results, reducing count accordingly', () => {
+    it('should remove invalid items from results', () => {
       const results = faker.helpers.multiple(
         () => ({ test: faker.lorem.word() }),
         { count: { min: 2, max: 5 } },
@@ -192,7 +192,6 @@ describe('Page schema factory', () => {
 
       const result = Schema.safeParse(page);
 
-      expect(result.success && result.data.count).toBe(results.length - 1);
       expect(result.success && result.data.results).toStrictEqual(
         results.slice(1),
       );

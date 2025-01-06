@@ -151,7 +151,7 @@ export class MultisigTransactionInfoMapper {
         );
       }
 
-      const dataDecodedParameters: DataDecodedParameter[] | null =
+      const dataDecodedParameters: Array<DataDecodedParameter> | null =
         transaction.dataDecoded.parameters?.map(
           (parameter) =>
             new DataDecodedParameter(

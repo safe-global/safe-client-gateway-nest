@@ -19,7 +19,7 @@ import type postgres from 'postgres';
  */
 // TODO: add tests
 export async function getFromCacheOrExecuteAndCache<
-  T extends postgres.MaybeRow[],
+  T extends Array<postgres.MaybeRow>,
 >(
   loggingService: ILoggingService,
   cacheService: ICacheService,

@@ -38,6 +38,7 @@ import { PostgresDatabaseModule } from '@/datasources/db/v1/postgres-database.mo
 import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Chains Controller (Unit)', () => {
   let app: INestApplication<Server>;
@@ -98,7 +99,7 @@ describe('Chains Controller (Unit)', () => {
   describe('GET /chains', () => {
     it('Success', async () => {
       networkService.get.mockResolvedValueOnce({
-        data: chainsResponse,
+        data: rawify(chainsResponse),
         status: 200,
       });
 
@@ -136,6 +137,8 @@ describe('Chains Controller (Unit)', () => {
               features: chainsResponse.results[0].features,
               balancesProvider: chainsResponse.results[0].balancesProvider,
               contractAddresses: chainsResponse.results[0].contractAddresses,
+              recommendedMasterCopyVersion:
+                chainsResponse.results[0].recommendedMasterCopyVersion,
             },
             {
               chainId: chainsResponse.results[1].chainId,
@@ -163,6 +166,8 @@ describe('Chains Controller (Unit)', () => {
               features: chainsResponse.results[1].features,
               balancesProvider: chainsResponse.results[1].balancesProvider,
               contractAddresses: chainsResponse.results[1].contractAddresses,
+              recommendedMasterCopyVersion:
+                chainsResponse.results[1].recommendedMasterCopyVersion,
             },
           ],
         });
@@ -208,12 +213,10 @@ describe('Chains Controller (Unit)', () => {
     it('should exclude items not passing validation', async () => {
       const invalidChains = [{ invalid: 'item' }];
       networkService.get.mockResolvedValueOnce({
-        data: {
+        data: rawify({
           ...chainsResponse,
-          // Ensure count does not include invalid chains
-          count: chainsResponse.results.length + invalidChains.length,
           results: [...chainsResponse.results, ...invalidChains],
-        },
+        }),
         status: 200,
       });
 
@@ -251,6 +254,8 @@ describe('Chains Controller (Unit)', () => {
               features: chainsResponse.results[0].features,
               balancesProvider: chainsResponse.results[0].balancesProvider,
               contractAddresses: chainsResponse.results[0].contractAddresses,
+              recommendedMasterCopyVersion:
+                chainsResponse.results[0].recommendedMasterCopyVersion,
             },
             {
               chainId: chainsResponse.results[1].chainId,
@@ -278,6 +283,8 @@ describe('Chains Controller (Unit)', () => {
               features: chainsResponse.results[1].features,
               balancesProvider: chainsResponse.results[1].balancesProvider,
               contractAddresses: chainsResponse.results[1].contractAddresses,
+              recommendedMasterCopyVersion:
+                chainsResponse.results[1].recommendedMasterCopyVersion,
             },
           ],
         });
@@ -296,17 +303,17 @@ describe('Chains Controller (Unit)', () => {
 
     it('Failure: received data is not valid', async () => {
       networkService.get.mockResolvedValueOnce({
-        data: {
+        data: rawify({
           ...chainsResponse,
           count: chainsResponse.count?.toString(),
-        },
+        }),
         status: 200,
       });
 
-      await request(app.getHttpServer()).get('/v1/chains').expect(500).expect({
-        statusCode: 500,
-        message: 'Internal server error',
-      });
+      await request(app.getHttpServer())
+        .get('/v1/chains')
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
       expect(networkService.get).toHaveBeenCalledTimes(1);
       expect(networkService.get).toHaveBeenCalledWith({
         url: `${safeConfigUrl}/api/v1/chains`,
@@ -350,9 +357,10 @@ describe('Chains Controller (Unit)', () => {
           : chainDomain.ensRegistryAddress,
         balancesProvider: chainDomain.balancesProvider,
         contractAddresses: chainDomain.contractAddresses,
+        recommendedMasterCopyVersion: chainDomain.recommendedMasterCopyVersion,
       };
       networkService.get.mockResolvedValueOnce({
-        data: chainDomain,
+        data: rawify(chainDomain),
         status: 200,
       });
 
@@ -405,11 +413,11 @@ describe('Chains Controller (Unit)', () => {
   describe('GET /:chainId/about/backbone', () => {
     it('Success', async () => {
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       networkService.get.mockResolvedValueOnce({
-        data: backboneResponse,
+        data: rawify(backboneResponse),
         status: 200,
       });
 
@@ -433,21 +441,18 @@ describe('Chains Controller (Unit)', () => {
     it('Validate the response', async () => {
       const invalidResponse = { invalid: 'value' };
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       networkService.get.mockResolvedValueOnce({
-        data: invalidResponse,
+        data: rawify(invalidResponse),
         status: 200,
       });
 
       await request(app.getHttpServer())
         .get('/v1/chains/1/about/backbone')
-        .expect(500)
-        .expect({
-          statusCode: 500,
-          message: 'Internal server error',
-        });
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
 
       expect(networkService.get).toHaveBeenCalledTimes(2);
       expect(networkService.get.mock.calls[0][0].url).toBe(
@@ -492,7 +497,7 @@ describe('Chains Controller (Unit)', () => {
         } as Response,
       );
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       networkService.get.mockRejectedValueOnce(error);
@@ -521,15 +526,15 @@ describe('Chains Controller (Unit)', () => {
   describe('GET /:chainId/about/master-copies', () => {
     it('Success', async () => {
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
-      const domainSingletonsResponse: Singleton[] = [
+      const domainSingletonsResponse: Array<Singleton> = [
         singletonBuilder().build(),
         singletonBuilder().build(),
       ];
       networkService.get.mockResolvedValueOnce({
-        data: domainSingletonsResponse,
+        data: rawify(domainSingletonsResponse),
         status: 200,
       });
       const masterCopiesResponse: Array<MasterCopy> = [
@@ -591,7 +596,7 @@ describe('Chains Controller (Unit)', () => {
         } as Response,
       );
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       networkService.get.mockRejectedValueOnce(error);
@@ -618,7 +623,7 @@ describe('Chains Controller (Unit)', () => {
 
     it('Should return validation error', async () => {
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       const domainSingletonsResponse = [
@@ -626,17 +631,14 @@ describe('Chains Controller (Unit)', () => {
         singletonBuilder().build(),
       ];
       networkService.get.mockResolvedValueOnce({
-        data: domainSingletonsResponse,
+        data: rawify(domainSingletonsResponse),
         status: 200,
       });
 
       await request(app.getHttpServer())
         .get('/v1/chains/1/about/master-copies')
-        .expect(500)
-        .expect({
-          statusCode: 500,
-          message: 'Internal server error',
-        });
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
     });
   });
 
@@ -646,7 +648,7 @@ describe('Chains Controller (Unit)', () => {
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chainResponse.chainId}`) {
           return Promise.resolve({
-            data: chainResponse,
+            data: rawify(chainResponse),
             status: 200,
           });
         }
@@ -654,7 +656,7 @@ describe('Chains Controller (Unit)', () => {
           url === `${chainResponse.transactionService}/api/v1/about/indexing/`
         ) {
           return Promise.resolve({
-            data: indexingStatus,
+            data: rawify(indexingStatus),
             status: 200,
           });
         }
@@ -718,7 +720,7 @@ describe('Chains Controller (Unit)', () => {
       networkService.get.mockImplementation(({ url }) => {
         if (url === `${safeConfigUrl}/api/v1/chains/${chainResponse.chainId}`) {
           return Promise.resolve({
-            data: chainResponse,
+            data: rawify(chainResponse),
             status: 200,
           });
         }
@@ -752,24 +754,21 @@ describe('Chains Controller (Unit)', () => {
 
     it('Should return validation error', async () => {
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       const indexingStatus = {
         invalid: 'indexingStatus',
       };
       networkService.get.mockResolvedValueOnce({
-        data: indexingStatus,
+        data: rawify(indexingStatus),
         status: 200,
       });
 
       await request(app.getHttpServer())
         .get(`/v1/chains/${chainResponse.chainId}/about/indexing`)
-        .expect(500)
-        .expect({
-          statusCode: 500,
-          message: 'Internal server error',
-        });
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
     });
   });
 
@@ -783,7 +782,7 @@ describe('Chains Controller (Unit)', () => {
         buildNumber,
       };
       networkService.get.mockResolvedValueOnce({
-        data: chainDomain,
+        data: rawify(chainDomain),
         status: 200,
       });
 

@@ -15,7 +15,7 @@ import {
   IndexingStatusSchema,
 } from '@/domain/indexing/entities/indexing-status.entity';
 import { ILoggingService, LoggingService } from '@/logging/logging.interface';
-import { differenceBy } from 'lodash';
+import differenceBy from 'lodash/differenceBy';
 import { PaginationData } from '@/routes/common/pagination/pagination.data';
 import { IConfigurationService } from '@/config/configuration.service.interface';
 import { LenientBasePageSchema } from '@/domain/entities/schemas/page.schema.factory';
@@ -94,7 +94,7 @@ export class ChainsRepository implements IChainsRepository {
     return chains;
   }
 
-  async getSingletons(chainId: string): Promise<Singleton[]> {
+  async getSingletons(chainId: string): Promise<Array<Singleton>> {
     const transactionApi = await this.transactionApiManager.getApi(chainId);
     const singletons = await transactionApi.getSingletons();
     return SingletonsSchema.parse(singletons);

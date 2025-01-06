@@ -6,6 +6,7 @@ import type { IJwtService } from '@/datasources/jwt/jwt.service.interface';
 import type { INetworkService } from '@/datasources/network/network.service.interface';
 import { firebaseNotificationBuilder } from '@/datasources/push-notifications-api/__tests__/firebase-notification.builder';
 import { FirebaseCloudMessagingApiService } from '@/datasources/push-notifications-api/firebase-cloud-messaging-api.service';
+import { rawify } from '@/validation/entities/raw.entity';
 import { faker } from '@faker-js/faker';
 
 const mockNetworkService = jest.mocked({
@@ -75,10 +76,11 @@ describe('FirebaseCloudMessagingApiService', () => {
     mockJwtService.sign.mockReturnValue(oauth2AssertionJwt);
     mockNetworkService.post.mockResolvedValueOnce({
       status: 200,
-      data: {
+      data: rawify({
         access_token: oauth2Token,
         expires_in: oauth2TokenExpiresIn,
-      },
+        token_type: 'Bearer',
+      }),
     });
 
     await expect(

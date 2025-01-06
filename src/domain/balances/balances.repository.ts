@@ -21,7 +21,7 @@ export class BalancesRepository implements IBalancesRepository {
     fiatCode: string;
     trusted?: boolean;
     excludeSpam?: boolean;
-  }): Promise<Balance[]> {
+  }): Promise<Array<Balance>> {
     const api = await this.balancesApiManager.getApi(
       args.chain.chainId,
       args.safeAddress,
@@ -41,7 +41,7 @@ export class BalancesRepository implements IBalancesRepository {
     await api.clearBalances(args);
   }
 
-  async getFiatCodes(): Promise<string[]> {
+  async getFiatCodes(): Promise<Array<string>> {
     return this.balancesApiManager
       .getFiatCodes()
       .then(z.array(z.string()).parse);

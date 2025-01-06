@@ -22,9 +22,9 @@ export class MessageMapper {
 
   async mapMessageItems(
     chainId: string,
-    domainMessages: DomainMessage[],
+    domainMessages: Array<DomainMessage>,
     safe: Safe,
-  ): Promise<MessageItem[]> {
+  ): Promise<Array<MessageItem>> {
     return Promise.all(
       domainMessages.map(async (domainMessage) => {
         const message = await this.mapMessage(chainId, domainMessage, safe);
@@ -92,8 +92,8 @@ export class MessageMapper {
 
   private async mapConfirmations(
     chainId: string,
-    confirmations: DomainMessageConfirmation[],
-  ): Promise<MessageConfirmation[]> {
+    confirmations: Array<DomainMessageConfirmation>,
+  ): Promise<Array<MessageConfirmation>> {
     return Promise.all(
       confirmations.map(async (confirmation) => {
         const owner = await this.addressInfoHelper.getOrDefault(

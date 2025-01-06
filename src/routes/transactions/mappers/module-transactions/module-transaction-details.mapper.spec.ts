@@ -80,6 +80,7 @@ describe('ModuleTransactionDetails mapper (Unit)', () => {
       txHash: transaction.transactionHash,
       detailedExecutionInfo: new ModuleExecutionDetails(addressInfo),
       safeAppInfo: null,
+      note: null,
     });
   });
 
@@ -127,6 +128,7 @@ describe('ModuleTransactionDetails mapper (Unit)', () => {
       txHash: transaction.transactionHash,
       detailedExecutionInfo: new ModuleExecutionDetails(addressInfo),
       safeAppInfo: null,
+      note: null,
     });
   });
 });

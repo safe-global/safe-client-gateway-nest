@@ -10,6 +10,7 @@ const anyStringOrNull: MatcherFunction = function (actual) {
     };
   } else {
     return {
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       message: () => `expected ${actual} to be string or null`,
       pass: false,
     };

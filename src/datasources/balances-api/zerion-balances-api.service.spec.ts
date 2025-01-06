@@ -6,6 +6,7 @@ import type { INetworkService } from '@/datasources/network/network.service.inte
 import { balancesProviderBuilder } from '@/domain/chains/entities/__tests__/balances-provider.builder';
 import { chainBuilder } from '@/domain/chains/entities/__tests__/chain.builder';
 import type { ILoggingService } from '@/logging/logging.interface';
+import { rawify } from '@/validation/entities/raw.entity';
 import { faker } from '@faker-js/faker';
 import { getAddress } from 'viem';
 
@@ -115,7 +116,7 @@ describe('ZerionBalancesApiService', () => {
       const safeAddress = getAddress(faker.finance.ethereumAddress());
       const fiatCode = faker.helpers.arrayElement(supportedFiatCodes);
       mockNetworkService.get.mockResolvedValue({
-        data: { data: [] },
+        data: rawify({ data: [] }),
         status: 200,
       });
 
@@ -149,7 +150,7 @@ describe('ZerionBalancesApiService', () => {
       const safeAddress = getAddress(faker.finance.ethereumAddress());
       const fiatCode = faker.helpers.arrayElement(supportedFiatCodes);
       mockNetworkService.get.mockResolvedValue({
-        data: { data: [] },
+        data: rawify({ data: [] }),
         status: 200,
       });
 

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { groupBy } from 'lodash';
+import groupBy from 'lodash/groupBy';
 import { Safe } from '@/domain/safe/entities/safe.entity';
 import {
   isCreationTransaction,
@@ -42,7 +42,7 @@ export class TransactionsHistoryMapper {
 
   async mapTransactionsHistory(
     chainId: string,
-    transactionsDomain: TransactionDomain[],
+    transactionsDomain: Array<TransactionDomain>,
     safe: Safe,
     offset: number,
     timezoneOffset: number,
@@ -53,14 +53,25 @@ export class TransactionsHistoryMapper {
     if (transactionsDomain.length == 0) {
       return [];
     }
-    // Must be retrieved before mapping others as we remove it from transactionsDomain
-    const previousTransaction = await this.getPreviousTransaction({
-      offset,
-      transactionsDomain,
-      chainId,
-      safe,
-      onlyTrusted,
-    });
+
+    let previousTransaction: TransactionItem | undefined;
+
+    /**
+     * We insert a {@link DateLabel} between transactions on different days.
+     * On subsequent pages (offset > 0), we fetch the last transaction of previous page
+     * to determine if the first transaction of the current page is on the same day.
+     */
+    if (offset > 0 && transactionsDomain.length > 1) {
+      previousTransaction = await this.getPreviousTransaction({
+        transactionsDomain,
+        chainId,
+        safe,
+        onlyTrusted,
+      });
+
+      // Remove first transaction that was requested to get previous day timestamp
+      transactionsDomain = transactionsDomain.slice(1);
+    }
 
     const mappedTransactions = await this.getMappedTransactions({
       transactionsDomain,
@@ -97,16 +108,11 @@ export class TransactionsHistoryMapper {
   }
 
   private async getPreviousTransaction(args: {
-    offset: number;
-    transactionsDomain: TransactionDomain[];
+    transactionsDomain: Array<TransactionDomain>;
     chainId: string;
     safe: Safe;
     onlyTrusted: boolean;
   }): Promise<TransactionItem | undefined> {
-    // More than 1 element is required to get the previous transaction
-    if (args.offset <= 0 || args.transactionsDomain.length <= 1) {
-      return;
-    }
     const prevDomainTransaction = args.transactionsDomain[0];
     // We map in order to filter last list item against it
     const mappedPreviousTransaction = await this.mapTransaction(
@@ -115,8 +121,6 @@ export class TransactionsHistoryMapper {
       args.safe,
       args.onlyTrusted,
     );
-    // Remove first transaction that was requested to get previous day timestamp
-    args.transactionsDomain = args.transactionsDomain.slice(1);
 
     return Array.isArray(mappedPreviousTransaction)
       ? // All transfers should have same execution date but the last is "true" previous
@@ -125,13 +129,13 @@ export class TransactionsHistoryMapper {
   }
 
   private async getMappedTransactions(args: {
-    transactionsDomain: TransactionDomain[];
+    transactionsDomain: Array<TransactionDomain>;
     chainId: string;
     safe: Safe;
     previousTransaction: TransactionItem | undefined;
     onlyTrusted: boolean;
     showImitations: boolean;
-  }): Promise<TransactionItem[]> {
+  }): Promise<Array<TransactionItem>> {
     const mappedTransactions = await Promise.all(
       args.transactionsDomain.map((transaction) => {
         return this.mapTransaction(
@@ -154,10 +158,10 @@ export class TransactionsHistoryMapper {
   }
 
   private groupByDay(
-    transactions: TransactionItem[],
+    transactions: Array<TransactionItem>,
     timezoneOffset: number,
     timezone?: string,
-  ): TransactionItem[][] {
+  ): Array<Array<TransactionItem>> {
     const grouped = groupBy(transactions, ({ transaction }) => {
       // timestamp will always be defined for historical transactions
       const date = new Date(transaction.timestamp ?? 0);
@@ -184,11 +188,11 @@ export class TransactionsHistoryMapper {
   }
 
   private async mapTransfers(
-    transfers: Transfer[],
+    transfers: Array<Transfer>,
     chainId: string,
     safe: Safe,
     onlyTrusted: boolean,
-  ): Promise<TransactionItem[]> {
+  ): Promise<Array<TransactionItem>> {
     const limitedTransfers = transfers.slice(0, this.maxNestedTransfers);
 
     const nestedTransactions = await this.transferMapper.mapTransfers({
@@ -208,7 +212,7 @@ export class TransactionsHistoryMapper {
     chainId: string,
     safe: Safe,
     onlyTrusted: boolean,
-  ): Promise<TransactionItem | TransactionItem[] | undefined> {
+  ): Promise<TransactionItem | Array<TransactionItem> | undefined> {
     if (isMultisigTransaction(transaction)) {
       return new TransactionItem(
         await this.multisigTransactionMapper.mapTransaction(

@@ -25,5 +25,5 @@ export abstract class Page<T> implements DomainPage<T> {
   next!: string | null;
   @ApiPropertyOptional({ type: String, nullable: true })
   previous!: string | null;
-  abstract results: T[];
+  abstract results: Array<T>;
 }

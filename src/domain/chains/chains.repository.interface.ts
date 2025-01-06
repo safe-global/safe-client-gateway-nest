@@ -40,7 +40,7 @@ export interface IChainsRepository {
    *
    * @param chainId
    */
-  getSingletons(chainId: string): Promise<Singleton[]>;
+  getSingletons(chainId: string): Promise<Array<Singleton>>;
 
   /**
    * Gets the {@link IndexingStatus} associated with {@link chainId}

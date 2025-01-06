@@ -11,7 +11,7 @@ export interface IBalancesApi {
     chain: Chain;
     trusted?: boolean;
     excludeSpam?: boolean;
-  }): Promise<Raw<Balance[]>>;
+  }): Promise<Raw<Array<Balance>>>;
 
   clearBalances(args: {
     chainId: string;
@@ -32,5 +32,5 @@ export interface IBalancesApi {
     safeAddress: `0x${string}`;
   }): Promise<void>;
 
-  getFiatCodes(): Promise<Raw<string[]>>;
+  getFiatCodes(): Promise<Raw<Array<string>>>;
 }

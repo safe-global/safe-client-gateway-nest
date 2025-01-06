@@ -4,7 +4,7 @@ export class SafeRegistration {
   @ApiProperty()
   chainId!: string;
   @ApiProperty()
-  safes!: string[];
+  safes!: Array<string>;
   @ApiProperty()
-  signatures!: string[];
+  signatures!: Array<string>;
 }

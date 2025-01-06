@@ -44,7 +44,7 @@ export class BalancesController {
   }
 
   @Get('balances/supported-fiat-codes')
-  async getSupportedFiatCodes(): Promise<string[]> {
+  async getSupportedFiatCodes(): Promise<Array<string>> {
     return this.balancesService.getSupportedFiatCodes();
   }
 }

@@ -28,7 +28,7 @@ export class MultisigTransactionExecutionInfoMapper {
   private getMissingSigners(
     transaction: MultisigTransaction,
     safe: Safe,
-  ): AddressInfo[] {
+  ): Array<AddressInfo> {
     const confirmedOwners =
       transaction.confirmations?.map((confirmation) => confirmation.owner) ??
       [];

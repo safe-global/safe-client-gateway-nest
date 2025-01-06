@@ -20,7 +20,7 @@ export class NativeStakingWithdrawConfirmationView implements Baseline {
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
   @ApiProperty()
   value: string;
@@ -33,7 +33,7 @@ export class NativeStakingWithdrawConfirmationView implements Baseline {
 
   constructor(args: {
     method: string;
-    parameters: DataDecodedParameter[] | null;
+    parameters: Array<DataDecodedParameter> | null;
     value: string;
     tokenInfo: TokenInfo;
     validators: Array<`0x${string}`>;

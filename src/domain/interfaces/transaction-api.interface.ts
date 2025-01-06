@@ -29,7 +29,7 @@ export interface ITransactionApi {
 
   getBackbone(): Promise<Raw<Backbone>>;
 
-  getSingletons(): Promise<Raw<Singleton[]>>;
+  getSingletons(): Promise<Raw<Array<Singleton>>>;
 
   getIndexingStatus(): Promise<Raw<IndexingStatus>>;
 
@@ -176,7 +176,7 @@ export interface ITransactionApi {
 
   getCreationTransaction(
     safeAddress: `0x${string}`,
-  ): Promise<CreationTransaction>;
+  ): Promise<Raw<CreationTransaction>>;
 
   getAllTransactions(args: {
     safeAddress: `0x${string}`;
@@ -200,8 +200,8 @@ export interface ITransactionApi {
 
   postDeviceRegistration(args: {
     device: Device;
-    safes: string[];
-    signatures: string[];
+    safes: Array<string>;
+    signatures: Array<string>;
   }): Promise<void>;
 
   deleteDeviceRegistration(uuid: string): Promise<void>;

@@ -1,14 +1,26 @@
-import type { DeviceType } from '@/domain/notifications/v2/entities/device-type.entity';
-import type { NotificationType } from '@/domain/notifications/v2/entities/notification-type.entity';
-import type { Uuid } from '@/domain/notifications/v2/entities/uuid.entity';
+import { DeviceType } from '@/domain/notifications/v2/entities/device-type.entity';
+import { NotificationType } from '@/domain/notifications/v2/entities/notification-type.entity';
+import { AddressSchema } from '@/validation/entities/schemas/address.schema';
+import { UuidSchema } from '@/validation/entities/schemas/uuid.schema';
+import { z } from 'zod';
 
-export type UpsertSubscriptionsDto = {
-  cloudMessagingToken: string;
-  safes: Array<{
-    chainId: string;
-    address: `0x${string}`;
-    notificationTypes: Array<NotificationType>;
-  }>;
-  deviceType: DeviceType;
-  deviceUuid?: Uuid;
-};
+const UpsertSubscriptionsDtoSafesSchema = z.object({
+  chainId: z.string(),
+  address: AddressSchema,
+  notificationTypes: z.array(z.nativeEnum(NotificationType)),
+});
+
+export const UpsertSubscriptionsDtoSchema = z.object({
+  cloudMessagingToken: z.string(),
+  safes: z.array(UpsertSubscriptionsDtoSafesSchema),
+  deviceType: z.nativeEnum(DeviceType),
+  deviceUuid: UuidSchema.nullish().default(null),
+});
+
+export type UpsertSubscriptionsSafesDto = z.infer<
+  typeof UpsertSubscriptionsDtoSafesSchema
+>;
+
+export type UpsertSubscriptionsDto = z.infer<
+  typeof UpsertSubscriptionsDtoSchema
+>;

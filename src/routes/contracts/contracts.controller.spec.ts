@@ -26,6 +26,7 @@ import { PostgresDatabaseModuleV2 } from '@/datasources/db/v2/postgres-database.
 import { TestPostgresDatabaseModuleV2 } from '@/datasources/db/v2/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Contracts controller', () => {
   let app: INestApplication<Server>;
@@ -75,9 +76,9 @@ describe('Contracts controller', () => {
       networkService.get.mockImplementation(({ url }) => {
         switch (url) {
           case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           case `${chain.transactionService}/api/v1/contracts/${contract.address}`:
-            return Promise.resolve({ data: contract, status: 200 });
+            return Promise.resolve({ data: rawify(contract), status: 200 });
           default:
             return Promise.reject(`No matching rule for url: ${url}`);
         }
@@ -113,7 +114,7 @@ describe('Contracts controller', () => {
       networkService.get.mockImplementation(({ url }) => {
         switch (url) {
           case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           case transactionServiceUrl:
             return Promise.reject(
               new NetworkResponseError(new URL(transactionServiceUrl), {
@@ -136,10 +137,10 @@ describe('Contracts controller', () => {
       networkService.get.mockImplementation(({ url }) => {
         switch (url) {
           case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-            return Promise.resolve({ data: chain, status: 200 });
+            return Promise.resolve({ data: rawify(chain), status: 200 });
           case `${chain.transactionService}/api/v1/contracts/${contract.address}`:
             return Promise.resolve({
-              data: { ...contract, name: false },
+              data: rawify({ ...contract, name: false }),
               status: 200,
             });
           default:
@@ -149,11 +150,8 @@ describe('Contracts controller', () => {
 
       await request(app.getHttpServer())
         .get(`/v1/chains/${chain.chainId}/contracts/${contract.address}`)
-        .expect(500)
-        .expect({
-          statusCode: 500,
-          message: 'Internal server error',
-        });
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
     });
   });
 });

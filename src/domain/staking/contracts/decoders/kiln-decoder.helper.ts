@@ -56,7 +56,7 @@ export class KilnDecoder extends AbiDecoder<typeof KilnAbi> {
   // publicKeys and don't format it like DataDecoded
   decodeValidatorsExit(data: `0x${string}`): {
     method: string;
-    parameters: KilnRequestValidatorsExitParameters[];
+    parameters: Array<KilnRequestValidatorsExitParameters>;
   } | null {
     if (!this.helpers.isRequestValidatorsExit(data)) {
       return null;
@@ -87,7 +87,7 @@ export class KilnDecoder extends AbiDecoder<typeof KilnAbi> {
   // publicKeys and don't format it like DataDecoded
   decodeBatchWithdrawCLFee(data: `0x${string}`): {
     method: string;
-    parameters: KilnBatchWithdrawCLFeeParameters[];
+    parameters: Array<KilnBatchWithdrawCLFeeParameters>;
   } | null {
     if (!this.helpers.isBatchWithdrawCLFee(data)) {
       return null;
@@ -116,7 +116,7 @@ export class KilnDecoder extends AbiDecoder<typeof KilnAbi> {
 
   decodeDepositEvent(args: {
     data: `0x${string}`;
-    topics: [signature: `0x${string}`, ...args: `0x${string}`[]];
+    topics: [signature: `0x${string}`, ...args: Array<`0x${string}`>];
   }): {
     pubkey: `0x${string}`;
     withdrawal_credentials: `0x${string}`;
@@ -138,7 +138,7 @@ export class KilnDecoder extends AbiDecoder<typeof KilnAbi> {
 
   decodeWithdrawal(args: {
     data: `0x${string}`;
-    topics: [signature: `0x${string}`, ...args: `0x${string}`[]];
+    topics: [signature: `0x${string}`, ...args: Array<`0x${string}`>];
   }): {
     withdrawer: `0x${string}`;
     feeRecipient: `0x${string}`;

@@ -6,5 +6,5 @@ export class Balances {
   @ApiProperty()
   fiatTotal!: string;
   @ApiProperty({ type: 'array', oneOf: [{ $ref: getSchemaPath(Balance) }] })
-  items!: Balance[];
+  items!: Array<Balance>;
 }

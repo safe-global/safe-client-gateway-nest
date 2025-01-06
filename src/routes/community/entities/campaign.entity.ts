@@ -20,7 +20,7 @@ export class Campaign implements DomainCampaign {
     isArray: true,
     nullable: true,
   })
-  activitiesMetadata!: ActivityMetadata[] | null;
+  activitiesMetadata!: Array<ActivityMetadata> | null;
   @ApiPropertyOptional({ type: String, nullable: true })
   rewardValue!: string | null;
   @ApiPropertyOptional({ type: String, nullable: true })

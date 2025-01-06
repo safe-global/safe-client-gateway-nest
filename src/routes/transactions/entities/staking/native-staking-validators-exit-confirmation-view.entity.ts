@@ -26,7 +26,7 @@ export class NativeStakingValidatorsExitConfirmationView implements Baseline {
     isArray: true,
     nullable: true,
   })
-  parameters: DataDecodedParameter[] | null;
+  parameters: Array<DataDecodedParameter> | null;
 
   @ApiProperty()
   estimatedExitTime: number;
@@ -48,7 +48,7 @@ export class NativeStakingValidatorsExitConfirmationView implements Baseline {
 
   constructor(args: {
     method: string;
-    parameters: DataDecodedParameter[] | null;
+    parameters: Array<DataDecodedParameter> | null;
     status: StakingStatus;
     estimatedExitTime: number;
     estimatedWithdrawalTime: number;

@@ -30,6 +30,7 @@ import { PostgresDatabaseModule } from '@/datasources/db/v1/postgres-database.mo
 import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Safes Controller Nonces (Unit)', () => {
   let app: INestApplication<Server>;
@@ -83,12 +84,12 @@ describe('Safes Controller Nonces (Unit)', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case `${chain.transactionService}/api/v1/safes/${safeInfo.address}`:
-          return Promise.resolve({ data: safeInfo, status: 200 });
+          return Promise.resolve({ data: rawify(safeInfo), status: 200 });
         case `${chain.transactionService}/api/v1/safes/${safeInfo.address}/multisig-transactions/`:
           return Promise.resolve({
-            data: multisigTransactionsPage,
+            data: rawify(multisigTransactionsPage),
             status: 200,
           });
       }
@@ -120,12 +121,12 @@ describe('Safes Controller Nonces (Unit)', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case `${chain.transactionService}/api/v1/safes/${safeInfo.address}`:
-          return Promise.resolve({ data: safeInfo, status: 200 });
+          return Promise.resolve({ data: rawify(safeInfo), status: 200 });
         case `${chain.transactionService}/api/v1/safes/${safeInfo.address}/multisig-transactions/`:
           return Promise.resolve({
-            data: multisigTransactionsPage,
+            data: rawify(multisigTransactionsPage),
             status: 200,
           });
       }
@@ -149,12 +150,12 @@ describe('Safes Controller Nonces (Unit)', () => {
     networkService.get.mockImplementation(({ url }) => {
       switch (url) {
         case `${safeConfigUrl}/api/v1/chains/${chain.chainId}`:
-          return Promise.resolve({ data: chain, status: 200 });
+          return Promise.resolve({ data: rawify(chain), status: 200 });
         case `${chain.transactionService}/api/v1/safes/${safeInfo.address}`:
-          return Promise.resolve({ data: safeInfo, status: 200 });
+          return Promise.resolve({ data: rawify(safeInfo), status: 200 });
         case `${chain.transactionService}/api/v1/safes/${safeInfo.address}/multisig-transactions/`:
           return Promise.resolve({
-            data: multisigTransactionsPage,
+            data: rawify(multisigTransactionsPage),
             status: 200,
           });
       }

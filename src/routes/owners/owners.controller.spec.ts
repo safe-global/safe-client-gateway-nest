@@ -32,6 +32,7 @@ import { PostgresDatabaseModuleV2 } from '@/datasources/db/v2/postgres-database.
 import { TestPostgresDatabaseModuleV2 } from '@/datasources/db/v2/test.postgres-database.module';
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
+import { rawify } from '@/validation/entities/raw.entity';
 
 describe('Owners Controller (Unit)', () => {
   let app: INestApplication<Server>;
@@ -87,11 +88,11 @@ describe('Owners Controller (Unit)', () => {
         ],
       };
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       networkService.get.mockResolvedValueOnce({
-        data: transactionApiSafeListResponse,
+        data: rawify(transactionApiSafeListResponse),
         status: 200,
       });
 
@@ -138,7 +139,7 @@ describe('Owners Controller (Unit)', () => {
       const ownerAddress = faker.finance.ethereumAddress();
       const chainResponse = chainBuilder().with('chainId', chainId).build();
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       const error = new NetworkResponseError(
@@ -182,21 +183,18 @@ describe('Owners Controller (Unit)', () => {
         ],
       };
       networkService.get.mockResolvedValueOnce({
-        data: chainResponse,
+        data: rawify(chainResponse),
         status: 200,
       });
       networkService.get.mockResolvedValueOnce({
-        data: transactionApiSafeListResponse,
+        data: rawify(transactionApiSafeListResponse),
         status: 200,
       });
 
       await request(app.getHttpServer())
         .get(`/v1/chains/${chainId}/owners/${ownerAddress}/safes`)
-        .expect(500)
-        .expect({
-          statusCode: 500,
-          message: 'Internal server error',
-        });
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
     });
   });
 
@@ -225,24 +223,26 @@ describe('Owners Controller (Unit)', () => {
         switch (url) {
           case `${safeConfigUrl}/api/v1/chains`: {
             return Promise.resolve({
-              data: pageBuilder()
-                .with('results', [chain1, chain2])
-                .with('next', null)
-                .build(),
+              data: rawify(
+                pageBuilder()
+                  .with('results', [chain1, chain2])
+                  .with('next', null)
+                  .build(),
+              ),
               status: 200,
             });
           }
 
           case `${safeConfigUrl}/api/v1/chains/${chainId1}`: {
             return Promise.resolve({
-              data: chain1,
+              data: rawify(chain1),
               status: 200,
             });
           }
 
           case `${safeConfigUrl}/api/v1/chains/${chainId2}`: {
             return Promise.resolve({
-              data: chain2,
+              data: rawify(chain2),
               status: 200,
             });
           }
@@ -250,14 +250,14 @@ describe('Owners Controller (Unit)', () => {
           // ValidationPipe checksums ownerAddress param
           case `${chain1.transactionService}/api/v1/owners/${getAddress(ownerAddress)}/safes/`: {
             return Promise.resolve({
-              data: { safes: safesOnChain1 },
+              data: rawify({ safes: safesOnChain1 }),
               status: 200,
             });
           }
 
           case `${chain2.transactionService}/api/v1/owners/${getAddress(ownerAddress)}/safes/`: {
             return Promise.resolve({
-              data: { safes: safesOnChain2 },
+              data: rawify({ safes: safesOnChain2 }),
               status: 200,
             });
           }
@@ -312,26 +312,26 @@ describe('Owners Controller (Unit)', () => {
       networkService.get.mockImplementation(({ url, networkRequest }) => {
         if (url === chainsUrl && !networkRequest!.params!.offset) {
           return Promise.resolve({
-            data: chainsPage1,
+            data: rawify(chainsPage1),
             status: 200,
           });
         }
         if (url === chainsUrl && networkRequest!.params!.offset === offset) {
           return Promise.resolve({
-            data: chainsPage2,
+            data: rawify(chainsPage2),
             status: 200,
           });
         }
         if (url === `${safeConfigUrl}/api/v1/chains/${chainId1}`) {
           return Promise.resolve({
-            data: chain1,
+            data: rawify(chain1),
             status: 200,
           });
         }
 
         if (url === `${safeConfigUrl}/api/v1/chains/${chainId2}`) {
           return Promise.resolve({
-            data: chain2,
+            data: rawify(chain2),
             status: 200,
           });
         }
@@ -342,7 +342,7 @@ describe('Owners Controller (Unit)', () => {
           `${chain1.transactionService}/api/v1/owners/${getAddress(ownerAddress)}/safes/`
         ) {
           return Promise.resolve({
-            data: { safes: safesOnChain1 },
+            data: rawify({ safes: safesOnChain1 }),
             status: 200,
           });
         }
@@ -352,7 +352,7 @@ describe('Owners Controller (Unit)', () => {
           `${chain2.transactionService}/api/v1/owners/${getAddress(ownerAddress)}/safes/`
         ) {
           return Promise.resolve({
-            data: { safes: safesOnChain2 },
+            data: rawify({ safes: safesOnChain2 }),
             status: 200,
           });
         }
@@ -420,23 +420,23 @@ describe('Owners Controller (Unit)', () => {
         switch (url) {
           case `${safeConfigUrl}/api/v1/chains`: {
             return Promise.resolve({
-              data: {
+              data: rawify({
                 results: [chain],
-              },
+              }),
               status: 200,
             });
           }
 
           case `${safeConfigUrl}/api/v1/chains/${chainId}`: {
             return Promise.resolve({
-              data: chain,
+              data: rawify(chain),
               status: 200,
             });
           }
 
           case `${chain.transactionService}/api/v1/owners/${ownerAddress}/safes/`: {
             return Promise.resolve({
-              data: { safes: safesOnChain },
+              data: rawify({ safes: safesOnChain }),
               status: 200,
             });
           }
@@ -449,11 +449,8 @@ describe('Owners Controller (Unit)', () => {
 
       await request(app.getHttpServer())
         .get(`/v1/owners/${ownerAddress}/safes`)
-        .expect(500)
-        .expect({
-          statusCode: 500,
-          message: 'Internal server error',
-        });
+        .expect(502)
+        .expect({ statusCode: 502, message: 'Bad gateway' });
     });
   });
 });

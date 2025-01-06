@@ -39,6 +39,10 @@ const multisigExecutionDetailsMapper = jest.mocked({
   mapMultisigExecutionDetails: jest.fn(),
 } as jest.MockedObjectDeep<MultisigTransactionExecutionDetailsMapper>);
 
+const multisigTransactionNoteMapper = jest.mocked({
+  mapTxNote: jest.fn(),
+});
+
 describe('MultisigTransactionDetails mapper (Unit)', () => {
   let mapper: MultisigTransactionDetailsMapper;
 
@@ -51,6 +55,7 @@ describe('MultisigTransactionDetails mapper (Unit)', () => {
       transactionDataMapper,
       safeAppInfoMapper,
       multisigExecutionDetailsMapper,
+      multisigTransactionNoteMapper,
     );
   });
 

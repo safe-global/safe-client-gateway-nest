@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { ContractsRepository } from '@/domain/contracts/contracts.repository';
 import { IContractsRepository } from '@/domain/contracts/contracts.repository.interface';
 import { Operation } from '@/domain/safe/entities/operation.entity';
@@ -111,7 +111,9 @@ export class TransactionDataMapper {
     if (dataDecoded === null || !Array.isArray(dataDecoded.parameters))
       return {};
     const { method, parameters } = dataDecoded;
-    const promises: Promise<(AddressInfo | null)[] | AddressInfo | null>[] = [];
+    const promises: Array<
+      Promise<Array<AddressInfo | null> | AddressInfo | null>
+    > = [];
 
     for (const parameter of parameters) {
       if (
@@ -146,9 +148,9 @@ export class TransactionDataMapper {
   private async _getFromValueDecoded(
     chainId: string,
     valueDecoded: unknown,
-  ): Promise<(AddressInfo | null)[]> {
+  ): Promise<Array<AddressInfo | null>> {
     if (!Array.isArray(valueDecoded)) return [];
-    const promises: Promise<AddressInfo | null>[] = [];
+    const promises: Array<Promise<AddressInfo | null>> = [];
 
     for (const transaction of valueDecoded) {
       promises.push(this._getIfValid(chainId, transaction.to));

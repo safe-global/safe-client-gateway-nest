@@ -61,7 +61,7 @@ describe('AddressBooksDataSource', () => {
 
   const createTestAccount = async (): Promise<Account> => {
     const createAccountDto = createAccountDtoBuilder().build();
-    const [account] = await sql<Account[]>`
+    const [account] = await sql<Array<Account>>`
         INSERT INTO accounts (address, name, name_hash)
         VALUES (
           ${createAccountDto.address},

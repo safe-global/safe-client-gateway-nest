@@ -5,7 +5,7 @@ import { ZodError } from 'zod';
 
 export class ZodErrorWithCode extends ZodError {
   constructor(
-    public issues: ZodIssue[],
+    public issues: Array<ZodIssue>,
     public code: number,
   ) {
     super(issues);

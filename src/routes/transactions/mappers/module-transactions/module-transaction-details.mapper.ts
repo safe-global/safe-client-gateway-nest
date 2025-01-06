@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { ModuleTransaction } from '@/domain/safe/entities/module-transaction.entity';
 import { AddressInfoHelper } from '@/routes/common/address-info/address-info.helper';
 import {
@@ -44,6 +44,7 @@ export class ModuleTransactionDetailsMapper {
       txHash: transaction.transactionHash,
       detailedExecutionInfo: new ModuleExecutionDetails(moduleAddress),
       safeAppInfo: null,
+      note: null,
     };
   }
 

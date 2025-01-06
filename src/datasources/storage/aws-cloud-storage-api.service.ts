@@ -45,7 +45,7 @@ export class AwsCloudStorageApiService implements ICloudStorageApiService {
 
   private async streamToString(stream: Readable): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      const chunks: Buffer[] = [];
+      const chunks: Array<Buffer> = [];
       stream.on('data', (chunk: Buffer) => chunks.push(chunk));
       stream.on('error', reject);
       stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));

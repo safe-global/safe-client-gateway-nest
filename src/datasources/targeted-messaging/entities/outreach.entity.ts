@@ -9,6 +9,7 @@ export class Outreach {
   source_file: string | null;
   source_file_processed_date: Date | null;
   source_file_checksum: string | null;
+  target_all: boolean;
   created_at: Date;
   updated_at: Date;
 
@@ -23,6 +24,7 @@ export class Outreach {
     source_file: string | null,
     source_file_processed_date: Date | null,
     source_file_checksum: string | null,
+    target_all: boolean,
     created_at: Date,
     updated_at: Date,
   ) {
@@ -36,6 +38,7 @@ export class Outreach {
     this.source_file = source_file;
     this.source_file_processed_date = source_file_processed_date;
     this.source_file_checksum = source_file_checksum;
+    this.target_all = target_all;
     this.created_at = created_at;
     this.updated_at = updated_at;
   }

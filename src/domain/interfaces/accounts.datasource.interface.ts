@@ -16,12 +16,14 @@ export interface IAccountsDatasource {
 
   deleteAccount(address: `0x${string}`): Promise<void>;
 
-  getDataTypes(): Promise<AccountDataType[]>;
+  getDataTypes(): Promise<Array<AccountDataType>>;
 
-  getAccountDataSettings(address: `0x${string}`): Promise<AccountDataSetting[]>;
+  getAccountDataSettings(
+    address: `0x${string}`,
+  ): Promise<Array<AccountDataSetting>>;
 
   upsertAccountDataSettings(args: {
     address: `0x${string}`;
     upsertAccountDataSettingsDto: UpsertAccountDataSettingsDto;
-  }): Promise<AccountDataSetting[]>;
+  }): Promise<Array<AccountDataSetting>>;
 }

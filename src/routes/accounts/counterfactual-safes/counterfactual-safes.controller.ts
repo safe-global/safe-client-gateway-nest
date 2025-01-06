@@ -43,7 +43,7 @@ export class CounterfactualSafesController {
   @Get(':address/counterfactual-safes')
   async getCounterfactualSafes(
     @Param('address', new ValidationPipe(AddressSchema)) address: `0x${string}`,
-  ): Promise<CounterfactualSafe[]> {
+  ): Promise<Array<CounterfactualSafe>> {
     return this.service.getCounterfactualSafes(address);
   }
 

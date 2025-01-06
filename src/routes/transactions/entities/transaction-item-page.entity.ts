@@ -12,5 +12,5 @@ export class TransactionItemPage extends Page<TransactionItem | DateLabel> {
       { $ref: getSchemaPath(DateLabel) },
     ],
   })
-  results!: (TransactionItem | DateLabel)[];
+  results!: Array<TransactionItem | DateLabel>;
 }

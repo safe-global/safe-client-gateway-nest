@@ -1,7 +1,7 @@
 interface TestSafe {
   chainId: string;
   address: `0x${string}`;
-  owners: `0x${string}`[];
+  owners: Array<`0x${string}`>;
 }
 
 export const TEST_SAFE: TestSafe = {

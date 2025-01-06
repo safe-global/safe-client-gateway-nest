@@ -59,7 +59,7 @@ describe('AddressBookItemNameSchema', () => {
           inclusive: true,
           exact: false,
           message:
-            'Address Books items names must be at least 3 characters long',
+            'Address book entry names must be at least 3 characters long',
           path: [],
         },
       ]),
@@ -80,7 +80,7 @@ describe('AddressBookItemNameSchema', () => {
           inclusive: true,
           exact: false,
           message:
-            'Address Books items names must be at most 50 characters long',
+            'Address book entry names must be at most 50 characters long',
           path: [],
         },
       ]),
@@ -99,7 +99,7 @@ describe('AddressBookItemNameSchema', () => {
           validation: 'regex',
           code: 'invalid_string',
           message:
-            'Address Books items names must start with a letter or number and can contain alphanumeric characters, periods, underscores, or hyphens',
+            'Address book entry names must start with a letter or number and can contain alphanumeric characters, periods, underscores, or hyphens',
           path: [],
         },
       ]),

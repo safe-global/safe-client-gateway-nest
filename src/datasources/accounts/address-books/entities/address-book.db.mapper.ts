@@ -17,7 +17,9 @@ export class AddressBookDbMapper {
 
   async map(addressBook: DbAddressBook): Promise<AddressBook> {
     const encryptionApi = await this.encryptionApiManager.getApi();
-    const decryptedData = await encryptionApi.decryptBlob<AddressBookItem[]>(
+    const decryptedData = await encryptionApi.decryptBlob<
+      Array<AddressBookItem>
+    >(
       new EncryptedBlob({
         encryptedData: addressBook.data,
         encryptedDataKey: addressBook.key,

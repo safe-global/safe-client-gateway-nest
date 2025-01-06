@@ -3,14 +3,17 @@ import {
   fingerprintIpInfoBuilder,
   fingerprintLocationSpoofingBuilder,
   fingerprintUnsealedDataBuilder,
+  fingerprintVpnBuilder,
 } from '@/datasources/locking-api/entities/__tests__/fingerprint-unsealed-data.entity.builder';
 import {
   FingerprintIpDataSchema,
   FingerprintIpInfoSchema,
   FingerprintLocationSpoofingSchema,
   FingerprintUnsealedDataSchema,
+  FingerprintVpnSchema,
 } from '@/datasources/locking-api/entities/fingerprint-unsealed-data.entity';
 import { ZodError } from 'zod';
+import { faker } from '@faker-js/faker';
 
 describe('FingerprintUnsealedData schemas', () => {
   describe('FingerprintUnsealedDataEntity', () => {
@@ -144,6 +147,62 @@ describe('FingerprintUnsealedData schemas', () => {
       const result = FingerprintLocationSpoofingSchema.safeParse(
         fingerprintLocationSpoofing,
       );
+
+      expect(!result.success && result.error).toStrictEqual(
+        new ZodError([
+          {
+            code: 'invalid_type',
+            expected: 'boolean',
+            received: 'string',
+            path: ['data', 'result'],
+            message: 'Expected boolean, received string',
+          },
+        ]),
+      );
+    });
+  });
+
+  describe('FingerprintVpnSchema', () => {
+    it('should validate a FingerprintVpnSchema', () => {
+      const fingerprintVpn = fingerprintVpnBuilder().build();
+
+      const result = FingerprintVpnSchema.safeParse(fingerprintVpn);
+
+      expect(result.success).toBe(true);
+    });
+
+    it('should allow undefined data, defaulting to null', () => {
+      const fingerprintVpn = fingerprintVpnBuilder().build();
+
+      // @ts-expect-error - inferred types don't allow optional fields
+      delete fingerprintVpn.data;
+
+      const result = FingerprintVpnSchema.safeParse(fingerprintVpn);
+
+      expect(result.success && result.data.data).toBe(null);
+    });
+
+    it('should fallback to unknown for an invalid confidence value', () => {
+      const fingerprintVpn = {
+        data: {
+          ...fingerprintVpnBuilder().build().data,
+          confidence: faker.string.sample(),
+        },
+      };
+
+      const result = FingerprintVpnSchema.safeParse(fingerprintVpn);
+
+      expect(result.success && result.data.data?.confidence).toEqual('unknown');
+    });
+
+    it('should not allow non-boolean result', () => {
+      const fingerprintVpn = fingerprintVpnBuilder().build();
+
+      // @ts-expect-error - value is expected to be a boolean
+      fingerprintVpn.data.result = 'true';
+
+      const result =
+        FingerprintLocationSpoofingSchema.safeParse(fingerprintVpn);
 
       expect(!result.success && result.error).toStrictEqual(
         new ZodError([

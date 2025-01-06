@@ -15,6 +15,7 @@ import { transactionStatusBuilder } from '@/datasources/staking-api/entities/__t
 import { KilnApi } from '@/datasources/staking-api/kiln-api.service';
 import { DataSourceError } from '@/domain/errors/data-source.error';
 import { KilnDecoder } from '@/domain/staking/contracts/decoders/kiln-decoder.helper';
+import { rawify } from '@/validation/entities/raw.entity';
 import { faker } from '@faker-js/faker';
 import { getAddress } from 'viem';
 
@@ -85,11 +86,13 @@ describe('KilnApi', () => {
         () => deploymentBuilder().build(),
         { count: { min: 1, max: 5 } },
       );
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: deployments,
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: deployments,
+        }),
+      );
 
       const actual = await target.getDeployments();
 
@@ -145,11 +148,13 @@ describe('KilnApi', () => {
   describe('getNetworkStats', () => {
     it('should return network stats', async () => {
       const networkStats = networkStatsBuilder().build();
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: networkStats,
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: networkStats,
+        }),
+      );
 
       const actual = await target.getNetworkStats();
 
@@ -205,11 +210,13 @@ describe('KilnApi', () => {
   describe('getDedicatedStakingStats', () => {
     it('should return the dedicated staking stats', async () => {
       const dedicatedStakingStats = dedicatedStakingStatsBuilder().build();
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: dedicatedStakingStats,
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: dedicatedStakingStats,
+        }),
+      );
 
       const actual = await target.getDedicatedStakingStats();
 
@@ -265,11 +272,13 @@ describe('KilnApi', () => {
   describe('getPooledStakingStats', () => {
     it('should return the pooled staking integration', async () => {
       const pooledStakingStats = pooledStakingStatsBuilder().build();
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: pooledStakingStats,
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: pooledStakingStats,
+        }),
+      );
 
       const actual = await target.getPooledStakingStats(
         pooledStakingStats.address,
@@ -357,11 +366,13 @@ describe('KilnApi', () => {
         .with('chain', chain)
         .with('chain_id', chain_id)
         .build();
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: [defiVaultStats],
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: [defiVaultStats],
+        }),
+      );
 
       const actual = await target.getDefiVaultStats(defiVaultStats.vault);
 
@@ -475,11 +486,13 @@ describe('KilnApi', () => {
         count: validatorsPublicKeys.length,
       });
       const getStakesUrl = `${baseUrl}/v1/eth/stakes`;
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: stakes,
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: stakes,
+        }),
+      );
 
       const actual = await target.getStakes({
         safeAddress,
@@ -584,11 +597,13 @@ describe('KilnApi', () => {
       const txHash = faker.string.hexadecimal({ length: 64 }) as `0x${string}`;
       const transactionStatus = transactionStatusBuilder().build();
       const getTransactionStatusUrl = `${baseUrl}/v1/eth/transaction/status`;
-      dataSource.get.mockResolvedValue({
-        status: 200,
-        // Note: Kiln always return { data: T }
-        data: transactionStatus,
-      });
+      dataSource.get.mockResolvedValue(
+        rawify({
+          status: 200,
+          // Note: Kiln always return { data: T }
+          data: transactionStatus,
+        }),
+      );
 
       const actual = await target.getTransactionStatus(txHash);
 

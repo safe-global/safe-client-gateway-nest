@@ -16,7 +16,7 @@ export class SafeAppsRepository implements ISafeAppsRepository {
     clientUrl?: string;
     onlyListed?: boolean;
     url?: string;
-  }): Promise<SafeApp[]> {
+  }): Promise<Array<SafeApp>> {
     const safeApps = await this.configApi.getSafeApps(args);
     return SafeAppsSchema.parse(safeApps);
   }

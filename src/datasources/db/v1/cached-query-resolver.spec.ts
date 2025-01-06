@@ -14,7 +14,7 @@ const mockLoggingService = jest.mocked({
 
 const mockQuery = jest.mocked({
   execute: jest.fn(),
-} as jest.MockedObjectDeep<postgres.PendingQuery<MaybeRow[]>>);
+} as jest.MockedObjectDeep<postgres.PendingQuery<Array<MaybeRow>>>);
 
 describe('CachedQueryResolver', () => {
   let fakeCacheService: FakeCacheService;

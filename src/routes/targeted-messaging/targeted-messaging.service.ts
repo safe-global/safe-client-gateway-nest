@@ -1,3 +1,4 @@
+import { TargetedSafe } from '@/domain/targeted-messaging/entities/targeted-safe.entity';
 import { SubmissionNotFoundError } from '@/domain/targeted-messaging/errors/submission-not-found.error';
 import { ITargetedMessagingRepository } from '@/domain/targeted-messaging/targeted-messaging.repository.interface';
 import { CreateSubmissionDto } from '@/routes/targeted-messaging/entities/create-submission.dto.entity';
@@ -44,6 +45,29 @@ export class TargetedMessagingService {
     }
   }
 
+  private async getOrAddSafeToOutreach(args: {
+    outreachId: number;
+    safeAddress: `0x${string}`;
+  }): Promise<TargetedSafe> {
+    try {
+      return await this.repository.getTargetedSafe(args);
+    } catch (err) {
+      const outreach = await this.repository.getOutreachOrFail(args.outreachId);
+
+      if (!outreach.targetAll) {
+        // Safe is not targeted
+        throw err;
+      }
+
+      const [targetedSafe] = await this.repository.addSafeToOutreach({
+        outreachId: args.outreachId,
+        safeAddress: args.safeAddress,
+      });
+
+      return targetedSafe;
+    }
+  }
+
   async createSubmission(args: {
     outreachId: number;
     chainId: string;
@@ -51,13 +75,14 @@ export class TargetedMessagingService {
     signerAddress: `0x${string}`;
     createSubmissionDto: CreateSubmissionDto;
   }): Promise<Submission> {
-    const targetedSafe = await this.repository.getTargetedSafe(args);
+    const targetedSafe = await this.getOrAddSafeToOutreach(args);
     try {
       await this.repository.getSubmission({
         chainId: args.chainId,
         targetedSafe,
         signerAddress: args.signerAddress,
       });
+
       throw new BadRequestException('Submission already exists');
     } catch (err) {
       if (err instanceof SubmissionNotFoundError) {
@@ -65,6 +90,7 @@ export class TargetedMessagingService {
           targetedSafe,
           signerAddress: args.signerAddress,
         });
+
         return new Submission(
           args.outreachId,
           submission.targetedSafeId,

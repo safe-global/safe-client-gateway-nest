@@ -51,7 +51,7 @@ export class AccountsController {
 
   @ApiOkResponse({ type: AccountDataType, isArray: true })
   @Get('data-types')
-  async getDataTypes(): Promise<AccountDataType[]> {
+  async getDataTypes(): Promise<Array<AccountDataType>> {
     return this.accountsService.getDataTypes();
   }
 
@@ -61,7 +61,7 @@ export class AccountsController {
   async getAccountDataSettings(
     @Auth() authPayload: AuthPayload,
     @Param('address', new ValidationPipe(AddressSchema)) address: `0x${string}`,
-  ): Promise<AccountDataSetting[]> {
+  ): Promise<Array<AccountDataSetting>> {
     return this.accountsService.getAccountDataSettings({
       authPayload,
       address,
@@ -76,7 +76,7 @@ export class AccountsController {
     @Param('address', new ValidationPipe(AddressSchema)) address: `0x${string}`,
     @Body(new ValidationPipe(UpsertAccountDataSettingsDtoSchema))
     upsertAccountDataSettingsDto: UpsertAccountDataSettingsDto,
-  ): Promise<AccountDataSetting[]> {
+  ): Promise<Array<AccountDataSetting>> {
     return this.accountsService.upsertAccountDataSettings({
       authPayload,
       address,

@@ -20,7 +20,7 @@ export interface IHumanDescriptionRepository {
     functionSignatureHash: FunctionSignatureHash;
     to: string;
     data: string;
-  }): HumanDescriptionFragment[];
+  }): Array<HumanDescriptionFragment>;
 }
 
 @Module({

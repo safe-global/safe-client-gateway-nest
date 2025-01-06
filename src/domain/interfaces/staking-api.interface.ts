@@ -23,7 +23,7 @@ export interface IStakingApi {
   getStakes(args: {
     safeAddress: `0x${string}`;
     validatorsPublicKeys: Array<`0x${string}`>;
-  }): Promise<Raw<Stake[]>>;
+  }): Promise<Raw<Array<Stake>>>;
 
   clearStakes(safeAddress: `0x${string}`): Promise<void>;
 
