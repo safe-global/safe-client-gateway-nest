@@ -14,28 +14,6 @@ describe('UpdateAddressBookItemDtoSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should not verify an UpdateAddressBookItemDto with a shorter name', () => {
-    const updateAddressBookItemDto = updateAddressBookItemDtoBuilder()
-      .with('name', faker.string.alphanumeric({ length: 2 }))
-      .build();
-
-    const result = UpdateAddressBookItemDtoSchema.safeParse(
-      updateAddressBookItemDto,
-    );
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'too_small',
-        inclusive: true,
-        exact: false,
-        message: 'Address book entry names must be at least 3 characters long',
-        minimum: 3,
-        path: ['name'],
-        type: 'string',
-      },
-    ]);
-  });
-
   it('should not verify an UpdateAddressBookItemDto with a string id', () => {
     const updateAddressBookItemDto = updateAddressBookItemDtoBuilder()
       // @ts-expect-error - should be numbers

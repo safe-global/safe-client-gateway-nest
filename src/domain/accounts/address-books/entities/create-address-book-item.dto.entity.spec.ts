@@ -1,6 +1,5 @@
 import { createAddressBookItemDtoBuilder } from '@/domain/accounts/address-books/entities/__tests__/create-address-book-item.dto.builder';
 import { CreateAddressBookItemDtoSchema } from '@/domain/accounts/address-books/entities/create-address-book-item.dto.entity';
-import { faker } from '@faker-js/faker/.';
 import { getAddress } from 'viem';
 
 describe('CreateAddressBookItemDtoSchema', () => {
