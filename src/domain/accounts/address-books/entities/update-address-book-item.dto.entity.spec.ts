@@ -28,7 +28,7 @@ describe('UpdateAddressBookItemDtoSchema', () => {
         code: 'too_small',
         inclusive: true,
         exact: false,
-        message: 'Address Books items names must be at least 3 characters long',
+        message: 'Address book entry names must be at least 3 characters long',
         minimum: 3,
         path: ['name'],
         type: 'string',
