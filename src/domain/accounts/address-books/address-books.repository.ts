@@ -101,7 +101,9 @@ export class AddressBooksRepository implements IAddressBooksRepository {
     updateAddressBookItemDto: UpdateAddressBookItemDto;
   }): Promise<AddressBookItem> {
     if (!args.authPayload.isForSigner(args.address)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        `Unauthorized: Signer address does not match requested address.`,
+      );
     }
     await this.checkAddressBooksIsEnabled({
       authPayload: args.authPayload,
