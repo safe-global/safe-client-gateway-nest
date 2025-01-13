@@ -8,6 +8,7 @@ import type { IConfigurationService } from '@/config/configuration.service.inter
 import clearAllMocks = jest.clearAllMocks;
 
 const redisClientType = {
+  isReady: true,
   hGet: jest.fn(),
   hSet: jest.fn(),
   hDel: jest.fn(),
@@ -37,10 +38,12 @@ describe('RedisCacheService with a Key Prefix', () => {
 
   beforeEach(() => {
     clearAllMocks();
-    defaultExpirationTimeInSeconds = faker.number.int();
+    defaultExpirationTimeInSeconds = faker.number.int({ min: 1, max: 3600 });
     mockConfigurationService.getOrThrow.mockImplementation((key) => {
       if (key === 'expirationTimeInSeconds.default') {
         return defaultExpirationTimeInSeconds;
+      } else if (key === 'redis.timeout') {
+        return defaultExpirationTimeInSeconds * 1_000;
       }
       throw Error(`Unexpected key: ${key}`);
     });

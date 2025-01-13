@@ -15,6 +15,7 @@ import { RouteLoggerInterceptor } from '@/routes/common/interceptors/route-logge
 import { Server } from 'net';
 import { ValidationPipe } from '@/validation/pipes/validation.pipe';
 import { NumericStringSchema } from '@/validation/entities/schemas/numeric-string.schema';
+import { ZodError } from 'zod';
 
 // We expect 500 instead of the status code of the DataSourceError
 // The reason is that this test webserver does not have logic to map
@@ -61,6 +62,11 @@ class TestController {
     _: `0x${string}`,
   ): void {}
   /* eslint-enable @typescript-eslint/no-unused-vars */
+
+  @Get('zod-error')
+  zodError(): never {
+    throw new ZodError([]);
+  }
 
   @Get('error-level-info-with-code')
   errorLevelInfoWithCode(): void {
@@ -229,6 +235,29 @@ describe('RouteLoggerInterceptor tests', () => {
       origin: null,
     });
     expect(mockLoggingService.error).not.toHaveBeenCalled();
+    expect(mockLoggingService.debug).not.toHaveBeenCalled();
+    expect(mockLoggingService.warn).not.toHaveBeenCalled();
+  });
+
+  it('400 Zod error triggers info level', async () => {
+    await request(app.getHttpServer())
+      .get('/test/zod-error')
+      .expect(expectedDatasourceErrorCode);
+
+    expect(mockLoggingService.error).toHaveBeenCalledTimes(1);
+    expect(mockLoggingService.error).toHaveBeenCalledWith({
+      chain_id: null,
+      client_ip: null,
+      detail: '[]',
+      method: 'GET',
+      path: '/test/zod-error',
+      response_time_ms: expect.any(Number),
+      route: '/test/zod-error',
+      safe_app_user_agent: null,
+      status_code: 502,
+      origin: null,
+    });
+    expect(mockLoggingService.info).not.toHaveBeenCalled();
     expect(mockLoggingService.debug).not.toHaveBeenCalled();
     expect(mockLoggingService.warn).not.toHaveBeenCalled();
   });

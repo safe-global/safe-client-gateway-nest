@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import type { INestApplication } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
-import request from 'supertest';
 import { TestCacheModule } from '@/datasources/cache/__tests__/test.cache.module';
 import { TestNetworkModule } from '@/datasources/network/__tests__/test.network.module';
 import { chainBuilder } from '@/domain/chains/entities/__tests__/chain.builder';
@@ -37,12 +36,24 @@ import { TestPostgresDatabaseModule } from '@/datasources/db/__tests__/test.post
 import { TestTargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/__tests__/test.targeted-messaging.datasource.module';
 import { TargetedMessagingDatasourceModule } from '@/datasources/targeted-messaging/targeted-messaging.datasource.module';
 import { rawify } from '@/validation/entities/raw.entity';
+import { IQueuesApiService } from '@/datasources/queues/queues-api.service.interface';
+import type { ConsumeMessage } from 'amqplib';
+import {
+  deletedDelegateEventBuilder,
+  newDelegateEventBuilder,
+  updatedDelegateEventBuilder,
+} from '@/routes/hooks/entities/__tests__/delegate-events.builder';
+
+function getSubscriptionCallback(
+  queuesApiService: jest.MockedObjectDeep<IQueuesApiService>,
+): (msg: ConsumeMessage) => Promise<void> {
+  // First call, second argument
+  return queuesApiService.subscribe.mock.calls[0][1];
+}
 
 // TODO: Migrate to E2E tests as TransactionEventType events are already being received via queue.
-// Add *_DELEGATE event tests here if we unskip this
-describe.skip('Post Hook Events for Cache (Unit)', () => {
+describe('Hook Events for Cache (Unit)', () => {
   let app: INestApplication<Server>;
-  let authToken: string;
   let safeConfigUrl: string;
   let fakeCacheService: FakeCacheService;
   let networkService: jest.MockedObjectDeep<INetworkService>;
@@ -51,6 +62,7 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
   let blockchainApiManager: IBlockchainApiManager;
   let transactionApiManager: ITransactionApiManager;
   let balancesApiManager: IBalancesApiManager;
+  let queuesApiService: jest.MockedObjectDeep<IQueuesApiService>;
 
   async function initApp(config: typeof configuration): Promise<void> {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -82,9 +94,9 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
     );
     transactionApiManager = moduleFixture.get(ITransactionApiManager);
     balancesApiManager = moduleFixture.get(IBalancesApiManager);
-    authToken = configurationService.getOrThrow('auth.token');
     safeConfigUrl = configurationService.getOrThrow('safeConfig.baseUri');
     networkService = moduleFixture.get(NetworkService);
+    queuesApiService = moduleFixture.get(IQueuesApiService);
 
     await app.init();
   }
@@ -96,158 +108,6 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
 
   afterAll(async () => {
     await app.close();
-  });
-
-  it.each([
-    {
-      type: 'DELETED_MULTISIG_TRANSACTION',
-      address: faker.finance.ethereumAddress(),
-      safeTxHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'EXECUTED_MULTISIG_TRANSACTION',
-      address: faker.finance.ethereumAddress(),
-      safeTxHash: faker.string.hexadecimal({ length: 32 }),
-      txHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'INCOMING_ETHER',
-      address: faker.finance.ethereumAddress(),
-      txHash: faker.string.hexadecimal({ length: 32 }),
-      value: faker.string.numeric(),
-    },
-    {
-      type: 'INCOMING_TOKEN',
-      address: faker.finance.ethereumAddress(),
-      tokenAddress: faker.finance.ethereumAddress(),
-      txHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'OUTGOING_ETHER',
-      address: faker.finance.ethereumAddress(),
-      txHash: faker.string.hexadecimal({ length: 32 }),
-      value: faker.string.numeric(),
-    },
-    {
-      type: 'OUTGOING_TOKEN',
-      address: faker.finance.ethereumAddress(),
-      tokenAddress: faker.finance.ethereumAddress(),
-      txHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'NEW_CONFIRMATION',
-      address: faker.finance.ethereumAddress(),
-      owner: faker.finance.ethereumAddress(),
-      safeTxHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'PENDING_MULTISIG_TRANSACTION',
-      address: faker.finance.ethereumAddress(),
-      safeTxHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'MODULE_TRANSACTION',
-      address: faker.finance.ethereumAddress(),
-      module: faker.finance.ethereumAddress(),
-      txHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'MESSAGE_CREATED',
-      address: faker.finance.ethereumAddress(),
-      messageHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'MESSAGE_CONFIRMATION',
-      address: faker.finance.ethereumAddress(),
-      messageHash: faker.string.hexadecimal({ length: 32 }),
-    },
-    {
-      type: 'CHAIN_UPDATE',
-    },
-    {
-      type: 'REORG_DETECTED',
-      chainId: faker.string.numeric(),
-      blockNumber: faker.number.int(),
-    },
-    {
-      type: 'SAFE_APPS_UPDATE',
-    },
-    {
-      type: 'SAFE_CREATED',
-      address: faker.finance.ethereumAddress(),
-      blockNumber: faker.number.int(),
-    },
-  ])('accepts $type', async (payload) => {
-    const chainId = faker.string.numeric();
-    const data = {
-      chainId: chainId,
-      ...payload,
-    };
-    networkService.get.mockImplementation(({ url }) => {
-      switch (url) {
-        case `${safeConfigUrl}/api/v1/chains/${chainId}`:
-          return Promise.resolve({
-            data: rawify(chainBuilder().with('chainId', chainId).build()),
-            status: 200,
-          });
-        default:
-          return Promise.reject(new Error(`Could not match ${url}`));
-      }
-    });
-
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
-  });
-
-  it('returns 400 (Bad Request) on unknown payload', async () => {
-    const data = {
-      type: 'SOME_TEST_TYPE_THAT_WE_DO_NOT_SUPPORT',
-      safeTxHash: 'some-safe-tx-hash',
-    };
-    networkService.get.mockImplementation(({ url }) => {
-      switch (url) {
-        case `${safeConfigUrl}/api/v1/chains/1`:
-          return Promise.resolve({
-            data: rawify(chainBuilder().with('chainId', '1').build()),
-            status: 200,
-          });
-        default:
-          return Promise.reject(new Error(`Could not match ${url}`));
-      }
-    });
-
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(422)
-      .expect({
-        statusCode: 422,
-        code: 'invalid_union_discriminator',
-        options: [
-          'CHAIN_UPDATE',
-          'DELETED_MULTISIG_TRANSACTION',
-          'EXECUTED_MULTISIG_TRANSACTION',
-          'INCOMING_ETHER',
-          'INCOMING_TOKEN',
-          'MESSAGE_CREATED',
-          'MODULE_TRANSACTION',
-          'NEW_CONFIRMATION',
-          'MESSAGE_CONFIRMATION',
-          'OUTGOING_ETHER',
-          'OUTGOING_TOKEN',
-          'PENDING_MULTISIG_TRANSACTION',
-          'REORG_DETECTED',
-          'SAFE_APPS_UPDATE',
-          'SAFE_CREATED',
-        ],
-        path: ['type'],
-        message:
-          "Invalid discriminator value. Expected 'CHAIN_UPDATE' | 'DELETED_MULTISIG_TRANSACTION' | 'EXECUTED_MULTISIG_TRANSACTION' | 'INCOMING_ETHER' | 'INCOMING_TOKEN' | 'MESSAGE_CREATED' | 'MODULE_TRANSACTION' | 'NEW_CONFIRMATION' | 'MESSAGE_CONFIRMATION' | 'OUTGOING_ETHER' | 'OUTGOING_TOKEN' | 'PENDING_MULTISIG_TRANSACTION' | 'REORG_DETECTED' | 'SAFE_APPS_UPDATE' | 'SAFE_CREATED'",
-      });
   });
 
   it.each([
@@ -308,11 +168,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -365,11 +222,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -422,11 +276,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -471,11 +322,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -526,11 +374,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -588,11 +433,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -642,11 +484,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -691,11 +530,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -735,11 +571,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -804,11 +637,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -851,11 +681,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -885,11 +712,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -922,11 +746,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -954,11 +775,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
     });
     const api = await stakingApiManager.getApi(chainId);
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     const newApi = await stakingApiManager.getApi(chainId);
     expect(api).not.toBe(newApi);
@@ -987,11 +805,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
     });
     const api = await blockchainApiManager.getApi(chainId);
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     const newApi = await blockchainApiManager.getApi(chainId);
     expect(api).not.toBe(newApi);
@@ -1020,11 +835,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
     });
     const api = await transactionApiManager.getApi(chainId);
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     const newApi = await transactionApiManager.getApi(chainId);
     expect(api).not.toBe(newApi);
@@ -1054,11 +866,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
     });
     const api = await balancesApiManager.getApi(chainId, safeAddress);
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     const newApi = await balancesApiManager.getApi(chainId, safeAddress);
     expect(api).not.toBe(newApi);
@@ -1092,11 +901,8 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       }
     });
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });
@@ -1128,11 +934,42 @@ describe.skip('Post Hook Events for Cache (Unit)', () => {
       faker.number.int({ min: 1 }),
     );
 
-    await request(app.getHttpServer())
-      .post(`/hooks/events`)
-      .set('Authorization', `Basic ${authToken}`)
-      .send(data)
-      .expect(202);
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(data)) } as ConsumeMessage);
+
+    await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
+  });
+
+  it.each(
+    [
+      newDelegateEventBuilder().build(),
+      updatedDelegateEventBuilder().build(),
+      deletedDelegateEventBuilder().build(),
+    ].map((event) => [event.type, event]),
+  )('%s clears delegates', async (_, event) => {
+    const cacheDir = new CacheDir(
+      `${event.chainId}_delegates_${event.address}`,
+      '',
+    );
+    networkService.get.mockImplementation(({ url }) => {
+      switch (url) {
+        case `${safeConfigUrl}/api/v1/chains/${event.chainId}`:
+          return Promise.resolve({
+            data: rawify(chainBuilder().with('chainId', event.chainId).build()),
+            status: 200,
+          });
+        default:
+          return Promise.reject(new Error(`Could not match ${url}`));
+      }
+    });
+    await fakeCacheService.hSet(
+      cacheDir,
+      faker.string.alpha(),
+      faker.number.int({ min: 1 }),
+    );
+
+    const cb = getSubscriptionCallback(queuesApiService);
+    await cb({ content: Buffer.from(JSON.stringify(event)) } as ConsumeMessage);
 
     await expect(fakeCacheService.hGet(cacheDir)).resolves.toBeUndefined();
   });

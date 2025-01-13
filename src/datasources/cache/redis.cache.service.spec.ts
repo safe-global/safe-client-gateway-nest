@@ -38,10 +38,12 @@ describe('RedisCacheService', () => {
   beforeEach(async () => {
     clearAllMocks();
     await redisClient.flushDb();
-    defaultExpirationTimeInSeconds = faker.number.int();
+    defaultExpirationTimeInSeconds = faker.number.int({ min: 1, max: 3600 });
     mockConfigurationService.getOrThrow.mockImplementation((key) => {
       if (key === 'expirationTimeInSeconds.default') {
         return defaultExpirationTimeInSeconds;
+      } else if (key === 'redis.timeout') {
+        return defaultExpirationTimeInSeconds * 1_000;
       }
       throw Error(`Unexpected key: ${key}`);
     });

@@ -37,6 +37,7 @@ import { TransactionsHistoryMapper } from '@/routes/transactions/mappers/transac
 import { TransferDetailsMapper } from '@/routes/transactions/mappers/transfers/transfer-details.mapper';
 import { TransferMapper } from '@/routes/transactions/mappers/transfers/transfer.mapper';
 import { getAddress, isAddress } from 'viem';
+import { LoggingService, ILoggingService } from '@/logging/logging.interface';
 
 @Injectable()
 export class TransactionsService {
@@ -51,6 +52,7 @@ export class TransactionsService {
     private readonly moduleTransactionDetailsMapper: ModuleTransactionDetailsMapper,
     private readonly multisigTransactionDetailsMapper: MultisigTransactionDetailsMapper,
     private readonly transferDetailsMapper: TransferDetailsMapper,
+    @Inject(LoggingService) private readonly loggingService: ILoggingService,
   ) {}
 
   async getById(args: {
@@ -392,12 +394,17 @@ export class TransactionsService {
     const nextURL = buildNextPageURL(args.routeUrl, domainTransactions.count);
     const previousURL = buildPreviousPageURL(args.routeUrl);
     if (nextURL == null) {
-      const creationTransaction =
-        await this.safeRepository.getCreationTransaction({
-          chainId: args.chainId,
-          safeAddress: args.safeAddress,
-        });
-      domainTransactions.results.push(creationTransaction);
+      // If creation is not indexed, we shouldn't block the entire history
+      try {
+        const creationTransaction =
+          await this.safeRepository.getCreationTransaction({
+            chainId: args.chainId,
+            safeAddress: args.safeAddress,
+          });
+        domainTransactions.results.push(creationTransaction);
+      } catch (error) {
+        this.loggingService.warn(error);
+      }
     }
     const safeInfo = await this.safeRepository.getSafe({
       chainId: args.chainId,

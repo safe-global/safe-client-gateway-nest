@@ -251,6 +251,47 @@ describe('Transactions History Controller (Unit)', () => {
       });
   });
 
+  it('Should not throw if creation transaction does not exist', async () => {
+    const chainResponse = chainBuilder().build();
+    const chainId = chainResponse.chainId;
+    const safe = safeBuilder().build();
+    const transactionHistoryBuilder = {
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    };
+    networkService.get.mockImplementation(({ url }) => {
+      const getChainUrl = `${safeConfigUrl}/api/v1/chains/${chainId}`;
+      const getAllTransactions = `${chainResponse.transactionService}/api/v1/safes/${safe.address}/all-transactions/`;
+      const getSafeUrl = `${chainResponse.transactionService}/api/v1/safes/${safe.address}`;
+      const getSafeCreationUrl = `${chainResponse.transactionService}/api/v1/safes/${safe.address}/creation/`;
+      if (url === getChainUrl) {
+        return Promise.resolve({ data: rawify(chainResponse), status: 200 });
+      }
+      if (url === getAllTransactions) {
+        return Promise.resolve({
+          data: rawify(transactionHistoryBuilder),
+          status: 200,
+        });
+      }
+      if (url === getSafeUrl) {
+        return Promise.resolve({ data: rawify(safe), status: 200 });
+      }
+      if (url === getSafeCreationUrl) {
+        return Promise.reject(new Error('Not found'));
+      }
+      return Promise.reject(new Error(`Could not match ${url}`));
+    });
+
+    await request(app.getHttpServer())
+      .get(`/v1/chains/${chainId}/safes/${safe.address}/transactions/history/`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.results).toHaveLength(0);
+      });
+  });
+
   it('Should return correctly each date label', async () => {
     const safe = safeBuilder().build();
     const chain = chainBuilder().build();

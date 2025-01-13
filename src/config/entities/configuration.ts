@@ -237,6 +237,7 @@ export default () => ({
     counterfactualBalances:
       process.env.FF_COUNTERFACTUAL_BALANCES?.toLowerCase() === 'true',
     accounts: process.env.FF_ACCOUNTS?.toLowerCase() === 'true',
+    // TODO: When enabled, we must add `db` as a requirement alongside `redis`
     pushNotifications:
       process.env.FF_PUSH_NOTIFICATIONS?.toLowerCase() === 'true',
     hookHttpPostEvent:
@@ -308,8 +309,11 @@ export default () => ({
     },
   },
   redis: {
+    user: process.env.REDIS_USER,
+    pass: process.env.REDIS_PASS,
     host: process.env.REDIS_HOST || 'localhost',
     port: process.env.REDIS_PORT || '6379',
+    timeout: process.env.REDIS_TIMEOUT || 2 * 1_000, // Milliseconds
   },
   relay: {
     baseUri:

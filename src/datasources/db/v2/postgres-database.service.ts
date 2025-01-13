@@ -44,8 +44,8 @@ export class PostgresDatabaseService {
    */
   public async initializeDatabaseConnection(): Promise<DataSource> {
     if (!this.isInitialized()) {
-      this.loggingService.info('PostgresDatabaseService initialized...');
       await this.dataSource.initialize();
+      this.loggingService.info('PostgresDatabaseService initialized...');
     }
 
     return this.dataSource;
@@ -58,8 +58,8 @@ export class PostgresDatabaseService {
    */
   public async destroyDatabaseConnection(): Promise<DataSource> {
     if (this.isInitialized()) {
-      this.loggingService.info('PostgresDatabaseService destroyed...');
       await this.dataSource.destroy();
+      this.loggingService.info('PostgresDatabaseService destroyed...');
     }
 
     return this.dataSource;
