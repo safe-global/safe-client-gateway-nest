@@ -237,6 +237,7 @@ export default () => ({
     counterfactualBalances:
       process.env.FF_COUNTERFACTUAL_BALANCES?.toLowerCase() === 'true',
     accounts: process.env.FF_ACCOUNTS?.toLowerCase() === 'true',
+    users: process.env.FF_USERS?.toLowerCase() === 'true',
     // TODO: When enabled, we must add `db` as a requirement alongside `redis`
     pushNotifications:
       process.env.FF_PUSH_NOTIFICATIONS?.toLowerCase() === 'true',

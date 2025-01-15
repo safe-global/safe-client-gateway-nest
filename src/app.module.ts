@@ -59,6 +59,7 @@ import {
   LoggingService,
   type ILoggingService,
 } from '@/logging/logging.interface';
+import { UsersModule } from '@/routes/users/users.module';
 
 @Module({})
 export class AppModule implements NestModule {
@@ -69,6 +70,7 @@ export class AppModule implements NestModule {
     const {
       auth: isAuthFeatureEnabled,
       accounts: isAccountsFeatureEnabled,
+      users: isUsersFeatureEnabled,
       email: isEmailFeatureEnabled,
       delegatesV2: isDelegatesV2Enabled,
       pushNotifications: isPushNotificationsEnabled,
@@ -82,6 +84,7 @@ export class AppModule implements NestModule {
         AboutModule,
         ...(isAccountsFeatureEnabled ? [AccountsModule] : []),
         ...(isAuthFeatureEnabled ? [AuthModule] : []),
+        ...(isUsersFeatureEnabled ? [UsersModule] : []),
         BalancesModule,
         ChainsModule,
         CollectiblesModule,
