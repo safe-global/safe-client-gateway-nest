@@ -15,6 +15,7 @@ export class User implements z.infer<typeof UserSchema> {
   @Column({
     type: 'enum',
     enum: UserStatus,
+    enumName: 'user_status',
   })
   status!: UserStatus;
 
