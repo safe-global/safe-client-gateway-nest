@@ -1,4 +1,4 @@
 export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  PENDING = 'PENDING',
+  ACTIVE = 1,
+  PENDING = 2,
 }
