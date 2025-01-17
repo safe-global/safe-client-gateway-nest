@@ -1,14 +1,11 @@
-import { RowSchema } from '@/datasources/db/v1/entities/row.entity';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { z } from 'zod';
-import { UserStatus } from '@/domain/users/entities/user.entity';
-
-export const UserSchema = RowSchema.extend({
-  status: z.nativeEnum(UserStatus),
-});
+import {
+  UserStatus,
+  User as DomainUser,
+} from '@/domain/users/entities/user.entity';
 
 @Entity('users')
-export class User implements z.infer<typeof UserSchema> {
+export class User implements DomainUser {
   @PrimaryGeneratedColumn()
   id!: number;
 
