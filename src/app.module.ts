@@ -84,7 +84,6 @@ export class AppModule implements NestModule {
         AboutModule,
         ...(isAccountsFeatureEnabled ? [AccountsModule] : []),
         ...(isAuthFeatureEnabled ? [AuthModule] : []),
-        ...(isUsersFeatureEnabled ? [UsersModule] : []),
         BalancesModule,
         ChainsModule,
         CollectiblesModule,
@@ -113,6 +112,7 @@ export class AppModule implements NestModule {
         TargetedMessagingModule,
         TransactionsModule,
         TransactionsViewControllerModule,
+        ...(isUsersFeatureEnabled ? [UsersModule] : []),
         // common
         CacheModule,
         // Module for storing and reading from the async local storage
