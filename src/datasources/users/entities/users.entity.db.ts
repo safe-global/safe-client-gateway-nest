@@ -6,10 +6,10 @@ import {
 
 @Entity('users')
 export class User implements DomainUser {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_id' })
   id!: number;
 
-  @Index()
+  @Index('idx_user_status')
   @Column({
     type: 'integer',
     enum: UserStatus,
