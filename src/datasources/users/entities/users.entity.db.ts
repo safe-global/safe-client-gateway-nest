@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import {
   UserStatus,
   User as DomainUser,
@@ -9,10 +9,10 @@ export class User implements DomainUser {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Index()
   @Column({
-    type: 'enum',
+    type: 'integer',
     enum: UserStatus,
-    enumName: 'user_status',
   })
   status!: UserStatus;
 
