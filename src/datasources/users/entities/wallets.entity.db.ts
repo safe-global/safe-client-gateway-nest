@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { z } from 'zod';
 import { getAddress } from 'viem';
@@ -17,7 +18,7 @@ export const WalletSchema = RowSchema.extend({
 });
 
 @Entity('wallets')
-@Unique(['user'])
+@Unique(['user', 'address'])
 export class Wallet implements z.infer<typeof WalletSchema> {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -28,6 +29,7 @@ export class Wallet implements z.infer<typeof WalletSchema> {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
+  @Index({ unique: true })
   @Column({
     type: 'varchar',
     length: 42,
