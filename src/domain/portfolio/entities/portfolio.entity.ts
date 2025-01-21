@@ -84,7 +84,7 @@ export const ProtocolPositionType = [
 ] as const;
 
 export const ProtocolPositionsSchema = z.record(
-  z.enum(ProtocolPositionType),
+  z.enum([...ProtocolPositionType, 'UNKNOWN']).catch('UNKNOWN'),
   ProtocolPositionSchema,
 );
 

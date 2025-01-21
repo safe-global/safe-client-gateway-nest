@@ -32,6 +32,7 @@ import { SafesModule } from '@/routes/safes/safes.module';
 import { NotificationsModule } from '@/routes/notifications/v1/notifications.module';
 import { EstimationsModule } from '@/routes/estimations/estimations.module';
 import { MessagesModule } from '@/routes/messages/messages.module';
+import { PortfolioModule } from '@/routes/portfolio/portfolio.module';
 import { RequestScopedLoggingModule } from '@/logging/logging.module';
 import { RouteLoggerInterceptor } from '@/routes/common/interceptors/route-logger.interceptor';
 import { NotFoundLoggerMiddleware } from '@/middleware/not-found-logger.middleware';
@@ -71,6 +72,7 @@ export class AppModule implements NestModule {
       accounts: isAccountsFeatureEnabled,
       email: isEmailFeatureEnabled,
       delegatesV2: isDelegatesV2Enabled,
+      portfolio: isPortfolioFeatureEnabled,
       pushNotifications: isPushNotificationsEnabled,
     } = configFactory()['features'];
 
@@ -103,6 +105,7 @@ export class AppModule implements NestModule {
         MessagesModule,
         NotificationsModule,
         OwnersModule,
+        ...(isPortfolioFeatureEnabled ? [PortfolioModule] : []),
         RelayControllerModule,
         RootModule,
         SafeAppsModule,

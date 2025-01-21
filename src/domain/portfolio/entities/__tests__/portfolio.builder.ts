@@ -22,7 +22,9 @@ export function portfolioBuilder(): IBuilder<Portfolio> {
   );
 }
 
-function assetByProtocolsBuilder(): IBuilder<Portfolio['assetByProtocols']> {
+export function assetByProtocolsBuilder(): IBuilder<
+  Portfolio['assetByProtocols']
+> {
   const builder = new Builder<Portfolio['assetByProtocols']>();
   const protocols = faker.helpers.multiple(() => faker.string.sample(), {
     count: {
@@ -38,13 +40,13 @@ function assetByProtocolsBuilder(): IBuilder<Portfolio['assetByProtocols']> {
 
 export function assetByProtocolBuilder(): IBuilder<AssetByProtocol> {
   return new Builder<AssetByProtocol>()
-    .with('chains', assetByProtocolChainBuilder().build())
+    .with('chains', assetByProtocolChainsBuilder().build())
     .with('name', faker.string.sample())
     .with('imgLarge', faker.internet.url())
     .with('value', faker.string.numeric());
 }
 
-export function assetByProtocolChainBuilder(): IBuilder<
+export function assetByProtocolChainsBuilder(): IBuilder<
   AssetByProtocol['chains']
 > {
   const builder = new Builder<AssetByProtocol['chains']>();
@@ -87,7 +89,7 @@ export function protocolPositionBuilder(): IBuilder<ProtocolPosition> {
     : complexProtocolPositionBuilder();
 }
 
-function regularProtocolPositionBuilder(): IBuilder<ProtocolPosition> {
+export function regularProtocolPositionBuilder(): IBuilder<ProtocolPosition> {
   return (
     new Builder<ProtocolPosition>()
       .with('name', faker.string.sample())
@@ -98,7 +100,7 @@ function regularProtocolPositionBuilder(): IBuilder<ProtocolPosition> {
   );
 }
 
-function complexProtocolPositionBuilder(): IBuilder<ProtocolPosition> {
+export function complexProtocolPositionBuilder(): IBuilder<ProtocolPosition> {
   return (
     new Builder<ProtocolPosition>()
       .with('name', faker.string.sample())
