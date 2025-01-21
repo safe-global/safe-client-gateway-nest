@@ -36,7 +36,8 @@ export class UsersRepository implements IUsersRepository {
 
       // 4) Create the Wallet entity
       const wallet = walletRepository.create({
-        user: createdUser, // establishing the relationship
+        user: createdUser,
+        address: args.authPayload.signer_address,
       });
 
       // 5) Save the Wallet
