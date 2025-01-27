@@ -6,6 +6,10 @@ import {
   AddressBookItem,
 } from '@/routes/accounts/address-books/entities/address-book.entity';
 import { CreateAddressBookItemDto } from '@/routes/accounts/address-books/entities/create-address-book-item.dto.entity';
+import {
+  UpdateAddressBookItemDto,
+  UpdateAddressBookItemDtoSchema,
+} from '@/routes/accounts/address-books/entities/update-address-book-item.dto.entity';
 import { Auth } from '@/routes/auth/decorators/auth.decorator';
 import { AuthGuard } from '@/routes/auth/guards/auth.guard';
 import { AddressSchema } from '@/validation/entities/schemas/address.schema';
@@ -20,6 +24,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -59,6 +64,27 @@ export class AddressBooksController {
       address,
       chainId,
       createAddressBookItemDto,
+    });
+  }
+
+  @ApiOkResponse({ type: AddressBookItem })
+  @Put(':address/address-books/:chainId/:addressBookItemId')
+  @UseGuards(AuthGuard)
+  async updateAddressBookItem(
+    @Auth() authPayload: AuthPayload,
+    @Param('address', new ValidationPipe(AddressSchema)) address: `0x${string}`,
+    @Param('chainId', new ValidationPipe(NumericStringSchema)) chainId: string,
+    @Param('addressBookItemId', new DefaultValuePipe(0), ParseIntPipe)
+    addressBookItemId: number,
+    @Body(new ValidationPipe(UpdateAddressBookItemDtoSchema))
+    updateAddressBookItemDto: UpdateAddressBookItemDto,
+  ): Promise<AddressBookItem> {
+    return this.service.updateAddressBookItem({
+      authPayload,
+      address,
+      chainId,
+      addressBookItemId,
+      updateAddressBookItemDto,
     });
   }
 

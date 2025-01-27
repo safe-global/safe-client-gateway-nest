@@ -5,6 +5,7 @@ import type {
   AddressBookItem,
 } from '@/domain/accounts/address-books/entities/address-book.entity';
 import { CreateAddressBookItemDto } from '@/domain/accounts/address-books/entities/create-address-book-item.dto.entity';
+import { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book-item.dto.entity';
 import {
   AccountDataType,
   AccountDataTypeNames,
@@ -83,6 +84,42 @@ export class AddressBooksRepository implements IAddressBooksRepository {
       account,
       chainId: args.chainId,
       createAddressBookItemDto: args.createAddressBookItemDto,
+    });
+  }
+
+  /**
+   * Updates an AddressBookItem.
+   * Checks that the account has the AddressBooks Data Setting enabled.
+   *
+   * If an AddressBook for the Account and chainId does not exist,
+   * an AddressBookNotFound error is thrown.
+   */
+  async updateAddressBookItem(args: {
+    authPayload: AuthPayload;
+    address: `0x${string}`;
+    chainId: string;
+    updateAddressBookItemDto: UpdateAddressBookItemDto;
+  }): Promise<AddressBookItem> {
+    if (!args.authPayload.isForSigner(args.address)) {
+      throw new UnauthorizedException(
+        `Unauthorized: Signer address does not match requested address.`,
+      );
+    }
+    await this.checkAddressBooksIsEnabled({
+      authPayload: args.authPayload,
+      address: args.address,
+    });
+    const account = await this.accountsRepository.getAccount({
+      authPayload: args.authPayload,
+      address: args.address,
+    });
+    const addressBook = await this.datasource.getAddressBook({
+      account,
+      chainId: args.chainId,
+    });
+    return this.datasource.updateAddressBookItem({
+      addressBook,
+      updateAddressBookItemDto: args.updateAddressBookItemDto,
     });
   }
 

@@ -5,7 +5,7 @@ import {
   AddressBookItem,
 } from '@/domain/accounts/address-books/entities/address-book.entity';
 import { CreateAddressBookItemDto } from '@/domain/accounts/address-books/entities/create-address-book-item.dto.entity';
-import { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book.item.dto.entity';
+import { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book-item.dto.entity';
 import { AddressBookItemNotFoundError } from '@/domain/accounts/address-books/errors/address-book-item-not-found.error';
 import { AddressBookNotFoundError } from '@/domain/accounts/address-books/errors/address-book-not-found.error';
 import { Account } from '@/domain/accounts/entities/account.entity';
@@ -56,15 +56,15 @@ export class AddressBooksDatasource implements IAddressBooksDatasource {
 
   async updateAddressBookItem(args: {
     addressBook: AddressBook;
-    updateAddressBookItem: UpdateAddressBookItemDto;
+    updateAddressBookItemDto: UpdateAddressBookItemDto;
   }): Promise<AddressBookItem> {
-    const { addressBook, updateAddressBookItem } = args;
+    const { addressBook, updateAddressBookItemDto } = args;
     const addressBookItem = addressBook.data.find(
-      (i) => i.id === updateAddressBookItem.id,
+      (i) => i.id === updateAddressBookItemDto.id,
     );
     if (!addressBookItem) throw new AddressBookItemNotFoundError();
-    addressBookItem.address = updateAddressBookItem.address;
-    addressBookItem.name = updateAddressBookItem.name;
+    addressBookItem.address = updateAddressBookItemDto.address;
+    addressBookItem.name = updateAddressBookItemDto.name;
     await this.updateAddressBook(addressBook);
     return addressBookItem;
   }

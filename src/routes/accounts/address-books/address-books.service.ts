@@ -8,6 +8,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IAddressBooksRepository } from '@/domain/accounts/address-books/address-books.repository.interface';
 import { AuthPayload } from '@/domain/auth/entities/auth-payload.entity';
 import { CreateAddressBookItemDto } from '@/domain/accounts/address-books/entities/create-address-book-item.dto.entity';
+import { UpdateAddressBookItemDto } from '@/routes/accounts/address-books/entities/update-address-book-item.dto.entity';
 
 @Injectable()
 export class AddressBooksService {
@@ -33,6 +34,24 @@ export class AddressBooksService {
   }): Promise<AddressBookItem> {
     const domainAddressBookItem =
       await this.repository.createAddressBookItem(args);
+    return this.mapAddressBookItem(domainAddressBookItem);
+  }
+
+  async updateAddressBookItem(args: {
+    authPayload: AuthPayload;
+    address: `0x${string}`;
+    chainId: string;
+    addressBookItemId: number;
+    updateAddressBookItemDto: UpdateAddressBookItemDto;
+  }): Promise<AddressBookItem> {
+    const domainAddressBookItem = await this.repository.updateAddressBookItem({
+      ...args,
+      updateAddressBookItemDto: {
+        id: args.addressBookItemId,
+        name: args.updateAddressBookItemDto.name,
+        address: args.updateAddressBookItemDto.address,
+      },
+    });
     return this.mapAddressBookItem(domainAddressBookItem);
   }
 

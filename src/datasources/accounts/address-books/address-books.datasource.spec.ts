@@ -188,7 +188,7 @@ describe('AddressBooksDataSource', () => {
       const addressBook = await target.getAddressBook({ account, chainId });
       const updatedItem = await target.updateAddressBookItem({
         addressBook,
-        updateAddressBookItem: updatedAddressBookItem,
+        updateAddressBookItemDto: updatedAddressBookItem,
       });
 
       expect(updatedItem).toMatchObject(updatedAddressBookItem);
@@ -219,7 +219,7 @@ describe('AddressBooksDataSource', () => {
       const addressBook = await target.getAddressBook({ account, chainId });
       const updatedItem = await target.updateAddressBookItem({
         addressBook,
-        updateAddressBookItem: updatedAddressBookItem,
+        updateAddressBookItemDto: updatedAddressBookItem,
       });
 
       expect(updatedItem).toMatchObject(updatedAddressBookItem);
@@ -251,7 +251,7 @@ describe('AddressBooksDataSource', () => {
       await expect(
         target.updateAddressBookItem({
           addressBook,
-          updateAddressBookItem: updateAddressBookItemDtoBuilder()
+          updateAddressBookItemDto: updateAddressBookItemDtoBuilder()
             .with('id', nonExistentId)
             .build(),
         }),

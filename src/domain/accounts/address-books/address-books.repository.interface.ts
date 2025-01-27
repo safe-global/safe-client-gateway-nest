@@ -6,6 +6,7 @@ import type {
   AddressBookItem,
 } from '@/domain/accounts/address-books/entities/address-book.entity';
 import { CreateAddressBookItemDto } from '@/domain/accounts/address-books/entities/create-address-book-item.dto.entity';
+import { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book-item.dto.entity';
 import { AuthPayload } from '@/domain/auth/entities/auth-payload.entity';
 import { Module } from '@nestjs/common';
 
@@ -23,6 +24,13 @@ export interface IAddressBooksRepository {
     address: `0x${string}`;
     chainId: string;
     createAddressBookItemDto: CreateAddressBookItemDto;
+  }): Promise<AddressBookItem>;
+
+  updateAddressBookItem(args: {
+    authPayload: AuthPayload;
+    address: `0x${string}`;
+    chainId: string;
+    updateAddressBookItemDto: UpdateAddressBookItemDto;
   }): Promise<AddressBookItem>;
 
   deleteAddressBook(args: {

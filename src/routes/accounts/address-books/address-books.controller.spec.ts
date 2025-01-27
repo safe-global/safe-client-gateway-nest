@@ -46,6 +46,7 @@ import { accountDataSettingBuilder } from '@/domain/accounts/entities/__tests__/
 import { createAddressBookItemDtoBuilder } from '@/domain/accounts/address-books/entities/__tests__/create-address-book-item.dto.builder';
 import { AddressBookNotFoundError } from '@/domain/accounts/address-books/errors/address-book-not-found.error';
 import { DB_MAX_SAFE_INTEGER } from '@/domain/common/constants';
+import { updateAddressBookItemDtoBuilder } from '@/domain/accounts/address-books/entities/__tests__/update-address-book-item.dto.builder';
 
 describe('AddressBooksController', () => {
   let app: INestApplication<Server>;
@@ -376,6 +377,197 @@ describe('AddressBooksController', () => {
         .post(`/v1/accounts/${address}/address-books/${chainId}`)
         .set('Cookie', [`access_token=${accessToken}`])
         .send(createAddressBookItemDto)
+        .expect(500)
+        .expect({
+          code: 500,
+          message: 'Internal server error',
+        });
+    });
+  });
+
+  describe('PUT /accounts/:address/address-books/:chainId/:addressBookItemId', () => {
+    it('should update an AddressBookItem', async () => {
+      const address = getAddress(faker.finance.ethereumAddress());
+      const chainId = faker.string.numeric();
+      const addressBookItemId = faker.number.int({
+        min: 1,
+        max: DB_MAX_SAFE_INTEGER,
+      });
+      const authPayloadDto = authPayloadDtoBuilder()
+        .with('chain_id', chainId)
+        .with('signer_address', address)
+        .build();
+      const accessToken = jwtService.sign(authPayloadDto);
+      const account = accountBuilder().build();
+      const accountDataTypes = [
+        accountDataTypeBuilder()
+          .with('name', AccountDataTypeNames.AddressBook)
+          .with('is_active', true)
+          .build(),
+      ];
+      accountsRepository.getAccount.mockResolvedValue(account);
+      accountsRepository.getDataTypes.mockResolvedValue(accountDataTypes);
+      accountsRepository.getAccountDataSettings.mockResolvedValue([
+        accountDataSettingBuilder()
+          .with('account_id', account.id)
+          .with('account_data_type_id', accountDataTypes[0].id)
+          .with('enabled', true)
+          .build(),
+      ]);
+      const addressBook = addressBookBuilder().build();
+      addressBooksDatasource.getAddressBook.mockResolvedValue(addressBook);
+      const addressBookItem = addressBookItemBuilder().build();
+      addressBooksDatasource.updateAddressBookItem.mockResolvedValue(
+        addressBookItem,
+      );
+      const updateAddressBookItemDto =
+        updateAddressBookItemDtoBuilder().build();
+
+      await request(app.getHttpServer())
+        .put(
+          `/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+        )
+        .set('Cookie', [`access_token=${accessToken}`])
+        .send(updateAddressBookItemDto)
+        .expect(200)
+        .expect({
+          id: addressBookItem.id.toString(),
+          name: addressBookItem.name,
+          address: addressBookItem.address,
+        });
+    });
+
+    it('should return a 404 if the AddressBook does not exist', async () => {
+      const address = getAddress(faker.finance.ethereumAddress());
+      const chainId = faker.string.numeric();
+      const addressBookItemId = faker.number.int({
+        min: 1,
+        max: DB_MAX_SAFE_INTEGER,
+      });
+      const authPayloadDto = authPayloadDtoBuilder()
+        .with('chain_id', chainId)
+        .with('signer_address', address)
+        .build();
+      const accessToken = jwtService.sign(authPayloadDto);
+      const account = accountBuilder().build();
+      const accountDataTypes = [
+        accountDataTypeBuilder()
+          .with('name', AccountDataTypeNames.AddressBook)
+          .with('is_active', true)
+          .build(),
+      ];
+      accountsRepository.getAccount.mockResolvedValue(account);
+      accountsRepository.getDataTypes.mockResolvedValue(accountDataTypes);
+      accountsRepository.getAccountDataSettings.mockResolvedValue([
+        accountDataSettingBuilder()
+          .with('account_id', account.id)
+          .with('account_data_type_id', accountDataTypes[0].id)
+          .with('enabled', true)
+          .build(),
+      ]);
+      addressBooksDatasource.getAddressBook.mockImplementation(() => {
+        throw new AddressBookNotFoundError();
+      });
+      const updateAddressBookItemDto =
+        updateAddressBookItemDtoBuilder().build();
+
+      await request(app.getHttpServer())
+        .put(
+          `/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+        )
+        .set('Cookie', [`access_token=${accessToken}`])
+        .send(updateAddressBookItemDto)
+        .expect(404);
+    });
+
+    it('should fail if the authPayload does not match the URL address', async () => {
+      const address = getAddress(faker.finance.ethereumAddress());
+      const chainId = faker.string.numeric();
+      const addressBookItemId = faker.number.int({
+        min: 1,
+        max: DB_MAX_SAFE_INTEGER,
+      });
+      const authPayloadDto = authPayloadDtoBuilder()
+        .with('chain_id', chainId)
+        .with('signer_address', getAddress(faker.finance.ethereumAddress())) // Different address
+        .build();
+      const accessToken = jwtService.sign(authPayloadDto);
+      const updateAddressBookItemDto =
+        updateAddressBookItemDtoBuilder().build();
+
+      await request(app.getHttpServer())
+        .put(
+          `/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+        )
+        .set('Cookie', [`access_token=${accessToken}`])
+        .send(updateAddressBookItemDto)
+        .expect(401);
+    });
+
+    it('should fail if the account does not have the AddressBooks data setting enabled', async () => {
+      const address = getAddress(faker.finance.ethereumAddress());
+      const chainId = faker.string.numeric();
+      const addressBookItemId = faker.number.int({
+        min: 1,
+        max: DB_MAX_SAFE_INTEGER,
+      });
+      const authPayloadDto = authPayloadDtoBuilder()
+        .with('chain_id', chainId)
+        .with('signer_address', address)
+        .build();
+      const accessToken = jwtService.sign(authPayloadDto);
+      const account = accountBuilder().build();
+      const accountDataTypes = [
+        accountDataTypeBuilder()
+          .with('name', AccountDataTypeNames.AddressBook)
+          .with('is_active', true)
+          .build(),
+      ];
+      const updateAddressBookItemDto =
+        updateAddressBookItemDtoBuilder().build();
+      accountsRepository.getAccount.mockResolvedValue(account);
+      accountsRepository.getDataTypes.mockResolvedValue(accountDataTypes);
+      accountsRepository.getAccountDataSettings.mockResolvedValue([
+        accountDataSettingBuilder()
+          .with('account_id', account.id)
+          .with('account_data_type_id', accountDataTypes[0].id)
+          .with('enabled', false) // AddressBooks setting is not enabled
+          .build(),
+      ]);
+
+      await request(app.getHttpServer())
+        .put(
+          `/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+        )
+        .set('Cookie', [`access_token=${accessToken}`])
+        .send(updateAddressBookItemDto)
+        .expect(410);
+    });
+
+    it('should not propagate a database error', async () => {
+      const address = getAddress(faker.finance.ethereumAddress());
+      const chainId = faker.string.numeric();
+      const addressBookItemId = faker.number.int({
+        min: 1,
+        max: DB_MAX_SAFE_INTEGER,
+      });
+      const authPayloadDto = authPayloadDtoBuilder()
+        .with('chain_id', chainId)
+        .with('signer_address', address)
+        .build();
+      const accessToken = jwtService.sign(authPayloadDto);
+      const updateAddressBookItemDto =
+        updateAddressBookItemDtoBuilder().build();
+      accountsRepository.getAccount.mockRejectedValue(
+        new Error('Database error'),
+      );
+
+      await request(app.getHttpServer())
+        .put(
+          `/v1/accounts/${address}/address-books/${chainId}/${addressBookItemId}`,
+        )
+        .set('Cookie', [`access_token=${accessToken}`])
+        .send(updateAddressBookItemDto)
         .expect(500)
         .expect({
           code: 500,

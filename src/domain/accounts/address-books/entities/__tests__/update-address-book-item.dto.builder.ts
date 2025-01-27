@@ -1,5 +1,5 @@
 import { Builder, type IBuilder } from '@/__tests__/builder';
-import type { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book.item.dto.entity';
+import type { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book-item.dto.entity';
 import { accountNameBuilder } from '@/domain/accounts/entities/__tests__/account-name.builder';
 import { DB_MAX_SAFE_INTEGER } from '@/domain/common/constants';
 import { faker } from '@faker-js/faker/.';

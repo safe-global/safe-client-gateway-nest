@@ -3,7 +3,7 @@ import type {
   AddressBookItem,
 } from '@/domain/accounts/address-books/entities/address-book.entity';
 import type { CreateAddressBookItemDto } from '@/domain/accounts/address-books/entities/create-address-book-item.dto.entity';
-import type { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book.item.dto.entity';
+import type { UpdateAddressBookItemDto } from '@/domain/accounts/address-books/entities/update-address-book-item.dto.entity';
 import type { Account } from '@/domain/accounts/entities/account.entity';
 
 export const IAddressBooksDatasource = Symbol('IAddressBooksDatasource');
@@ -22,7 +22,7 @@ export interface IAddressBooksDatasource {
 
   updateAddressBookItem(args: {
     addressBook: AddressBook;
-    updateAddressBookItem: UpdateAddressBookItemDto;
+    updateAddressBookItemDto: UpdateAddressBookItemDto;
   }): Promise<AddressBookItem>;
 
   deleteAddressBook(addressBook: AddressBook): Promise<void>;

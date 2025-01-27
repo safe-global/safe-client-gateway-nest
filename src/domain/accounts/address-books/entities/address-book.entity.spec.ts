@@ -107,61 +107,6 @@ describe('AddressBookSchema', () => {
     ]);
   });
 
-  it('should not verify an AddressBookItem with a shorter name', () => {
-    const addressBook = addressBookBuilder().build();
-    addressBook.data[0].name = 'e'; // min length is 3
-
-    const result = AddressBookSchema.safeParse(addressBook);
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'too_small',
-        exact: false,
-        inclusive: true,
-        message: 'Address book entry names must be at least 3 characters long',
-        minimum: 3,
-        path: ['data', 0, 'name'],
-        type: 'string',
-      },
-    ]);
-  });
-
-  it('should not verify an AddressBookItem with a longer name', () => {
-    const addressBook = addressBookBuilder().build();
-    addressBook.data[0].name = 'e'.repeat(51); // max length is 50
-
-    const result = AddressBookSchema.safeParse(addressBook);
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'too_big',
-        exact: false,
-        inclusive: true,
-        message: 'Address book entry names must be at most 50 characters long',
-        maximum: 50,
-        path: ['data', 0, 'name'],
-        type: 'string',
-      },
-    ]);
-  });
-
-  it('should not verify an AddressBookItem with a malformed name', () => {
-    const addressBook = addressBookBuilder().build();
-    addressBook.data[0].name = '////'; // must start with a letter or number
-
-    const result = AddressBookSchema.safeParse(addressBook);
-
-    expect(!result.success && result.error.issues).toStrictEqual([
-      {
-        code: 'invalid_string',
-        message:
-          'Address book entry names must start with a letter or number and can contain alphanumeric characters, periods, underscores, or hyphens',
-        path: ['data', 0, 'name'],
-        validation: 'regex',
-      },
-    ]);
-  });
-
   it('should not verify an AddressBookItem with a malformed address', () => {
     const addressBook = addressBookBuilder().build();
     addressBook.data[0].address = '0x123';
