@@ -8,6 +8,7 @@ import { OctavApi } from '@/datasources/portfolio-api/octav-api.service';
 import { rawify } from '@/validation/entities/raw.entity';
 import type { INetworkService } from '@/datasources/network/network.service.interface';
 import type { OctavGetPortfolio } from '@/datasources/portfolio-api/entities/octav-get-portfolio.entity';
+import { portfolioBuilder } from '@/domain/portfolio/entities/__tests__/portfolio.builder';
 
 const mockNetworkService = jest.mocked({
   get: jest.fn(),
@@ -70,8 +71,9 @@ describe('OctavApiService', () => {
   describe('getPortfolio', () => {
     it('should get portfolio', async () => {
       const safeAddress = getAddress(faker.finance.ethereumAddress());
-      const portfolio = { example: 'payload' };
-      const getPortfolio: OctavGetPortfolio = { getPortfolio: [portfolio] };
+      const getPortfolio: OctavGetPortfolio = {
+        getPortfolio: [portfolioBuilder().build()],
+      };
       mockNetworkService.get.mockResolvedValueOnce({
         status: 200,
         data: rawify(getPortfolio),

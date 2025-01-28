@@ -1,11 +1,13 @@
 import { ZodError } from 'zod';
 import { OctavGetPortfolioSchema } from '@/datasources/portfolio-api/entities/octav-get-portfolio.entity';
 import type { OctavGetPortfolio } from '@/datasources/portfolio-api/entities/octav-get-portfolio.entity';
+import { portfolioBuilder } from '@/domain/portfolio/entities/__tests__/portfolio.builder';
 
 describe('OctavGetPortfolioSchema', () => {
   it('should validate a getPortfolio response', () => {
-    const portfolio = { example: 'payload' };
-    const getPortfolio: OctavGetPortfolio = { getPortfolio: [portfolio] };
+    const getPortfolio: OctavGetPortfolio = {
+      getPortfolio: [portfolioBuilder().build()],
+    };
 
     const result = OctavGetPortfolioSchema.safeParse(getPortfolio);
 
