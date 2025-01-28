@@ -59,6 +59,7 @@ import {
   type ILoggingService,
 } from '@/logging/logging.interface';
 import { UsersModule } from '@/routes/users/users.module';
+import { OrganisationsModule } from '@/routes/organisations/organisations.module';
 
 @Module({})
 export class AppModule implements NestModule {
@@ -103,6 +104,7 @@ export class AppModule implements NestModule {
           : [HooksModule]),
         MessagesModule,
         NotificationsModule,
+        ...(isUsersFeatureEnabled ? [OrganisationsModule] : []),
         OwnersModule,
         RelayControllerModule,
         RootModule,
