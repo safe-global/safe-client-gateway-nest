@@ -22,6 +22,9 @@ async function redisClientFactory(
   const redisHost = configurationService.getOrThrow<string>('redis.host');
   const redisPort = configurationService.getOrThrow<string>('redis.port');
   const redisTimeout = configurationService.getOrThrow<number>('redis.timeout');
+  const redisDisableOfflineQueue = configurationService.getOrThrow<boolean>(
+    'redis.disableOfflineQueue',
+  );
   const client: RedisClientType = createClient({
     socket: {
       host: redisHost,
@@ -29,6 +32,7 @@ async function redisClientFactory(
     },
     username: redisUser,
     password: redisPass,
+    disableOfflineQueue: redisDisableOfflineQueue,
   });
   client.on('error', (err) =>
     loggingService.error(`Redis client error: ${err}`),
