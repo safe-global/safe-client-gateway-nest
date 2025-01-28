@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { IUsersRepository } from '@/domain/users/users.repository.interface';
 import { User, UserStatus } from '@/domain/users/entities/user.entity';
 import { AuthPayload } from '@/domain/auth/entities/auth-payload.entity';
@@ -43,6 +48,49 @@ export class UsersRepository implements IUsersRepository {
         });
 
         return { id: userInsertResult.identifiers[0].id };
+      },
+    );
+  }
+
+  async addWalletToUser(args: {
+    newSignerAddress: `0x${string}`;
+    authPayload: AuthPayload;
+  }): Promise<Pick<Wallet, 'id'>> {
+    return await this.postgresDatabaseService.transaction(
+      async (entityManager: EntityManager) => {
+        const walletRepository = entityManager.getRepository(Wallet);
+
+        if (!args.authPayload.signer_address) {
+          throw new UnauthorizedException();
+        }
+
+        const authenticatedWallet = await walletRepository.findOne({
+          where: { address: args.authPayload.signer_address },
+          relations: { user: true },
+        });
+
+        if (!authenticatedWallet?.user) {
+          throw new NotFoundException('User not found');
+        }
+
+        const walletAlreadyExists = Boolean(
+          await walletRepository.findOne({
+            where: { address: args.newSignerAddress },
+          }),
+        );
+
+        if (walletAlreadyExists) {
+          throw new ConflictException(
+            'A wallet with the same address already exists',
+          );
+        }
+
+        const walletInsertResult = await walletRepository.insert({
+          user: authenticatedWallet.user,
+          address: args.newSignerAddress,
+        });
+
+        return { id: walletInsertResult.identifiers[0].id };
       },
     );
   }

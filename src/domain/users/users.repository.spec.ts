@@ -9,6 +9,8 @@ import type { EntityManager } from 'typeorm';
 import { User } from '@/datasources/users/entities/users.entity.db';
 import { Wallet } from '@/datasources/users/entities/wallets.entity.db';
 import { userBuilder } from '@/datasources/users/entities/__tests__/users.entity.db.builder';
+import { walletBuilder } from '@/datasources/users/entities/__tests__/wallets.entity.db.builder';
+import { faker } from '@faker-js/faker/.';
 
 let usersRepository: IUsersRepository;
 const mockUserRepository = { ...mockRepository };
@@ -61,6 +63,35 @@ describe('UsersRepository', () => {
       });
 
       expect(result).toEqual({ id: mockUser.id });
+    });
+  });
+
+  describe('addWalletToUser', () => {
+    it('should add a wallet to a user', async () => {
+      const authPayloadDto = authPayloadDtoBuilder().build();
+      const authPayload = new AuthPayload(authPayloadDto);
+
+      const newSignerAddressMock = faker.finance.ethereumAddress();
+      const mockWallet = walletBuilder().build();
+      mockWalletRepository.findOne.mockResolvedValueOnce(mockWallet);
+      mockUserRepository.findOne.mockResolvedValueOnce(null);
+      mockWalletRepository.insert.mockResolvedValue({
+        identifiers: [{ id: mockWallet.id }],
+        generatedMaps: [{ id: 1 }],
+        raw: jest.fn(),
+      });
+
+      const result = await usersRepository.addWalletToUser({
+        authPayload,
+        newSignerAddress: newSignerAddressMock as `0x${string}`,
+      });
+
+      expect(mockWalletRepository.insert).toHaveBeenCalledWith({
+        user: mockWallet.user,
+        address: newSignerAddressMock,
+      });
+
+      expect(result).toEqual({ id: mockWallet.id });
     });
   });
 });
